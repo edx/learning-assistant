@@ -14,7 +14,7 @@ Change Log
 Unreleased
 **********
 
-*
+* Created model to associate course ideas with a specific prompt text
 
 0.1.0 – 2023-07-26
 **********************************************

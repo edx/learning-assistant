@@ -3,10 +3,35 @@
 Tests for the `learning-assistant` models module.
 """
 
+from django.test import TestCase
 
-def test_placeholder():
-    """
-    Placeholder to allow pytest to succeed before real tests are in place.
+from learning_assistant.models import CoursePrompt
 
-    (If there are no tests, it will exit with code 5.)
+
+class CoursePromptTests(TestCase):
     """
+    Test suite for the CoursePrompt model
+    """
+
+    def setUp(self):
+        self.course_id = 'course-v1:edx+test+23'
+        self.prompt = 'This is a prompt'
+        self.course_prompt = CoursePrompt.objects.create(
+            course_id=self.course_id,
+            prompt=self.prompt,
+        )
+        return super().setUp()
+
+    def test_get_prompt_by_course_id(self):
+        """
+        Test that a prompt can be retrieved by course ID
+        """
+        prompt = CoursePrompt.get_prompt_by_course_id(self.course_id)
+        self.assertEqual(prompt, self.prompt)
+
+    def test_get_prompt_by_course_id_invalid(self):
+        """
+        Test that None is returned if the given course ID does not exist
+        """
+        prompt = CoursePrompt.get_prompt_by_course_id('course-v1:edx+fake+19')
+        self.assertIsNone(prompt)
