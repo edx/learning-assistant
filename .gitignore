@@ -65,3 +65,5 @@ docs/learning_assistant.*.rst
 # Private requirements
 requirements/private.in
 requirements/private.txt
+
+default.db
