@@ -1,10 +1,17 @@
 """
 URLs for learning_assistant.
 """
-from django.urls import re_path  # pylint: disable=unused-import
-from django.views.generic import TemplateView  # pylint: disable=unused-import
+from django.urls import re_path
+
+from learning_assistant.constants import COURSE_ID_PATTERN
+from learning_assistant.views import CourseChatView
+
+app_name = 'learning_assistant'
 
 urlpatterns = [
-    # TODO: Fill in URL patterns and views here.
-    # re_path(r'', TemplateView.as_view(template_name="learning_assistant/base.html")),
+    re_path(
+        fr'learning_assistant/v1/course_id/{COURSE_ID_PATTERN}',
+        CourseChatView.as_view(),
+        name='chat'
+    ),
 ]

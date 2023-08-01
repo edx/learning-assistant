@@ -3,4 +3,6 @@
 
 Django             # Web application framework
 django-model-utils
+djangorestframework
+edx-drf-extensions
 edx-opaque-keys

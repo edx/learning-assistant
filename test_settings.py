@@ -44,9 +44,9 @@ ROOT_URLCONF = 'learning_assistant.urls'
 SECRET_KEY = 'insecure-secret-key'
 
 MIDDLEWARE = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
 )
 
 TEMPLATES = [{
@@ -59,3 +59,7 @@ TEMPLATES = [{
         ],
     },
 }]
+
+CHAT_COMPLETION_API = 'https://test.edx.org/'
+CHAT_COMPLETION_API_CONNECT_TIMEOUT = 0.5
+CHAT_COMPLETION_API_READ_TIMEOUT = 10
