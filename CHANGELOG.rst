@@ -11,11 +11,15 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
-Unreleased
-**********
+1.0.0 - 2023-08-08
+******************
 
 * Add endpoint to retrieve chat response
 * Created model to associate course ideas with a specific prompt text
+
+Unreleased
+**********
+
 
 0.1.0 – 2023-07-26
 **********************************************
