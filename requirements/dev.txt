@@ -27,7 +27,7 @@ cffi==1.15.1
     #   -r requirements/quality.txt
     #   cryptography
     #   pynacl
-chardet==5.1.0
+chardet==5.2.0
     # via diff-cover
 charset-normalizer==3.2.0
     # via
@@ -59,7 +59,7 @@ coverage[toml]==7.2.7
     #   -r requirements/quality.txt
     #   codecov
     #   pytest-cov
-cryptography==41.0.2
+cryptography==41.0.3
     # via
     #   -r requirements/quality.txt
     #   pyjwt
@@ -107,17 +107,17 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-django-utils==5.6.0
+edx-django-utils==5.7.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
 edx-drf-extensions==8.8.0
     # via -r requirements/quality.txt
-edx-i18n-tools==1.0.0
+edx-i18n-tools==1.1.0
     # via -r requirements/dev.in
 edx-lint==5.3.4
     # via -r requirements/quality.txt
-edx-opaque-keys==2.3.0
+edx-opaque-keys==2.4.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
@@ -178,7 +178,7 @@ pbr==5.11.1
     # via
     #   -r requirements/quality.txt
     #   stevedore
-pip-tools==7.1.0
+pip-tools==7.2.0
     # via -r requirements/pip-tools.txt
 platformdirs==3.10.0
     # via
@@ -211,7 +211,7 @@ pycparser==2.21
     #   cffi
 pydocstyle==6.3.0
     # via -r requirements/quality.txt
-pygments==2.15.1
+pygments==2.16.1
     # via diff-cover
 pyjwt[crypto]==2.8.0
     # via
@@ -360,7 +360,7 @@ virtualenv==20.24.2
     # via
     #   -r requirements/ci.txt
     #   tox
-wheel==0.41.0
+wheel==0.41.1
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
