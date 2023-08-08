@@ -11,3 +11,13 @@ class LearningAssistantConfig(AppConfig):
     """
 
     name = 'learning_assistant'
+
+    plugin_app = {
+        'url_config': {
+            'lms.djangoapp': {
+                'namespace': 'learning_assistant',
+                'regex': '^api/',
+                'relative_path': 'urls',
+            },
+        }
+    }
