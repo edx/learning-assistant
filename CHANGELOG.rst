@@ -11,6 +11,10 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.1.0 - 2023-08-09
+******************
+* fix for course id to course key conversion
+
 1.0.0 - 2023-08-08
 ******************
 

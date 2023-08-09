@@ -4,6 +4,7 @@ V1 API Views.
 import logging
 
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
+from opaque_keys.edx.keys import CourseKey
 from rest_framework import status as http_status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -45,15 +46,16 @@ class CourseChatView(APIView):
             ]
         }
         """
-        if not learning_assistant_is_active(course_id):
+        course_key = CourseKey.from_string(course_id)
+        if not learning_assistant_is_active(course_key):
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,
                 data={'detail': 'Learning assistant not enabled for course.'}
             )
 
         # If user does not have a verified enrollment, or is not staff, they should not have access
-        user_role = get_user_role(request.user, course_id)
-        enrollment_object = CourseEnrollment.get_enrollment(request.user, course_id)
+        user_role = get_user_role(request.user, course_key)
+        enrollment_object = CourseEnrollment.get_enrollment(request.user, course_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
         if (
             (enrollment_mode not in CourseMode.VERIFIED_MODES)
