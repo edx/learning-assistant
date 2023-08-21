@@ -8,6 +8,8 @@ from django.conf import settings
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
+from learning_assistant.dev_utils import generate_response
+
 log = logging.getLogger(__name__)
 
 
@@ -15,6 +17,10 @@ def get_chat_response(message_list):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
+    if auto_response_for_testing_enabled():
+        auto_response = generate_response()
+        return http_status.HTTP_200_OK, auto_response
+
     completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API', None)
     if completion_endpoint:
         headers = {'Content-Type': 'application/json'}
@@ -44,3 +50,13 @@ def get_chat_response(message_list):
         chat = 'Completion endpoint is not defined.'
 
     return response_status, chat
+
+
+def auto_response_for_testing_enabled():
+    """
+    If AUTOMATIC_CHAT_RESPONSE_FOR_TESTING is True, we want to skip making a request to the chat completion endpoint.
+
+    Bypass passing anything to the chat completion endpoint, as that endpoint is defined via a setting that
+    is not available in the dev environment.
+    """
+    return settings.FEATURES.get('AUTOMATIC_CHAT_RESPONSE_FOR_TESTING')
