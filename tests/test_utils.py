@@ -68,3 +68,9 @@ class GetChatResponseTests(TestCase):
         mock_requests.post = MagicMock(side_effect=exception())
         status_code, _ = get_chat_response(self.message_list)
         self.assertEqual(status_code, 502)
+
+    @patch.dict(settings.FEATURES, {'AUTOMATIC_CHAT_RESPONSE_FOR_TESTING': True})
+    def test_automatic_response(self):
+        status_code, message = get_chat_response(self.message_list)
+        self.assertEqual(status_code, 200)
+        self.assertIsNotNone(message)
