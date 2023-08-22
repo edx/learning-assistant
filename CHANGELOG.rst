@@ -11,6 +11,11 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.2.0 - 2023-08-22
+******************
+* add endpoint authentication
+* fix request structure required for endpoint integration
+
 1.1.0 - 2023-08-09
 ******************
 * fix for course id to course key conversion

@@ -31,6 +31,12 @@ class GetChatResponseTests(TestCase):
         self.assertEqual(status_code, 404)
         self.assertEqual(message, 'Completion endpoint is not defined.')
 
+    @override_settings(CHAT_COMPLETION_API_KEY=None)
+    def test_no_endpoint_key_setting(self):
+        status_code, message = get_chat_response(self.message_list)
+        self.assertEqual(status_code, 404)
+        self.assertEqual(message, 'Completion endpoint is not defined.')
+
     @responses.activate
     def test_200_response(self):
         message_response = {'role': 'assistant', 'content': 'See you later!'}
@@ -68,3 +74,21 @@ class GetChatResponseTests(TestCase):
         mock_requests.post = MagicMock(side_effect=exception())
         status_code, _ = get_chat_response(self.message_list)
         self.assertEqual(status_code, 502)
+
+    @patch('learning_assistant.utils.requests')
+    def test_post_request_structure(self, mock_requests):
+        mock_requests.post = MagicMock()
+
+        completion_endpoint = settings.CHAT_COMPLETION_API
+        connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
+        read_timeout = settings.CHAT_COMPLETION_API_READ_TIMEOUT
+        headers = {'Content-Type': 'application/json', 'x-api-key': settings.CHAT_COMPLETION_API_KEY}
+        body = json.dumps({'message_list': self.message_list})
+
+        get_chat_response(self.message_list)
+        mock_requests.post.assert_called_with(
+            completion_endpoint,
+            headers=headers,
+            data=body,
+            timeout=(connect_timeout, read_timeout)
+        )
