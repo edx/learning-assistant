@@ -34,7 +34,7 @@ charset-normalizer==3.2.0
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   requests
-click==8.1.6
+click==8.1.7
     # via
     #   -r requirements/pip-tools.txt
     #   -r requirements/quality.txt
@@ -111,7 +111,7 @@ edx-django-utils==5.7.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-drf-extensions==8.9.0
+edx-drf-extensions==8.9.1
     # via -r requirements/quality.txt
 edx-i18n-tools==1.1.0
     # via -r requirements/dev.in
@@ -160,7 +160,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/quality.txt
     #   pylint
-newrelic==8.10.0
+newrelic==8.10.1
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
@@ -338,7 +338,7 @@ tox==3.28.0
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/ci.txt
     #   tox-battery
-tox-battery==0.6.1
+tox-battery==0.6.2
     # via -r requirements/ci.txt
 types-pyyaml==6.0.12.11
     # via
@@ -360,7 +360,7 @@ virtualenv==20.24.3
     # via
     #   -r requirements/ci.txt
     #   tox
-wheel==0.41.1
+wheel==0.41.2
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
