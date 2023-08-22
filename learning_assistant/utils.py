@@ -1,6 +1,7 @@
 """
 Utils file for learning-assistant.
 """
+import json
 import logging
 
 import requests
@@ -16,16 +17,18 @@ def get_chat_response(message_list):
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
     completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API', None)
-    if completion_endpoint:
-        headers = {'Content-Type': 'application/json'}
+    completion_endpoint_key = getattr(settings, 'CHAT_COMPLETION_API_KEY', None)
+    if completion_endpoint and completion_endpoint_key:
+        headers = {'Content-Type': 'application/json', 'x-api-key': completion_endpoint_key}
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
-        read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 10)
+        read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
+        body = {'message_list': message_list}
 
         try:
             response = requests.post(
                 completion_endpoint,
                 headers=headers,
-                data=message_list,
+                data=json.dumps(body),
                 timeout=(connect_timeout, read_timeout)
             )
             chat = response.json()
