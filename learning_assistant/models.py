@@ -17,7 +17,7 @@ class CoursePrompt(TimeStampedModel):
     course_id = CourseKeyField(max_length=255, db_index=True, unique=True)
 
     # text prompt, that may contain course related information
-    prompt = models.TextField(blank=True)
+    prompt = models.TextField(blank=True, null=True)
 
     @classmethod
     def get_prompt_by_course_id(cls, course_id):

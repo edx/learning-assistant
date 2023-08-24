@@ -11,6 +11,10 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.2.1 - 2023-08-24
+******************
+* make prompt field nullable
+
 1.2.0 - 2023-08-22
 ******************
 * add endpoint authentication
