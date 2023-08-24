@@ -11,6 +11,10 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.3.1 - 2023-08-24
+******************
+* Remove prompt field
+
 1.3.0 - 2023-08-24
 ******************
 * Remove references to prompt field
