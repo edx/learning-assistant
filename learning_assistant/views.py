@@ -20,7 +20,7 @@ except ImportError:
     # If the waffle flag is false, the endpoint will force an early return.
     learning_assistant_is_active = False
 
-from learning_assistant.api import get_prompt_by_course_id
+from learning_assistant.api import get_setup_messages
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.utils import get_chat_response
 
@@ -66,8 +66,8 @@ class CourseChatView(APIView):
                 data={'detail': 'Must be staff or have valid enrollment.'}
             )
 
-        prompt_text = get_prompt_by_course_id(course_id)
-        if not prompt_text:
+        prompt_messages = get_setup_messages(course_id)
+        if not prompt_messages:
             return Response(
                 status=http_status.HTTP_404_NOT_FOUND,
                 data={'detail': 'Learning assistant not enabled for course.'}
@@ -85,10 +85,7 @@ class CourseChatView(APIView):
             )
 
         # append system message to beginning of message list
-        message_setup = [{
-            'role': 'system',
-            'content': prompt_text
-        }]
+        message_setup = prompt_messages
 
         log.info(
             'Attempting to retrieve chat response for user_id=%(user_id)s in course_id=%(course_id)s',

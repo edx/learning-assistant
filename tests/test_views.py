@@ -115,7 +115,7 @@ class CourseChatViewTests(LoggedInTestCase):
 
         CoursePrompt.objects.create(
             course_id=self.course_id,
-            prompt='This is a prompt'
+            json_prompt_content=json.dumps('["This is a Prompt", "This is another Prompt"]')
         )
 
         test_data = [
@@ -140,7 +140,7 @@ class CourseChatViewTests(LoggedInTestCase):
 
         CoursePrompt.objects.create(
             course_id=self.course_id,
-            prompt='This is a prompt'
+            json_prompt_content=json.dumps('["This is a Prompt", "This is another Prompt"]')
         )
 
         test_data = [

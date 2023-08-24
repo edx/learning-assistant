@@ -11,6 +11,11 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.3.0 - 2023-08-24
+******************
+* Remove references to prompt field
+* Create json_prompt field to allow for more flexible prompts
+
 1.2.1 - 2023-08-24
 ******************
 * make prompt field nullable
