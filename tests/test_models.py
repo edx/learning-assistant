@@ -2,8 +2,6 @@
 """
 Tests for the `learning-assistant` models module.
 """
-import json
-
 from django.test import TestCase
 
 from learning_assistant.models import CoursePrompt
@@ -16,7 +14,7 @@ class CoursePromptTests(TestCase):
 
     def setUp(self):
         self.course_id = 'course-v1:edx+test+23'
-        self.prompt = json.dumps('["This is a Prompt", "This is another Prompt"]')
+        self.prompt = ["This is a Prompt", "This is another Prompt"]
         self.course_prompt = CoursePrompt.objects.create(
             course_id=self.course_id,
             json_prompt_content=self.prompt,
