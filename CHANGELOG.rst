@@ -11,6 +11,11 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.3.2 - 2023-08-25
+******************
+* Remove deserialization of prompt field, as it is represented in the python
+  native format
+
 1.3.1 - 2023-08-24
 ******************
 * Remove prompt field

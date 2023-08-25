@@ -1,8 +1,6 @@
 """
 Library for the learning_assistant app.
 """
-import json
-
 from learning_assistant.models import CoursePrompt
 
 
@@ -12,8 +10,7 @@ def get_deserialized_prompt_content_by_course_id(course_id):
     """
     json_prompt = CoursePrompt.get_json_prompt_content_by_course_id(course_id)
     if json_prompt:
-        prompt_messages = json.loads(json_prompt)
-        return prompt_messages
+        return json_prompt
     return None
 
 
