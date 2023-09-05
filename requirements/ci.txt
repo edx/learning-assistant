@@ -45,5 +45,5 @@ typing-extensions==4.7.1
     # via filelock
 urllib3==2.0.4
     # via requests
-virtualenv==20.24.3
+virtualenv==20.24.4
     # via tox
