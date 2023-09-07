@@ -53,12 +53,12 @@ class CourseChatView(APIView):
                 data={'detail': 'Learning assistant not enabled for course.'}
             )
 
-        # If user does not have a verified enrollment, or is not staff, they should not have access
+        # If user does not have an enrollment record, or is not staff, they should not have access
         user_role = get_user_role(request.user, course_key)
         enrollment_object = CourseEnrollment.get_enrollment(request.user, course_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
         if (
-            (enrollment_mode not in CourseMode.VERIFIED_MODES)
+            (enrollment_mode not in CourseMode.ALL_MODES)
             and user_role not in ('staff', 'instructor')
         ):
             return Response(

@@ -11,6 +11,10 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.3.3 - 2023-09-07
+******************
+* Allow any enrolled learner to access API.
+
 1.3.2 - 2023-08-25
 ******************
 * Remove deserialization of prompt field, as it is represented in the python
