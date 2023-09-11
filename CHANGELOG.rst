@@ -11,6 +11,10 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.4.0 - 2023-09-11
+******************
+* Send reduced message list if needed to avoid going over token limit
+
 1.3.3 - 2023-09-07
 ******************
 * Allow any enrolled learner to access API.

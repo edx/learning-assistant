@@ -12,7 +12,42 @@ from rest_framework import status as http_status
 log = logging.getLogger(__name__)
 
 
-def get_chat_response(message_list):
+def _estimated_message_tokens(message):
+    """
+    Estimates how many tokens are in a given message.
+    """
+    chars_per_token = 3.5
+    json_padding = 8
+
+    return int((len(message) - message.count(' ')) / chars_per_token) + json_padding
+
+
+def get_reduced_message_list(system_list, message_list):
+    """
+    If messages are larger than allotted token amount, return a smaller list of messages.
+    """
+    total_system_tokens = sum(_estimated_message_tokens(system_message['content']) for system_message in system_list)
+
+    max_tokens = getattr(settings, 'CHAT_COMPLETION_MAX_TOKENS', 16385)
+    response_tokens = getattr(settings, 'CHAT_COMPLETION_RESPONSE_TOKENS', 1000)
+    remaining_tokens = max_tokens - response_tokens - total_system_tokens
+
+    new_message_list = []
+    total_message_tokens = 0
+
+    while total_message_tokens < remaining_tokens and len(message_list) != 0:
+        new_message = message_list.pop()
+        total_message_tokens += _estimated_message_tokens(new_message['content'])
+        if total_message_tokens >= remaining_tokens:
+            break
+
+        # insert message at beginning of list, because we are traversing the message list from most recent to oldest
+        new_message_list.insert(0, new_message)
+
+    return new_message_list
+
+
+def get_chat_response(system_list, message_list):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
@@ -22,7 +57,9 @@ def get_chat_response(message_list):
         headers = {'Content-Type': 'application/json', 'x-api-key': completion_endpoint_key}
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
-        body = {'message_list': message_list}
+
+        reduced_messages = get_reduced_message_list(system_list, message_list)
+        body = {'message_list': system_list + reduced_messages}
 
         try:
             response = requests.post(
