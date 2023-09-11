@@ -94,6 +94,6 @@ class CourseChatView(APIView):
                 'course_id': course_id
             }
         )
-        status_code, message = get_chat_response(message_setup + message_list)
+        status_code, message = get_chat_response(message_setup, message_list)
 
         return Response(status=status_code, data=message)
