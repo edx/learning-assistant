@@ -13,7 +13,7 @@ astroid==2.15.6
     #   -r requirements/quality.txt
     #   pylint
     #   pylint-celery
-build==0.10.0
+build==1.0.3
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
@@ -53,7 +53,7 @@ code-annotations==1.5.0
     #   edx-lint
 codecov==2.1.13
     # via -r requirements/ci.txt
-coverage[toml]==7.3.0
+coverage[toml]==7.3.1
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
@@ -75,7 +75,7 @@ distlib==0.3.7
     # via
     #   -r requirements/ci.txt
     #   virtualenv
-django==3.2.20
+django==3.2.21
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/quality.txt
@@ -111,7 +111,7 @@ edx-django-utils==5.7.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-drf-extensions==8.9.1
+edx-drf-extensions==8.9.2
     # via -r requirements/quality.txt
 edx-i18n-tools==1.1.0
     # via -r requirements/dev.in
@@ -135,6 +135,10 @@ idna==3.4
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   requests
+importlib-metadata==6.8.0
+    # via
+    #   -r requirements/pip-tools.txt
+    #   build
 iniconfig==2.0.0
     # via
     #   -r requirements/quality.txt
@@ -250,7 +254,7 @@ pyproject-hooks==1.0.0
     # via
     #   -r requirements/pip-tools.txt
     #   build
-pytest==7.4.0
+pytest==7.4.2
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
@@ -267,7 +271,7 @@ python-slugify==8.0.1
     # via
     #   -r requirements/quality.txt
     #   code-annotations
-pytz==2023.3
+pytz==2023.3.post1
     # via
     #   -r requirements/quality.txt
     #   django
@@ -359,7 +363,7 @@ urllib3==2.0.4
     #   -r requirements/quality.txt
     #   requests
     #   responses
-virtualenv==20.24.3
+virtualenv==20.24.5
     # via
     #   -r requirements/ci.txt
     #   tox
@@ -371,6 +375,10 @@ wrapt==1.15.0
     # via
     #   -r requirements/quality.txt
     #   astroid
+zipp==3.16.2
+    # via
+    #   -r requirements/pip-tools.txt
+    #   importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
