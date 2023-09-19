@@ -12,9 +12,7 @@ asgiref==3.7.2
     #   django
 babel==2.12.1
     # via sphinx
-bleach==6.0.0
-    # via readme-renderer
-build==0.10.0
+build==1.0.3
     # via -r requirements/doc.in
 certifi==2023.7.22
     # via
@@ -36,7 +34,7 @@ click==8.1.7
     #   edx-django-utils
 code-annotations==1.5.0
     # via -r requirements/test.txt
-coverage[toml]==7.3.0
+coverage[toml]==7.3.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -47,7 +45,7 @@ cryptography==41.0.3
     #   secretstorage
 ddt==1.6.0
     # via -r requirements/test.txt
-django==3.2.20
+django==3.2.21
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -90,7 +88,7 @@ edx-django-utils==5.7.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-edx-drf-extensions==8.9.1
+edx-drf-extensions==8.10.0
     # via -r requirements/test.txt
 edx-opaque-keys==2.5.0
     # via
@@ -108,6 +106,7 @@ imagesize==1.4.1
     # via sphinx
 importlib-metadata==6.8.0
     # via
+    #   build
     #   keyring
     #   sphinx
     #   twine
@@ -144,6 +143,8 @@ newrelic==9.0.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
+nh3==0.2.14
+    # via readme-renderer
 packaging==23.1
     # via
     #   -r requirements/test.txt
@@ -189,7 +190,7 @@ pynacl==1.5.0
     #   edx-django-utils
 pyproject-hooks==1.0.0
     # via build
-pytest==7.4.0
+pytest==7.4.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -198,15 +199,11 @@ pytest-cov==4.1.0
     # via -r requirements/test.txt
 pytest-django==4.5.2
     # via -r requirements/test.txt
-python-dateutil==2.8.2
-    # via
-    #   -r requirements/test.txt
-    #   edx-drf-extensions
 python-slugify==8.0.1
     # via
     #   -r requirements/test.txt
     #   code-annotations
-pytz==2023.3
+pytz==2023.3.post1
     # via
     #   -r requirements/test.txt
     #   babel
@@ -217,7 +214,7 @@ pyyaml==6.0.1
     #   -r requirements/test.txt
     #   code-annotations
     #   responses
-readme-renderer==41.0
+readme-renderer==42.0
     # via twine
 requests==2.31.0
     # via
@@ -235,7 +232,7 @@ restructuredtext-lint==1.4.0
     # via doc8
 rfc3986==2.0.0
     # via twine
-rich==13.5.2
+rich==13.5.3
     # via twine
 secretstorage==3.3.3
     # via keyring
@@ -243,12 +240,6 @@ semantic-version==2.10.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-six==1.16.0
-    # via
-    #   -r requirements/test.txt
-    #   bleach
-    #   edx-drf-extensions
-    #   python-dateutil
 snowballstemmer==2.2.0
     # via sphinx
 sphinx==7.1.2
@@ -294,7 +285,7 @@ types-pyyaml==6.0.12.11
     # via
     #   -r requirements/test.txt
     #   responses
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via
     #   -r requirements/test.txt
     #   asgiref
@@ -306,9 +297,7 @@ urllib3==2.0.4
     #   requests
     #   responses
     #   twine
-webencodings==0.5.1
-    # via bleach
-zipp==3.16.2
+zipp==3.17.0
     # via
     #   importlib-metadata
     #   importlib-resources
