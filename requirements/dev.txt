@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/quality.txt
     #   django
-astroid==2.15.6
+astroid==2.15.8
     # via
     #   -r requirements/quality.txt
     #   pylint
@@ -59,7 +59,7 @@ coverage[toml]==7.3.1
     #   -r requirements/quality.txt
     #   codecov
     #   pytest-cov
-cryptography==41.0.3
+cryptography==41.0.4
     # via
     #   -r requirements/quality.txt
     #   pyjwt
@@ -117,7 +117,7 @@ edx-i18n-tools==1.2.0
     # via -r requirements/dev.in
 edx-lint==5.3.4
     # via -r requirements/quality.txt
-edx-opaque-keys==2.5.0
+edx-opaque-keys==2.5.1
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
@@ -164,7 +164,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/quality.txt
     #   pylint
-newrelic==9.0.0
+newrelic==9.1.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
@@ -222,7 +222,7 @@ pyjwt[crypto]==2.8.0
     #   -r requirements/quality.txt
     #   drf-jwt
     #   edx-drf-extensions
-pylint==2.17.5
+pylint==2.17.6
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -338,7 +338,7 @@ tox==3.28.0
     #   tox-battery
 tox-battery==0.6.2
     # via -r requirements/ci.txt
-types-pyyaml==6.0.12.11
+types-pyyaml==6.0.12.12
     # via
     #   -r requirements/quality.txt
     #   responses
@@ -349,7 +349,7 @@ typing-extensions==4.8.0
     #   astroid
     #   edx-opaque-keys
     #   pylint
-urllib3==2.0.4
+urllib3==2.0.5
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
