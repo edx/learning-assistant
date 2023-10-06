@@ -22,14 +22,14 @@ certifi==2023.7.22
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   requests
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   -r requirements/quality.txt
     #   cryptography
     #   pynacl
 chardet==5.2.0
     # via diff-cover
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
@@ -53,7 +53,7 @@ code-annotations==1.5.0
     #   edx-lint
 codecov==2.1.13
     # via -r requirements/ci.txt
-coverage[toml]==7.3.1
+coverage[toml]==7.3.2
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
@@ -168,7 +168,7 @@ newrelic==9.1.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
-packaging==23.1
+packaging==23.2
     # via
     #   -r requirements/ci.txt
     #   -r requirements/pip-tools.txt
@@ -184,7 +184,7 @@ pbr==5.11.1
     #   stevedore
 pip-tools==7.3.0
     # via -r requirements/pip-tools.txt
-platformdirs==3.10.0
+platformdirs==3.11.0
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
@@ -222,7 +222,7 @@ pyjwt[crypto]==2.8.0
     #   -r requirements/quality.txt
     #   drf-jwt
     #   edx-drf-extensions
-pylint==2.17.6
+pylint==2.17.7
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -349,7 +349,7 @@ typing-extensions==4.8.0
     #   astroid
     #   edx-opaque-keys
     #   pylint
-urllib3==2.0.5
+urllib3==2.0.6
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
