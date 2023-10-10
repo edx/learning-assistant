@@ -45,7 +45,7 @@ cryptography==41.0.4
     #   secretstorage
 ddt==1.6.0
     # via -r requirements/test.txt
-django==3.2.21
+django==3.2.22
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
