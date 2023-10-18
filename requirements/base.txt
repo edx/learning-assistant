@@ -45,13 +45,17 @@ djangorestframework==3.14.0
 drf-jwt==1.19.2
     # via edx-drf-extensions
 edx-django-utils==5.7.0
-    # via edx-drf-extensions
+    # via
+    #   edx-drf-extensions
+    #   edx-rest-api-client
 edx-drf-extensions==8.12.0
     # via -r requirements/base.in
 edx-opaque-keys==2.5.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
+edx-rest-api-client==5.6.1
+    # via -r requirements/base.in
 idna==3.4
     # via requests
 newrelic==9.1.0
@@ -66,6 +70,7 @@ pyjwt[crypto]==2.8.0
     # via
     #   drf-jwt
     #   edx-drf-extensions
+    #   edx-rest-api-client
     #   pyjwt
 pymongo==3.13.0
     # via edx-opaque-keys
@@ -76,9 +81,14 @@ pytz==2023.3.post1
     #   django
     #   djangorestframework
 requests==2.31.0
-    # via edx-drf-extensions
+    # via
+    #   edx-drf-extensions
+    #   edx-rest-api-client
+    #   slumber
 semantic-version==2.10.0
     # via edx-drf-extensions
+slumber==0.7.1
+    # via edx-rest-api-client
 sqlparse==0.4.4
     # via django
 stevedore==5.1.0
@@ -89,5 +99,5 @@ typing-extensions==4.8.0
     # via
     #   asgiref
     #   edx-opaque-keys
-urllib3==2.0.6
+urllib3==2.0.7
     # via requests
