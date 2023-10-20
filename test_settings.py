@@ -64,3 +64,8 @@ CHAT_COMPLETION_API = 'https://test.edx.org/'
 CHAT_COMPLETION_API_KEY = 'endpoint_key'
 CHAT_COMPLETION_API_CONNECT_TIMEOUT = 0.5
 CHAT_COMPLETION_API_READ_TIMEOUT = 10
+
+DISCOVERY_BASE_URL = 'http://edx.devstack.discovery:18381'
+DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL = 'http://edx.devstack.lms:18000/oauth2'
+DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_KEY = 'discovery-backend-service-key'
+DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_SECRET = 'discovery-backend-service-secret'

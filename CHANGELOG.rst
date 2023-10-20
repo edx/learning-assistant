@@ -11,6 +11,10 @@ Change Log
 
 .. There should always be an "Unreleased" section for changes pending release.
 
+1.5.0 - 2023-10-18
+******************
+* Add management command to generate course prompts
+
 1.4.0 - 2023-09-11
 ******************
 * Send reduced message list if needed to avoid going over token limit
