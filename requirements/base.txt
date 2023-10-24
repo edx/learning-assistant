@@ -12,7 +12,7 @@ cffi==1.16.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.3.0
+charset-normalizer==3.3.1
     # via requests
 click==8.1.7
     # via edx-django-utils
@@ -58,7 +58,7 @@ edx-rest-api-client==5.6.1
     # via -r requirements/base.in
 idna==3.4
     # via requests
-newrelic==9.1.0
+newrelic==9.1.1
     # via edx-django-utils
 pbr==5.11.1
     # via stevedore
