@@ -21,7 +21,7 @@ cffi==1.16.0
     #   -r requirements/test.txt
     #   cryptography
     #   pynacl
-charset-normalizer==3.3.1
+charset-normalizer==3.3.2
     # via
     #   -r requirements/test.txt
     #   requests
@@ -51,7 +51,7 @@ ddt==1.6.0
     # via -r requirements/test.txt
 dill==0.3.7
     # via pylint
-django==3.2.22
+django==3.2.23
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -82,12 +82,12 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-edx-django-utils==5.7.0
+edx-django-utils==5.8.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==8.12.0
+edx-drf-extensions==8.13.0
     # via -r requirements/test.txt
 edx-lint==5.3.6
     # via -r requirements/quality.in
@@ -212,7 +212,7 @@ requests==2.31.0
     #   edx-rest-api-client
     #   responses
     #   slumber
-responses==0.23.3
+responses==0.24.0
     # via -r requirements/test.txt
 semantic-version==2.10.0
     # via
@@ -246,12 +246,8 @@ tomli==2.0.1
     #   coverage
     #   pylint
     #   pytest
-tomlkit==0.12.1
+tomlkit==0.12.2
     # via pylint
-types-pyyaml==6.0.12.12
-    # via
-    #   -r requirements/test.txt
-    #   responses
 typing-extensions==4.8.0
     # via
     #   -r requirements/test.txt
