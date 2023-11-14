@@ -44,7 +44,7 @@ cryptography==41.0.5
     #   -r requirements/test.txt
     #   pyjwt
     #   secretstorage
-ddt==1.6.0
+ddt==1.7.0
     # via -r requirements/test.txt
 django==3.2.23
     # via
@@ -131,7 +131,7 @@ jinja2==3.1.2
     #   -r requirements/test.txt
     #   code-annotations
     #   sphinx
-keyring==24.2.0
+keyring==24.3.0
     # via twine
 markdown-it-py==3.0.0
     # via rich
@@ -143,7 +143,7 @@ mdurl==0.1.2
     # via markdown-it-py
 more-itertools==10.1.0
     # via jaraco-classes
-newrelic==9.1.1
+newrelic==9.1.2
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -155,7 +155,7 @@ packaging==23.2
     #   build
     #   pytest
     #   sphinx
-pbr==5.11.1
+pbr==6.0.0
     # via
     #   -r requirements/test.txt
     #   stevedore
@@ -203,7 +203,7 @@ pytest==7.4.3
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/test.txt
-pytest-django==4.6.0
+pytest-django==4.7.0
     # via -r requirements/test.txt
 python-slugify==8.0.1
     # via
@@ -299,7 +299,7 @@ typing-extensions==4.8.0
     #   asgiref
     #   edx-opaque-keys
     #   rich
-urllib3==2.0.7
+urllib3==2.1.0
     # via
     #   -r requirements/test.txt
     #   requests
