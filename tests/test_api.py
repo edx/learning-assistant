@@ -4,6 +4,7 @@ Test cases for the learning-assistant api module.
 from unittest.mock import MagicMock, patch
 
 import ddt
+from django.core.cache import cache
 from django.test import TestCase
 from opaque_keys.edx.keys import UsageKey
 
@@ -91,6 +92,8 @@ class GetBlockContentAPITests(TestCase):
     """
 
     def setUp(self):
+        cache.clear()
+
         self.children = [
             FakeChild('html', '01', '''
                         <p>
@@ -187,7 +190,17 @@ class GetBlockContentAPITests(TestCase):
 
         length, items = get_block_content(request, user_id, course_id, unit_usage_key)
 
+        mock_get_children_contents.assert_called_once()
         mock_get_children_contents.assert_called_with(self.block)
 
+        self.assertEqual(length, len(block_content))
+        self.assertEqual(items, content_items)
+
+        # call get_block_content again with same args to assert that cache is used
+        length, items = get_block_content(request, user_id, course_id, unit_usage_key)
+
+        # assert that the mock for _get_children_contents has not been called again,
+        # as subsequent calls should hit the cache
+        mock_get_children_contents.assert_called_once()
         self.assertEqual(length, len(block_content))
         self.assertEqual(items, content_items)
