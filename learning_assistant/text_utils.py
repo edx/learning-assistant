@@ -34,7 +34,7 @@ class _HTMLToTextHelper(HTMLParser):  # lint-amnesty, pylint: disable=abstract-m
 
     def handle_starttag(self, tag, _):
         """On each tag, check whether this is a tag we think is content."""
-        tags_to_filter = getattr(settings, 'HTML_TAGS_TO_REMOVE', None)
+        tags_to_filter = getattr(settings, 'LEARNING_ASSISTANT_HTML_TAGS_TO_REMOVE', None)
         self._is_content = not (tags_to_filter and tag in tags_to_filter)
 
     def handle_data(self, data):

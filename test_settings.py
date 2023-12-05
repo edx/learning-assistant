@@ -69,3 +69,9 @@ DISCOVERY_BASE_URL = 'http://edx.devstack.discovery:18381'
 DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL = 'http://edx.devstack.lms:18000/oauth2'
 DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_KEY = 'discovery-backend-service-key'
 DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_SECRET = 'discovery-backend-service-secret'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}

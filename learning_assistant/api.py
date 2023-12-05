@@ -1,6 +1,10 @@
 """
 Library for the learning_assistant app.
 """
+from django.conf import settings
+from django.core.cache import cache
+from edx_django_utils.cache import get_cache_key
+
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.models import CoursePrompt
 from learning_assistant.platform_imports import (
@@ -93,8 +97,18 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
         length - the cummulative length of a block's children's content
         items - a list of dictionaries containing the content type and text for each child
     """
-    block = get_single_block(request, user_id, course_id, unit_usage_key)
+    cache_key = get_cache_key(
+        resource='learning_assistant',
+        user_id=user_id,
+        course_id=course_id,
+        unit_usage_key=unit_usage_key
+    )
+    cache_data = cache.get(cache_key)
 
-    length, items = _get_children_contents(block)
+    if not isinstance(cache_data, dict):
+        block = get_single_block(request, user_id, course_id, unit_usage_key)
+        length, items = _get_children_contents(block)
+        cache_data = {'content_length': length, 'content_items': items}
+        cache.set(cache_key, cache_data, getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360))
 
-    return length, items
+    return cache_data['content_length'], cache_data['content_items']
