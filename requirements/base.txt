@@ -33,7 +33,7 @@ django-crum==0.7.9
     # via edx-django-utils
 django-model-utils==4.3.1
     # via -r requirements/base.in
-django-waffle==4.0.0
+django-waffle==4.1.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
@@ -48,7 +48,7 @@ edx-django-utils==5.9.0
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==9.0.0
+edx-drf-extensions==9.0.1
     # via -r requirements/base.in
 edx-opaque-keys==2.5.1
     # via
@@ -58,7 +58,7 @@ edx-rest-api-client==5.6.1
     # via -r requirements/base.in
 idna==3.6
     # via requests
-newrelic==9.2.0
+newrelic==9.3.0
     # via edx-django-utils
 pbr==6.0.0
     # via stevedore
@@ -95,7 +95,7 @@ stevedore==5.1.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-typing-extensions==4.8.0
+typing-extensions==4.9.0
     # via
     #   asgiref
     #   edx-opaque-keys

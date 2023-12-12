@@ -10,7 +10,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/test.txt
     #   django
-babel==2.13.1
+babel==2.14.0
     # via sphinx
 build==1.0.3
     # via -r requirements/doc.in
@@ -63,7 +63,7 @@ django-crum==0.7.9
     #   edx-django-utils
 django-model-utils==4.3.1
     # via -r requirements/test.txt
-django-waffle==4.0.0
+django-waffle==4.1.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -90,7 +90,7 @@ edx-django-utils==5.9.0
     #   -r requirements/test.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==9.0.0
+edx-drf-extensions==9.0.1
     # via -r requirements/test.txt
 edx-opaque-keys==2.5.1
     # via
@@ -108,7 +108,7 @@ idna==3.6
     #   requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.8.0
+importlib-metadata==7.0.0
     # via
     #   build
     #   keyring
@@ -143,11 +143,11 @@ mdurl==0.1.2
     # via markdown-it-py
 more-itertools==10.1.0
     # via jaraco-classes
-newrelic==9.2.0
+newrelic==9.3.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-nh3==0.2.14
+nh3==0.2.15
     # via readme-renderer
 packaging==23.2
     # via
@@ -293,7 +293,7 @@ tomli==2.0.1
     #   pytest
 twine==4.0.2
     # via -r requirements/doc.in
-typing-extensions==4.8.0
+typing-extensions==4.9.0
     # via
     #   -r requirements/test.txt
     #   asgiref
