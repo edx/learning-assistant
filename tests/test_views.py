@@ -104,15 +104,6 @@ class CourseChatViewTests(LoggedInTestCase):
 
     @patch('learning_assistant.views.learning_assistant_is_active')
     @patch('learning_assistant.views.get_user_role')
-    def test_no_prompt(self, mock_role, mock_waffle):
-        mock_waffle.return_value = True
-        mock_role.return_value = 'staff'
-
-        response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
-        self.assertEqual(response.status_code, 404)
-
-    @patch('learning_assistant.views.learning_assistant_is_active')
-    @patch('learning_assistant.views.get_user_role')
     def test_invalid_messages(self, mock_role, mock_waffle):
         mock_waffle.return_value = True
         mock_role.return_value = 'staff'
@@ -134,17 +125,20 @@ class CourseChatViewTests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.get_chat_response')
     @patch('learning_assistant.views.learning_assistant_is_active')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    def test_chat_response(self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response):
+    def test_chat_response(self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response, mock_render):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.ALL_MODES = ['verified']
         mock_enrollment.return_value = MagicMock(mode='verified')
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
+        mock_render.return_value = 'This is a template'
+        test_unit_id = 'test-unit-id'
 
         CoursePrompt.objects.create(
             course_id=self.course_id,
@@ -157,8 +151,11 @@ class CourseChatViewTests(LoggedInTestCase):
         ]
 
         response = self.client.post(
-            reverse('chat', kwargs={'course_id': self.course_id}),
+            reverse('chat', kwargs={'course_id': self.course_id})+f'?unit_id={test_unit_id}',
             data=json.dumps(test_data),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
+
+        render_args = mock_render.call_args.args
+        self.assertIn(test_unit_id, render_args)
