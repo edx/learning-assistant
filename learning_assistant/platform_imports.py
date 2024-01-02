@@ -22,7 +22,7 @@ def get_text_transcript(video_block):
 def get_single_block(request, user_id, course_id, usage_key_string, course=None):
     """Load a single xblock."""
     # pylint: disable=import-error, import-outside-toplevel
-    from lms.djangoapps.courseware.block_renderer import load_single_xblock
+    from lms.djangoapps.courseware.block_render import load_single_xblock
     return load_single_xblock(request, user_id, course_id, usage_key_string, course)
 
 
@@ -45,3 +45,15 @@ def block_get_children(block):
     # pylint: disable=import-error, import-outside-toplevel
     from openedx.core.lib.graph_traversals import get_children
     return get_children(block)
+
+
+def get_cache_course_run_data(course_run_id, fields):
+    """
+    Return course run related data given a course run id.
+
+    This function makes use of the discovery course run cache, which is necessary because
+    only the discovery service stores the relation between courseruns and courses.
+    """
+    # pylint: disable=import-error, import-outside-toplevel
+    from openedx.core.djangoapps.catalog.utils import get_course_run_data
+    return get_course_run_data(course_run_id, fields)

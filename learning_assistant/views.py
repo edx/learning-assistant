@@ -20,7 +20,7 @@ except ImportError:
     # If the waffle flag is false, the endpoint will force an early return.
     learning_assistant_is_active = False
 
-from learning_assistant.api import get_setup_messages
+from learning_assistant.api import render_prompt_template
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.utils import get_chat_response
 
@@ -46,16 +46,16 @@ class CourseChatView(APIView):
             ]
         }
         """
-        course_key = CourseKey.from_string(course_id)
-        if not learning_assistant_is_active(course_key):
+        courserun_key = CourseKey.from_string(course_id)
+        if not learning_assistant_is_active(courserun_key):
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,
                 data={'detail': 'Learning assistant not enabled for course.'}
             )
 
         # If user does not have an enrollment record, or is not staff, they should not have access
-        user_role = get_user_role(request.user, course_key)
-        enrollment_object = CourseEnrollment.get_enrollment(request.user, course_key)
+        user_role = get_user_role(request.user, courserun_key)
+        enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
         if (
             (enrollment_mode not in CourseMode.ALL_MODES)
@@ -66,12 +66,7 @@ class CourseChatView(APIView):
                 data={'detail': 'Must be staff or have valid enrollment.'}
             )
 
-        prompt_messages = get_setup_messages(course_id)
-        if not prompt_messages:
-            return Response(
-                status=http_status.HTTP_404_NOT_FOUND,
-                data={'detail': 'Learning assistant not enabled for course.'}
-            )
+        unit_id = request.query_params.get('unit_id')
 
         message_list = request.data
         serializer = MessageSerializer(data=message_list, many=True)
@@ -84,9 +79,6 @@ class CourseChatView(APIView):
                 data={'detail': 'Invalid data', 'errors': serializer.errors}
             )
 
-        # append system message to beginning of message list
-        message_setup = prompt_messages
-
         log.info(
             'Attempting to retrieve chat response for user_id=%(user_id)s in course_id=%(course_id)s',
             {
@@ -94,6 +86,9 @@ class CourseChatView(APIView):
                 'course_id': course_id
             }
         )
-        status_code, message = get_chat_response(message_setup, message_list)
+
+        prompt_template = render_prompt_template(request, request.user.id, course_id, unit_id)
+
+        status_code, message = get_chat_response(prompt_template, message_list, course_id)
 
         return Response(status=status_code, data=message)
