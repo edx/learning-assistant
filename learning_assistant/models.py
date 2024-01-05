@@ -30,3 +30,20 @@ class CoursePrompt(TimeStampedModel):
         except cls.DoesNotExist:
             json_prompt_content = None
         return json_prompt_content
+
+
+class LearningAssistantCourseEnabled(TimeStampedModel):
+    """
+    This model stores whether the Learning Assistant is enabled for a particular course ID.
+
+    For now, the purpose of this model is to store overrides added by course team members. By default, the Learning
+    Assistant will be enabled via a CourseWaffleFlag. This model will store whether course team members have manually
+    disabled the Learning Assistant.
+
+    .. no_pii: This model has no PII.
+    """
+
+    # course ID with for the course in which the Learning Assistant is enabled or disabled
+    course_id = CourseKeyField(max_length=255, db_index=True, unique=True)
+
+    enabled = models.BooleanField()
