@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.cache import cache
 from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
+from opaque_keys.edx.keys import CourseKey
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.models import CoursePrompt
@@ -18,6 +19,7 @@ from learning_assistant.platform_imports import (
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
+from learning_assistant.toggles import course_content_enabled
 
 log = logging.getLogger(__name__)
 
@@ -124,7 +126,9 @@ def render_prompt_template(request, user_id, course_id, unit_usage_key):
     Return a rendered prompt template, specified by the LEARNING_ASSISTANT_PROMPT_TEMPLATE setting.
     """
     unit_content = ''
-    if unit_usage_key:
+
+    course_run_key = CourseKey.from_string(course_id)
+    if unit_usage_key and course_content_enabled(course_run_key):
         _, unit_content = get_block_content(request, user_id, course_id, unit_usage_key)
 
     template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
