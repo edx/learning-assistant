@@ -210,9 +210,11 @@ class GetBlockContentAPITests(TestCase):
         'This is content.',
         ''
     )
+    @patch('learning_assistant.api.ENABLE_COURSE_CONTENT')
     @patch('learning_assistant.api.get_block_content')
-    def test_render_prompt_template(self, unit_content, mock_get_content):
+    def test_render_prompt_template(self, unit_content, mock_get_content, mock_enable_content):
         mock_get_content.return_value = (len(unit_content), unit_content)
+        mock_enable_content.is_enabled.return_value = True
 
         # mock arguments that are passed through to `get_block_content` function. the value of these
         # args does not matter for this test right now, as the `get_block_content` function is entirely mocked.
