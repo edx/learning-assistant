@@ -12,6 +12,8 @@ astroid==3.0.2
     # via
     #   pylint
     #   pylint-celery
+attrs==23.2.0
+    # via -r requirements/test.txt
 certifi==2023.11.17
     # via
     #   -r requirements/test.txt

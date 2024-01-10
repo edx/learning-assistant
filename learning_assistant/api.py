@@ -10,6 +10,7 @@ from jinja2 import BaseLoader, Environment
 from opaque_keys.edx.keys import CourseKey
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
+from learning_assistant.data import LearningAssistantCourseEnabledData
 from learning_assistant.models import LearningAssistantCourseEnabled
 from learning_assistant.platform_imports import (
     block_get_children,
@@ -139,3 +140,25 @@ def learning_assistant_enabled(course_key):
         enabled = True
 
     return learning_assistant_available(course_key) and enabled
+
+
+def set_learning_assistant_enabled(course_key, enabled):
+    """
+    Set whether the Learning Assistant is enabled and return a representation of the created data.
+
+    Arguments:
+        * course_key: (CourseKey): the course's key
+        * enabled (bool): whether the Learning Assistant should be enabled
+
+    Returns:
+        * bool: whether the Learning Assistant is enabled
+    """
+    obj, _ = LearningAssistantCourseEnabled.objects.update_or_create(
+        course_id=course_key,
+        defaults={'enabled': enabled}
+    )
+
+    return LearningAssistantCourseEnabledData(
+        course_key=obj.course_id,
+        enabled=obj.enabled
+    )

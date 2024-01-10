@@ -1,6 +1,7 @@
 """
 Test cases for the learning-assistant api module.
 """
+import itertools
 from unittest.mock import MagicMock, patch
 
 import ddt
@@ -15,7 +16,9 @@ from learning_assistant.api import (
     get_block_content,
     learning_assistant_enabled,
     render_prompt_template,
+    set_learning_assistant_enabled,
 )
+from learning_assistant.data import LearningAssistantCourseEnabledData
 from learning_assistant.models import LearningAssistantCourseEnabled
 
 fake_transcript = 'This is the text version from the transcript'
@@ -232,12 +235,34 @@ class LearningAssistantCourseEnabledApiTests(TestCase):
         learning_assistant_available_mock.return_value = learning_assistant_available_value
 
         if obj_exists:
-            LearningAssistantCourseEnabled.objects.update_or_create(
-                course_id=self.course_key,
-                defaults={'enabled': obj_value}
-            )
+            set_learning_assistant_enabled(self.course_key, obj_value)
 
         self.assertEqual(
             learning_assistant_enabled(self.course_key),
             expected_value
         )
+
+    @ddt.idata(itertools.product((True, False), (True, False)))
+    @ddt.unpack
+    def test_set_learning_assistant_enabled(self, obj_exists, obj_value):
+        if obj_exists:
+            LearningAssistantCourseEnabled.objects.create(
+                course_id=self.course_key,
+                # Set the opposite of the desired end value to test that it is changed properly.
+                enabled=not obj_value,
+            )
+
+        expected_value = LearningAssistantCourseEnabledData(
+            self.course_key,
+            obj_value,
+        )
+
+        return_value = set_learning_assistant_enabled(self.course_key, obj_value)
+
+        self.assertEqual(
+            return_value,
+            expected_value,
+        )
+
+        obj = LearningAssistantCourseEnabled.objects.get(course_id=self.course_key)
+        self.assertEqual(obj.enabled, obj_value)

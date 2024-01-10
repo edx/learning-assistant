@@ -10,7 +10,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from requests.exceptions import ConnectTimeout
 
-from learning_assistant.utils import get_chat_response, get_reduced_message_list
+from learning_assistant.utils import get_chat_response, get_reduced_message_list, user_role_is_staff
 
 
 @ddt.ddt
@@ -142,3 +142,14 @@ class GetReducedMessageListTests(TestCase):
         reduced_message_list = get_reduced_message_list(self.prompt_template, self.message_list)
         self.assertEqual(len(reduced_message_list), 2)
         self.assertEqual(reduced_message_list, self.message_list)
+
+
+@ddt.ddt
+class UserRoleIsStaffTests(TestCase):
+    """
+    Tests for the user_role_is_staff helper function.
+    """
+    @ddt.data(('instructor', True), ('staff', True), ('student', False))
+    @ddt.unpack
+    def test_user_role_is_staff(self, role, expected_value):
+        self.assertEqual(user_role_is_staff(role), expected_value)

@@ -10,6 +10,8 @@ asgiref==3.7.2
     # via
     #   -r requirements/test.txt
     #   django
+attrs==23.2.0
+    # via -r requirements/test.txt
 babel==2.14.0
     # via sphinx
 build==1.0.3
