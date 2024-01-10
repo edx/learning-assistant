@@ -1,9 +1,13 @@
 """
 Library for the learning_assistant app.
 """
+import logging
+
 from django.conf import settings
 from django.core.cache import cache
 from edx_django_utils.cache import get_cache_key
+from jinja2 import BaseLoader, Environment
+from opaque_keys.edx.keys import CourseKey
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.models import CoursePrompt
@@ -15,6 +19,9 @@ from learning_assistant.platform_imports import (
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
+from learning_assistant.toggles import course_content_enabled
+
+log = logging.getLogger(__name__)
 
 
 def get_deserialized_prompt_content_by_course_id(course_id):
@@ -112,3 +119,19 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
         cache.set(cache_key, cache_data, getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360))
 
     return cache_data['content_length'], cache_data['content_items']
+
+
+def render_prompt_template(request, user_id, course_id, unit_usage_key):
+    """
+    Return a rendered prompt template, specified by the LEARNING_ASSISTANT_PROMPT_TEMPLATE setting.
+    """
+    unit_content = ''
+
+    course_run_key = CourseKey.from_string(course_id)
+    if unit_usage_key and course_content_enabled(course_run_key):
+        _, unit_content = get_block_content(request, user_id, course_id, unit_usage_key)
+
+    template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
+    template = Environment(loader=BaseLoader).from_string(template_string)
+    data = template.render(unit_content=unit_content)
+    return data

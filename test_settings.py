@@ -75,3 +75,12 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+LEARNING_ASSISTANT_PROMPT_TEMPLATE = (
+    "This is a prompt. {% if unit_content %}"
+    "The following text is useful."
+    "\""
+    "{{ unit_content }}"
+    "\""
+    "{% endif %}"
+)

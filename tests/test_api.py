@@ -15,6 +15,7 @@ from learning_assistant.api import (
     get_block_content,
     get_deserialized_prompt_content_by_course_id,
     get_setup_messages,
+    render_prompt_template,
 )
 from learning_assistant.models import CoursePrompt
 
@@ -204,3 +205,30 @@ class GetBlockContentAPITests(TestCase):
         mock_get_children_contents.assert_called_once()
         self.assertEqual(length, len(block_content))
         self.assertEqual(items, content_items)
+
+    @ddt.data(
+        ('This is content.', True),
+        ('', True),
+        ('This is content.', False),
+        ('', False),
+    )
+    @ddt.unpack
+    @patch('learning_assistant.toggles._is_learning_assistant_waffle_flag_enabled')
+    @patch('learning_assistant.api.get_block_content')
+    def test_render_prompt_template(self, unit_content, flag_enabled, mock_get_content, mock_is_flag_enabled):
+        mock_get_content.return_value = (len(unit_content), unit_content)
+        mock_is_flag_enabled.return_value = flag_enabled
+
+        # mock arguments that are passed through to `get_block_content` function. the value of these
+        # args does not matter for this test right now, as the `get_block_content` function is entirely mocked.
+        request = MagicMock()
+        user_id = 1
+        course_id = self.course_id
+        unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
+
+        prompt_text = render_prompt_template(request, user_id, course_id, unit_usage_key)
+
+        if unit_content and flag_enabled:
+            self.assertIn(unit_content, prompt_text)
+        else:
+            self.assertNotIn('The following text is useful.', prompt_text)

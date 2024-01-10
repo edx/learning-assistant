@@ -13,7 +13,15 @@ Change Log
 
 Unreleased
 **********
+
+2.0.1 - 2021-01-08
+******************
+* Gate content integration with waffle flag
+
+2.0.0 - 2024-01-03
+******************
 * Add content cache
+* Integrate system prompt setting
 
 1.5.0 - 2023-10-18
 ******************

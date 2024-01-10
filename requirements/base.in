@@ -7,3 +7,4 @@ djangorestframework
 edx-drf-extensions
 edx-rest-api-client
 edx-opaque-keys
+jinja2
