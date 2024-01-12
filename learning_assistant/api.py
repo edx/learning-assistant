@@ -10,7 +10,6 @@ from jinja2 import BaseLoader, Environment
 from opaque_keys.edx.keys import CourseKey
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
-from learning_assistant.models import CoursePrompt
 from learning_assistant.platform_imports import (
     block_get_children,
     block_leaf_filter,
@@ -22,27 +21,6 @@ from learning_assistant.text_utils import html_to_text
 from learning_assistant.toggles import course_content_enabled
 
 log = logging.getLogger(__name__)
-
-
-def get_deserialized_prompt_content_by_course_id(course_id):
-    """
-    Return a deserialized prompt given a course_id.
-    """
-    json_prompt = CoursePrompt.get_json_prompt_content_by_course_id(course_id)
-    if json_prompt:
-        return json_prompt
-    return None
-
-
-def get_setup_messages(course_id):
-    """
-    Return a list of setup messages given a course id.
-    """
-    message_content = get_deserialized_prompt_content_by_course_id(course_id)
-    if message_content:
-        setup_messages = [{'role': 'system', 'content': x} for x in message_content]
-        return setup_messages
-    return None
 
 
 def _extract_block_contents(child, category):
