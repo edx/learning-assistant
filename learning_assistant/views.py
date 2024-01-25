@@ -15,12 +15,10 @@ try:
     from common.djangoapps.course_modes.models import CourseMode
     from common.djangoapps.student.models import CourseEnrollment
     from lms.djangoapps.courseware.access import get_user_role
-    from lms.djangoapps.courseware.toggles import learning_assistant_is_active
 except ImportError:
-    # If the waffle flag is false, the endpoint will force an early return.
-    learning_assistant_is_active = False
+    pass
 
-from learning_assistant.api import render_prompt_template
+from learning_assistant.api import learning_assistant_enabled, render_prompt_template
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.utils import get_chat_response
 
@@ -47,7 +45,8 @@ class CourseChatView(APIView):
         }
         """
         courserun_key = CourseKey.from_string(course_id)
-        if not learning_assistant_is_active(courserun_key):
+
+        if not learning_assistant_enabled(courserun_key):
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,
                 data={'detail': 'Learning assistant not enabled for course.'}
