@@ -13,8 +13,6 @@ from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from learning_assistant.models import CoursePrompt
-
 User = get_user_model()
 
 
@@ -102,16 +100,15 @@ class CourseChatViewTests(LoggedInTestCase):
         response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
+    @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.learning_assistant_is_active')
     @patch('learning_assistant.views.get_user_role')
-    def test_invalid_messages(self, mock_role, mock_waffle):
+    def test_invalid_messages(self, mock_role, mock_waffle, mock_render):
         mock_waffle.return_value = True
         mock_role.return_value = 'staff'
 
-        CoursePrompt.objects.create(
-            course_id=self.course_id,
-            json_prompt_content=["This is a Prompt", "This is another Prompt"]
-        )
+        mock_render.return_value = 'This is a template'
+        test_unit_id = 'test-unit-id'
 
         test_data = [
             {'role': 'user', 'content': 'What is 2+2?'},
@@ -119,7 +116,7 @@ class CourseChatViewTests(LoggedInTestCase):
         ]
 
         response = self.client.post(
-            reverse('chat', kwargs={'course_id': self.course_id}),
+            reverse('chat', kwargs={'course_id': self.course_id})+f'?unit_id={test_unit_id}',
             data=json.dumps(test_data),
             content_type='application/json'
         )
@@ -139,11 +136,6 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'This is a template'
         test_unit_id = 'test-unit-id'
-
-        CoursePrompt.objects.create(
-            course_id=self.course_id,
-            json_prompt_content=["This is a Prompt", "This is another Prompt"]
-        )
 
         test_data = [
             {'role': 'user', 'content': 'What is 2+2?'},
