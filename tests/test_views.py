@@ -81,13 +81,13 @@ class CourseChatViewTests(LoggedInTestCase):
         super().setUp()
         self.course_id = 'course-v1:edx+test+23'
 
-    @patch('learning_assistant.views.learning_assistant_is_active')
+    @patch('learning_assistant.views.learning_assistant_enabled')
     def test_course_waffle_inactive(self, mock_waffle):
         mock_waffle.return_value = False
         response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
-    @patch('learning_assistant.views.learning_assistant_is_active')
+    @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
@@ -101,7 +101,7 @@ class CourseChatViewTests(LoggedInTestCase):
         self.assertEqual(response.status_code, 403)
 
     @patch('learning_assistant.views.render_prompt_template')
-    @patch('learning_assistant.views.learning_assistant_is_active')
+    @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     def test_invalid_messages(self, mock_role, mock_waffle, mock_render):
         mock_waffle.return_value = True
@@ -124,7 +124,7 @@ class CourseChatViewTests(LoggedInTestCase):
 
     @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.get_chat_response')
-    @patch('learning_assistant.views.learning_assistant_is_active')
+    @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')

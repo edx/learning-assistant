@@ -10,11 +10,13 @@ from jinja2 import BaseLoader, Environment
 from opaque_keys.edx.keys import CourseKey
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
+from learning_assistant.models import LearningAssistantCourseEnabled
 from learning_assistant.platform_imports import (
     block_get_children,
     block_leaf_filter,
     get_single_block,
     get_text_transcript,
+    learning_assistant_available,
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
@@ -113,3 +115,27 @@ def render_prompt_template(request, user_id, course_id, unit_usage_key):
     template = Environment(loader=BaseLoader).from_string(template_string)
     data = template.render(unit_content=unit_content)
     return data
+
+
+def learning_assistant_enabled(course_key):
+    """
+    Return whether the Learning Assistant is enabled in the course represented by the course_key.
+
+    The Learning Assistant is enabled if the feature is available (i.e. appropriate CourseWaffleFlag is enabled) and
+    either there is no override in the LearningAssistantCourseEnabled table or there is an enabled value in the
+    LearningAssistantCourseEnabled table.
+
+    Arguments:
+        * course_key: (CourseKey): the course's key
+
+    Returns:
+        * bool: whether the Learning Assistant is enabled
+    """
+    try:
+        obj = LearningAssistantCourseEnabled.objects.get(course_id=course_key)
+        enabled = obj.enabled
+    except LearningAssistantCourseEnabled.DoesNotExist:
+        # Currently, the Learning Assistant defaults to enabled if there is no override.
+        enabled = True
+
+    return learning_assistant_available(course_key) and enabled

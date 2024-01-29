@@ -8,5 +8,8 @@ coverage:
       default:
         enabled: yes
         target: 100%
+ignore:
+ - "learning_assistant/platform_imports.py"
+
 
 comment: false

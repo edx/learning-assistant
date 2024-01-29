@@ -6,15 +6,17 @@ from unittest.mock import MagicMock, patch
 import ddt
 from django.core.cache import cache
 from django.test import TestCase
-from opaque_keys.edx.keys import UsageKey
+from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from learning_assistant.api import (
     _extract_block_contents,
     _get_children_contents,
     _leaf_filter,
     get_block_content,
+    learning_assistant_enabled,
     render_prompt_template,
 )
+from learning_assistant.models import LearningAssistantCourseEnabled
 
 fake_transcript = 'This is the text version from the transcript'
 
@@ -196,3 +198,46 @@ class GetBlockContentAPITests(TestCase):
             self.assertIn(unit_content, prompt_text)
         else:
             self.assertNotIn('The following text is useful.', prompt_text)
+
+
+@ddt.ddt
+class LearningAssistantCourseEnabledApiTests(TestCase):
+    """
+    Test suite for the learning_assistant_enabled and set_learning_assistant_enalbed api functions.
+    """
+    def setUp(self):
+        super().setUp()
+        self.course_key = CourseKey.from_string('course-v1:edx+fake+1')
+
+    @ddt.data(
+        (True, True, True, True),
+        (True, True, False, False),
+        (True, False, True, False),
+        (True, False, False, False),
+        (False, True, True, True),
+        (False, False, True, True),
+        (False, True, False, False),
+        (False, False, False, False),
+    )
+    @ddt.unpack
+    @patch('learning_assistant.api.learning_assistant_available')
+    def test_learning_assistant_enabled(
+        self,
+        obj_exists,
+        obj_value,
+        learning_assistant_available_value,
+        expected_value,
+        learning_assistant_available_mock,
+    ):
+        learning_assistant_available_mock.return_value = learning_assistant_available_value
+
+        if obj_exists:
+            LearningAssistantCourseEnabled.objects.update_or_create(
+                course_id=self.course_key,
+                defaults={'enabled': obj_value}
+            )
+
+        self.assertEqual(
+            learning_assistant_enabled(self.course_key),
+            expected_value
+        )
