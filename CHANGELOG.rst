@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+3.3.0 - 2024-01-30
+******************
+* Fix release version
+
 3.2.0 - 2024-01-30
 ******************
 * Remove audit access to chat view.
