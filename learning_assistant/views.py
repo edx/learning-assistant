@@ -4,6 +4,7 @@ V1 API Views.
 import logging
 
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from rest_framework import status as http_status
 from rest_framework.authentication import SessionAuthentication
@@ -44,7 +45,13 @@ class CourseChatView(APIView):
             ]
         }
         """
-        courserun_key = CourseKey.from_string(course_id)
+        try:
+            courserun_key = CourseKey.from_string(course_id)
+        except InvalidKeyError:
+            return Response(
+                status=http_status.HTTP_400_BAD_REQUEST,
+                data={'detail': 'Course ID is not a valid course ID.'}
+            )
 
         if not learning_assistant_enabled(courserun_key):
             return Response(
@@ -91,3 +98,48 @@ class CourseChatView(APIView):
         status_code, message = get_chat_response(prompt_template, message_list, course_id)
 
         return Response(status=status_code, data=message)
+
+
+class LearningAssistantEnabledView(APIView):
+    """
+    View to retrieve whether the Learning Assistant is enabled for a course.
+
+    This endpoint returns a boolean representing whether the Learning Assistant feature is enabled in a course
+    represented by the course_key, which is provided in the URL.
+
+    Accepts: [GET]
+
+    Path: /learning_assistant/v1/course_id/{course_key}/enabled
+
+    Parameters:
+        * course_key: the ID of the course
+
+    Responses:
+        * 200: OK
+        * 400: Malformed Request - Course ID is not a valid course ID.
+    """
+
+    authentication_classes = (SessionAuthentication, JwtAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, course_id):
+        """
+        Given a course ID, retrieve whether the Learning Assistant is enabled for the corresponding course.
+
+        The response will be in the following format.
+
+            {'enabled': <bool>}
+        """
+        try:
+            courserun_key = CourseKey.from_string(course_id)
+        except InvalidKeyError:
+            return Response(
+                status=http_status.HTTP_400_BAD_REQUEST,
+                data={'detail': 'Course ID is not a valid course ID.'}
+            )
+
+        data = {
+            'enabled': learning_assistant_enabled(courserun_key),
+        }
+
+        return Response(status=http_status.HTTP_200_OK, data=data)
