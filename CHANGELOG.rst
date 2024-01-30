@@ -14,10 +14,6 @@ Change Log
 Unreleased
 **********
 
-3.3.0 - 2024-01-30
-******************
-* Add new GET endpoint to retrieve whether Learning Assistant is enabled in a given course.
-
 3.2.0 - 2024-01-30
 ******************
 * Remove audit access to chat view.
