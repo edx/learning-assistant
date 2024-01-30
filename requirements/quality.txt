@@ -38,18 +38,18 @@ code-annotations==1.5.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.4.0
+coverage[toml]==7.4.1
     # via
     #   -r requirements/test.txt
     #   coverage
     #   pytest-cov
-cryptography==42.0.0
+cryptography==42.0.1
     # via
     #   -r requirements/test.txt
     #   pyjwt
 ddt==1.7.1
     # via -r requirements/test.txt
-dill==0.3.7
+dill==0.3.8
     # via pylint
 django==3.2.23
     # via
@@ -87,7 +87,7 @@ edx-django-utils==5.10.1
     #   -r requirements/test.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==9.1.2
+edx-drf-extensions==10.1.0
     # via -r requirements/test.txt
 edx-lint==5.3.6
     # via -r requirements/quality.in
@@ -123,7 +123,7 @@ markupsafe==2.1.4
     #   jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==9.5.0
+newrelic==9.6.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -137,7 +137,7 @@ pbr==6.0.0
     #   stevedore
 platformdirs==4.1.0
     # via pylint
-pluggy==1.3.0
+pluggy==1.4.0
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -182,20 +182,20 @@ pynacl==1.5.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-pytest==7.4.4
+pytest==8.0.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/test.txt
-pytest-django==4.7.0
+pytest-django==4.8.0
     # via -r requirements/test.txt
-python-slugify==8.0.1
+python-slugify==8.0.2
     # via
     #   -r requirements/test.txt
     #   code-annotations
-pytz==2023.3.post1
+pytz==2023.4
     # via
     #   -r requirements/test.txt
     #   django
@@ -255,7 +255,7 @@ typing-extensions==4.9.0
     #   astroid
     #   edx-opaque-keys
     #   pylint
-urllib3==2.1.0
+urllib3==2.2.0
     # via
     #   -r requirements/test.txt
     #   requests
