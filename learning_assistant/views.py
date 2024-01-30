@@ -57,7 +57,7 @@ class CourseChatView(APIView):
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
         if (
-            (enrollment_mode not in CourseMode.ALL_MODES)
+            (enrollment_mode not in CourseMode.VERIFIED_MODES)
             and user_role not in ('staff', 'instructor')
         ):
             return Response(

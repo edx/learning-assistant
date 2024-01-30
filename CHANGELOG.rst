@@ -14,7 +14,23 @@ Change Log
 Unreleased
 **********
 
-2.0.1 - 2021-01-08
+3.2.0 - 2024-01-30
+******************
+* Remove audit access to chat view.
+
+3.0.1 - 2024-01-29
+******************
+* Modify gating of learning assistant based on waffle flag and enabled value.
+
+3.0.0 - 2024-01-23
+******************
+* Remove and drop the course prompt model.
+
+2.0.3 - 2024-01-22
+******************
+* Remove references to the course prompt model.
+
+2.0.1 - 2024-01-08
 ******************
 * Gate content integration with waffle flag
 

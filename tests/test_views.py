@@ -94,8 +94,21 @@ class CourseChatViewTests(LoggedInTestCase):
     def test_user_no_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
-        mock_mode.ALL_MODES = ['verified']
+        mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.return_value = None
+
+        response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
+        self.assertEqual(response.status_code, 403)
+
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_user_audit_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
+        mock_waffle.return_value = True
+        mock_role.return_value = 'student'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_enrollment.return_value = MagicMock(mode='audit')
 
         response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
@@ -131,7 +144,7 @@ class CourseChatViewTests(LoggedInTestCase):
     def test_chat_response(self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response, mock_render):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
-        mock_mode.ALL_MODES = ['verified']
+        mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.return_value = MagicMock(mode='verified')
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'This is a template'
