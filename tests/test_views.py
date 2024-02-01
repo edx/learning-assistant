@@ -6,6 +6,7 @@ import sys
 from importlib import import_module
 from unittest.mock import MagicMock, patch
 
+import ddt
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.http import HttpRequest
@@ -80,6 +81,13 @@ class CourseChatViewTests(LoggedInTestCase):
     def setUp(self):
         super().setUp()
         self.course_id = 'course-v1:edx+test+23'
+
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    def test_invalid_course_id(self, mock_learning_assistant_enabled):
+        mock_learning_assistant_enabled.return_value = True
+        response = self.client.get(reverse('enabled', kwargs={'course_id': self.course_id+'+invalid'}))
+
+        self.assertEqual(response.status_code, 400)
 
     @patch('learning_assistant.views.learning_assistant_enabled')
     def test_course_waffle_inactive(self, mock_waffle):
@@ -164,3 +172,38 @@ class CourseChatViewTests(LoggedInTestCase):
 
         render_args = mock_render.call_args.args
         self.assertIn(test_unit_id, render_args)
+
+
+@ddt.ddt
+class LearningAssistantEnabledViewTests(LoggedInTestCase):
+    """
+    Test for the LearningAssistantEnabledView
+    """
+    sys.modules['lms.djangoapps.courseware.access'] = MagicMock()
+    sys.modules['lms.djangoapps.courseware.toggles'] = MagicMock()
+    sys.modules['common.djangoapps.course_modes.models'] = MagicMock()
+    sys.modules['common.djangoapps.student.models'] = MagicMock()
+
+    def setUp(self):
+        super().setUp()
+        self.course_id = 'course-v1:edx+test+23'
+
+    @ddt.data(
+        (True, True),
+        (False, False),
+    )
+    @ddt.unpack
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    def test_learning_assistant_enabled(self, mock_value, expected_value, mock_learning_assistant_enabled):
+        mock_learning_assistant_enabled.return_value = mock_value
+        response = self.client.get(reverse('enabled', kwargs={'course_id': self.course_id}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'enabled': expected_value})
+
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    def test_invalid_course_id(self, mock_learning_assistant_enabled):
+        mock_learning_assistant_enabled.return_value = True
+        response = self.client.get(reverse('enabled', kwargs={'course_id': self.course_id+'+invalid'}))
+
+        self.assertEqual(response.status_code, 400)

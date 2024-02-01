@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+3.4.0 - 2024-01-30
+******************
+* Add new GET endpoint to retrieve whether Learning Assistant is enabled in a given course.
+
 3.3.0 - 2024-01-30
 ******************
 * Fix release version
