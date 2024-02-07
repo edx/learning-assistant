@@ -123,3 +123,16 @@ def get_chat_response(prompt_template, message_list, courserun_id):
         chat = 'Completion endpoint is not defined.'
 
     return response_status, chat
+
+
+def user_role_is_staff(role):
+    """
+    Return whether the user role parameter represents that of a staff member.
+
+    Arguments:
+    * role (str): the user's role
+
+    Returns:
+    * bool: whether the user's role is that of a staff member
+    """
+    return role in ('staff', 'instructor')

@@ -77,3 +77,19 @@ def learning_assistant_available(course_key):
     # pylint: disable=import-error, import-outside-toplevel
     from lms.djangoapps.courseware.toggles import learning_assistant_is_active
     return learning_assistant_is_active(course_key)
+
+
+def get_user_role(user, course_key):
+    """
+    Return the role of the user on the edX platform.
+
+    Arguments:
+        * user (User): the user who's role to get
+        * course_key (CourseKey): the key of the course in which to get the user's role
+
+    Returns:
+        * str: the user's role
+    """
+    # pylint: disable=import-error, import-outside-toplevel
+    from lms.djangoapps.courseware.access import get_user_role as platform_get_user_role
+    return platform_get_user_role(user, course_key)

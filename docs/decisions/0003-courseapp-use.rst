@@ -40,6 +40,10 @@ Consequences
   Assistant plugin is installed into ``edx-platform``.
 * It will become slightly more difficult to know which ``CourseApps`` are available simply by reading the code, because
   this ``CourseApp`` plugin is not stored in the `edx-platform repository`_.
+* Because the `CourseApps` API is registered under the CMS application, the Learning Assistant needs to be registered as
+  a plugin to the CMS as well. Otherwise, the plugin is not included in the CMS application's ``INSTALLED_APPS`` list.
+  This causes a runtime error, because the Learning Assistant CourseApp plugin will refer to the Learning Assistant's
+  models, and this are not available in the CMS if the Learning Assistant plugin is not installed.
 
 Rejected Alternatives
 *********************

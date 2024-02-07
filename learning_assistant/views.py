@@ -21,7 +21,7 @@ except ImportError:
 
 from learning_assistant.api import learning_assistant_enabled, render_prompt_template
 from learning_assistant.serializers import MessageSerializer
-from learning_assistant.utils import get_chat_response
+from learning_assistant.utils import get_chat_response, user_role_is_staff
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class CourseChatView(APIView):
         enrollment_mode = enrollment_object.mode if enrollment_object else None
         if (
             (enrollment_mode not in CourseMode.VERIFIED_MODES)
-            and user_role not in ('staff', 'instructor')
+            and not user_role_is_staff(user_role)
         ):
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,

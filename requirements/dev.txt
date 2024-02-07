@@ -13,6 +13,8 @@ astroid==3.0.2
     #   -r requirements/quality.txt
     #   pylint
     #   pylint-celery
+attrs==23.2.0
+    # via -r requirements/quality.txt
 build==1.0.3
     # via
     #   -r requirements/pip-tools.txt

@@ -131,6 +131,12 @@ setup(
     entry_points={
         'lms.djangoapp': [
             "learning_assistant = learning_assistant.apps:LearningAssistantConfig"
+        ],
+        'cms.djangoapp': [
+            "learning_assistant = learning_assistant.apps:LearningAssistantConfig"
+        ],
+        'openedx.course_app': [
+            "learning_assistant = learning_assistant.plugins:LearningAssistantCourseApp",
         ]
     }
 )
