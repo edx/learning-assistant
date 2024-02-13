@@ -63,7 +63,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via -r requirements/test.txt
 django-waffle==4.1.0
     # via
@@ -122,7 +122,7 @@ iniconfig==2.0.0
     # via
     #   -r requirements/test.txt
     #   pytest
-jaraco-classes==3.3.0
+jaraco-classes==3.3.1
     # via keyring
 jeepney==0.8.0
     # via
@@ -207,7 +207,7 @@ pytest-cov==4.1.0
     # via -r requirements/test.txt
 pytest-django==4.8.0
     # via -r requirements/test.txt
-python-slugify==8.0.3
+python-slugify==8.0.4
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -293,7 +293,7 @@ tomli==2.0.1
     #   doc8
     #   pyproject-hooks
     #   pytest
-twine==4.0.2
+twine==5.0.0
     # via -r requirements/doc.in
 typing-extensions==4.9.0
     # via
