@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+3.6.0 - 2024-02-13
+******************
+* Enable backend access by course waffle flag or django setting.
+
 3.4.0 - 2024-01-30
 ******************
 * Add new GET endpoint to retrieve whether Learning Assistant is enabled in a given course.
