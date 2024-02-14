@@ -59,7 +59,7 @@ def get_cache_course_run_data(course_run_id, fields):
     return get_course_run_data(course_run_id, fields)
 
 
-def learning_assistant_available(course_key):
+def learning_assistant_available_flag(course_key):
     """
     Return whether the Learning Assistant is available in the course represented by the course_key.
 

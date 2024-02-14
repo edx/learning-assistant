@@ -84,3 +84,5 @@ LEARNING_ASSISTANT_PROMPT_TEMPLATE = (
     "\""
     "{% endif %}"
 )
+
+LEARNING_ASSISTANT_AVAILABLE = True

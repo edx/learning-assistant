@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import ddt
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from learning_assistant.api import (
@@ -14,6 +14,7 @@ from learning_assistant.api import (
     _get_children_contents,
     _leaf_filter,
     get_block_content,
+    learning_assistant_available,
     learning_assistant_enabled,
     render_prompt_template,
     set_learning_assistant_enabled,
@@ -206,7 +207,7 @@ class GetBlockContentAPITests(TestCase):
 @ddt.ddt
 class LearningAssistantCourseEnabledApiTests(TestCase):
     """
-    Test suite for the learning_assistant_enabled and set_learning_assistant_enalbed api functions.
+    Test suite for learning_assistant_available, learning_assistant_enabled, and set_learning_assistant_enabled.
     """
     def setUp(self):
         super().setUp()
@@ -266,3 +267,19 @@ class LearningAssistantCourseEnabledApiTests(TestCase):
 
         obj = LearningAssistantCourseEnabled.objects.get(course_id=self.course_key)
         self.assertEqual(obj.enabled, obj_value)
+
+    @ddt.idata(itertools.product((True, False), (True, False)))
+    @ddt.unpack
+    @patch('learning_assistant.api.learning_assistant_available_flag')
+    def test_learning_assistant_available(
+        self,
+        learning_assistant_available_flag_value,
+        learning_assistant_available_setting_value,
+        learning_assistant_available_flag_mock
+    ):
+        learning_assistant_available_flag_mock.return_value = learning_assistant_available_flag_value
+        with override_settings(LEARNING_ASSISTANT_AVAILABLE=learning_assistant_available_setting_value):
+            return_value = learning_assistant_available(self.course_key)
+
+        expected_value = learning_assistant_available_setting_value or learning_assistant_available_flag_value
+        self.assertEqual(return_value, expected_value)

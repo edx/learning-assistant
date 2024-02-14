@@ -7,8 +7,12 @@ Instead, the CourseApp abstract methods are implemented here and
 imported into and used by the LearningAssistantCourseApp. This way, these implementations can be tested.
 """
 
-from learning_assistant.api import learning_assistant_enabled, set_learning_assistant_enabled
-from learning_assistant.platform_imports import get_user_role, learning_assistant_available
+from learning_assistant.api import (
+    learning_assistant_available,
+    learning_assistant_enabled,
+    set_learning_assistant_enabled,
+)
+from learning_assistant.platform_imports import get_user_role
 from learning_assistant.utils import user_role_is_staff
 
 
@@ -17,7 +21,8 @@ def is_available(course_key):
     Return a boolean indicating this course app's availability for a given course.
 
     If an app is not available, it will not show up in the UI at all for that course,
-    and it will not be possible to enable/disable/configure it.
+    and it will not be possible to enable/disable/configure it, unless the platform wide setting
+    LEARNING_ASSISTANT_AVAILABLE is set to True.
 
     Args:
         course_key (CourseKey): Course key for course whose availability is being checked.
