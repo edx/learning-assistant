@@ -54,7 +54,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via -r requirements/base.txt
 django-waffle==4.1.0
     # via
@@ -142,7 +142,7 @@ pytest-cov==4.1.0
     # via -r requirements/test.in
 pytest-django==4.8.0
     # via -r requirements/test.in
-python-slugify==8.0.3
+python-slugify==8.0.4
     # via code-annotations
 pytz==2024.1
     # via
@@ -160,7 +160,7 @@ requests==2.31.0
     #   edx-rest-api-client
     #   responses
     #   slumber
-responses==0.24.1
+responses==0.25.0
     # via -r requirements/test.in
 semantic-version==2.10.0
     # via
