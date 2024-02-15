@@ -25,7 +25,6 @@ cachetools==5.3.2
     #   tox
 certifi==2024.2.2
     # via
-    #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   requests
 cffi==1.16.0
@@ -40,7 +39,6 @@ chardet==5.2.0
     #   tox
 charset-normalizer==3.3.2
     # via
-    #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   requests
 click==8.1.7
@@ -60,17 +58,13 @@ code-annotations==1.6.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
-codecov==2.1.13
-    # via -r requirements/ci.txt
 colorama==0.4.6
     # via
     #   -r requirements/ci.txt
     #   tox
 coverage[toml]==7.4.1
     # via
-    #   -r requirements/ci.txt
     #   -r requirements/quality.txt
-    #   codecov
     #   coverage
     #   pytest-cov
 cryptography==42.0.2
@@ -105,7 +99,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via -r requirements/quality.txt
 django-waffle==4.1.0
     # via
@@ -149,7 +143,6 @@ filelock==3.13.1
     #   virtualenv
 idna==3.6
     # via
-    #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   requests
 importlib-metadata==7.0.1
@@ -282,7 +275,7 @@ pytest-cov==4.1.0
     # via -r requirements/quality.txt
 pytest-django==4.8.0
     # via -r requirements/quality.txt
-python-slugify==8.0.3
+python-slugify==8.0.4
     # via
     #   -r requirements/quality.txt
     #   code-annotations
@@ -299,14 +292,12 @@ pyyaml==6.0.1
     #   responses
 requests==2.31.0
     # via
-    #   -r requirements/ci.txt
     #   -r requirements/quality.txt
-    #   codecov
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   responses
     #   slumber
-responses==0.24.1
+responses==0.25.0
     # via -r requirements/quality.txt
 semantic-version==2.10.0
     # via
@@ -366,7 +357,6 @@ typing-extensions==4.9.0
     #   pylint
 urllib3==2.2.0
     # via
-    #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   requests
     #   responses
