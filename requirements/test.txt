@@ -31,10 +31,8 @@ click==8.1.7
 code-annotations==1.6.0
     # via -r requirements/test.in
 coverage[toml]==7.4.1
-    # via
-    #   coverage
-    #   pytest-cov
-cryptography==42.0.2
+    # via pytest-cov
+cryptography==42.0.3
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -125,7 +123,6 @@ pyjwt[crypto]==2.8.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-    #   pyjwt
 pymongo==3.13.0
     # via
     #   -r requirements/base.txt
@@ -134,7 +131,7 @@ pynacl==1.5.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pytest==8.0.0
+pytest==8.0.1
     # via
     #   pytest-cov
     #   pytest-django
@@ -191,7 +188,7 @@ typing-extensions==4.9.0
     #   -r requirements/base.txt
     #   asgiref
     #   edx-opaque-keys
-urllib3==2.2.0
+urllib3==2.2.1
     # via
     #   -r requirements/base.txt
     #   requests
