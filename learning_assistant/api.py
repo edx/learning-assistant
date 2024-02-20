@@ -17,7 +17,6 @@ from learning_assistant.platform_imports import (
     block_leaf_filter,
     get_single_block,
     get_text_transcript,
-    learning_assistant_available_flag,
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
@@ -118,11 +117,11 @@ def render_prompt_template(request, user_id, course_id, unit_usage_key):
     return data
 
 
-def learning_assistant_available(course_key):
+def learning_assistant_available():
     """
     Return whether or not the learning assistant is available via django setting or course waffle flag.
     """
-    return getattr(settings, 'LEARNING_ASSISTANT_AVAILABLE', False) or learning_assistant_available_flag(course_key)
+    return getattr(settings, 'LEARNING_ASSISTANT_AVAILABLE', False)
 
 
 def learning_assistant_enabled(course_key):
@@ -146,7 +145,7 @@ def learning_assistant_enabled(course_key):
         # Currently, the Learning Assistant defaults to enabled if there is no override.
         enabled = True
 
-    return learning_assistant_available(course_key) and enabled
+    return learning_assistant_available() and enabled
 
 
 def set_learning_assistant_enabled(course_key, enabled):
