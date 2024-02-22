@@ -14,6 +14,15 @@ Change Log
 Unreleased
 **********
 
+4.1.0 - 2024-02-22
+******************
+* Revert course waffle flag removal
+
+4.0.0 - 2024-02-21
+******************
+* Remove use of course waffle flag. Use the django setting LEARNING_ASSISTANT_AVAILABLE
+  to enable the learning assistant feature.
+
 3.6.0 - 2024-02-13
 ******************
 * Enable backend access by course waffle flag or django setting.
