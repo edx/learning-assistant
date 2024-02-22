@@ -59,6 +59,26 @@ def get_cache_course_run_data(course_run_id, fields):
     return get_course_run_data(course_run_id, fields)
 
 
+def learning_assistant_available_flag(course_key):
+    """
+    Return whether the Learning Assistant is available in the course represented by the course_key.
+
+    Note that this may be different than whether the Learning Assistant is enabled in the course. The value returned by
+    this fuction represents whether the Learning Assistant is available in the course and, perhaps, whether it is
+    enabled. Course teams can disable the Learning Assistant via the LearningAssistantCourseEnabled model, so, in those
+    cases, the Learning Assistant may be available and disabled.
+
+    Arguments:
+        * course_key (CourseKey): the course's key
+
+    Returns:
+        * bool: whether the Learning Assistant feature is available
+    """
+    # pylint: disable=import-error, import-outside-toplevel
+    from lms.djangoapps.courseware.toggles import learning_assistant_is_active
+    return learning_assistant_is_active(course_key)
+
+
 def get_user_role(user, course_key):
     """
     Return the role of the user on the edX platform.

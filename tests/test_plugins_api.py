@@ -31,7 +31,7 @@ class PluginApiTests(TestCase):
         Test the is_available function of the plugins_api module.
         """
         learning_assistant_available_mock.return_value = is_available_value
-        self.assertEqual(is_available(), is_available_value)
+        self.assertEqual(is_available(self.course_key), is_available_value)
 
     @ddt.data(True, False)
     @patch('learning_assistant.plugins_api.learning_assistant_enabled')

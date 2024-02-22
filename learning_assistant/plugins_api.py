@@ -16,7 +16,7 @@ from learning_assistant.platform_imports import get_user_role
 from learning_assistant.utils import user_role_is_staff
 
 
-def is_available():
+def is_available(course_key):
     """
     Return a boolean indicating this course app's availability for a given course.
 
@@ -30,7 +30,7 @@ def is_available():
     Returns:
         bool: Availability status of app.
     """
-    return learning_assistant_available()
+    return learning_assistant_available(course_key)
 
 
 def is_enabled(course_key):

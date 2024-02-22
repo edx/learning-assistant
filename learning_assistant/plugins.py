@@ -23,7 +23,7 @@ class LearningAssistantCourseApp(CourseApp):
     }
 
     @classmethod
-    def is_available(cls, course_key):  # pylint: disable=unused-argument
+    def is_available(cls, course_key):
         """
         Return a boolean indicating this course app's availability for a given course.
 
@@ -36,7 +36,7 @@ class LearningAssistantCourseApp(CourseApp):
         Returns:
             bool: Availability status of app.
         """
-        return plugins_api.is_available()
+        return plugins_api.is_available(course_key)
 
     @classmethod
     def is_enabled(cls, course_key):
