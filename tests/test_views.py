@@ -82,17 +82,23 @@ class CourseChatViewTests(LoggedInTestCase):
         super().setUp()
         self.course_id = 'course-v1:edx+test+23'
 
+        self.patcher = patch(
+            'learning_assistant.api.get_cache_course_run_data',
+            return_value={'course': 'edx+test'}
+        )
+        self.patcher.start()
+
     @patch('learning_assistant.views.learning_assistant_enabled')
     def test_invalid_course_id(self, mock_learning_assistant_enabled):
         mock_learning_assistant_enabled.return_value = True
-        response = self.client.get(reverse('enabled', kwargs={'course_id': self.course_id+'+invalid'}))
+        response = self.client.get(reverse('enabled', kwargs={'course_run_id': self.course_id+'+invalid'}))
 
         self.assertEqual(response.status_code, 400)
 
     @patch('learning_assistant.views.learning_assistant_enabled')
     def test_course_waffle_inactive(self, mock_waffle):
         mock_waffle.return_value = False
-        response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
+        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
     @patch('learning_assistant.views.learning_assistant_enabled')
@@ -105,7 +111,7 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.return_value = None
 
-        response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
+        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
     @patch('learning_assistant.views.learning_assistant_enabled')
@@ -118,7 +124,7 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.return_value = MagicMock(mode='audit')
 
-        response = self.client.post(reverse('chat', kwargs={'course_id': self.course_id}))
+        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
     @patch('learning_assistant.views.render_prompt_template')
@@ -137,7 +143,7 @@ class CourseChatViewTests(LoggedInTestCase):
         ]
 
         response = self.client.post(
-            reverse('chat', kwargs={'course_id': self.course_id})+f'?unit_id={test_unit_id}',
+            reverse('chat', kwargs={'course_run_id': self.course_id})+f'?unit_id={test_unit_id}',
             data=json.dumps(test_data),
             content_type='application/json'
         )
@@ -164,7 +170,7 @@ class CourseChatViewTests(LoggedInTestCase):
         ]
 
         response = self.client.post(
-            reverse('chat', kwargs={'course_id': self.course_id})+f'?unit_id={test_unit_id}',
+            reverse('chat', kwargs={'course_run_id': self.course_id})+f'?unit_id={test_unit_id}',
             data=json.dumps(test_data),
             content_type='application/json'
         )
@@ -196,7 +202,7 @@ class LearningAssistantEnabledViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.learning_assistant_enabled')
     def test_learning_assistant_enabled(self, mock_value, expected_value, mock_learning_assistant_enabled):
         mock_learning_assistant_enabled.return_value = mock_value
-        response = self.client.get(reverse('enabled', kwargs={'course_id': self.course_id}))
+        response = self.client.get(reverse('enabled', kwargs={'course_run_id': self.course_id}))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {'enabled': expected_value})
@@ -204,6 +210,6 @@ class LearningAssistantEnabledViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.learning_assistant_enabled')
     def test_invalid_course_id(self, mock_learning_assistant_enabled):
         mock_learning_assistant_enabled.return_value = True
-        response = self.client.get(reverse('enabled', kwargs={'course_id': self.course_id+'+invalid'}))
+        response = self.client.get(reverse('enabled', kwargs={'course_run_id': self.course_id+'+invalid'}))
 
         self.assertEqual(response.status_code, 400)

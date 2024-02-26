@@ -24,14 +24,7 @@ class GetChatResponseTests(TestCase):
         self.prompt_template = 'This is a prompt.'
 
         self.message_list = [{'role': 'assistant', 'content': 'Hello'}, {'role': 'user', 'content': 'Goodbye'}]
-        self.course_id = 'course-v1:edx+test+23'
-        self.course_key = 'edx-test'
-
-        self.patcher = patch(
-            'learning_assistant.utils.get_cache_course_run_data',
-            return_value={'course': self.course_key}
-        )
-        self.patcher.start()
+        self.course_id = 'edx+test'
 
     def get_response(self):
         return get_chat_response(self.prompt_template, self.message_list, self.course_id)
@@ -99,7 +92,7 @@ class GetChatResponseTests(TestCase):
             'context': {
                 'content': self.prompt_template,
                 'render': {
-                    'doc_id': self.course_key,
+                    'doc_id': self.course_id,
                     'fields': ['skillNames', 'title']
                 }
             },

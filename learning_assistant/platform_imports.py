@@ -51,12 +51,24 @@ def get_cache_course_run_data(course_run_id, fields):
     """
     Return course run related data given a course run id.
 
-    This function makes use of the discovery course run cache, which is necessary because
-    only the discovery service stores the relation between courseruns and courses.
+    This function makes use of the course run cache in the LMS, which caches data from the discovery service. This is
+    necessary because only the discovery service stores the relation between courseruns and courses.
     """
     # pylint: disable=import-error, import-outside-toplevel
     from openedx.core.djangoapps.catalog.utils import get_course_run_data
     return get_course_run_data(course_run_id, fields)
+
+
+def get_cache_course_data(course_id, fields):
+    """
+    Return course related data given a course id.
+
+    This function makes use of the course cache in the LMS, which caches data from the discovery service. This is
+    necessary because only the discovery service stores course skills data.
+    """
+    # pylint: disable=import-error, import-outside-toplevel
+    from openedx.core.djangoapps.catalog.utils import get_course_data
+    return get_course_data(course_id, fields)
 
 
 def get_user_role(user, course_key):

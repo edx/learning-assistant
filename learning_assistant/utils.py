@@ -10,8 +10,6 @@ from django.conf import settings
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
-from learning_assistant.platform_imports import get_cache_course_run_data
-
 log = logging.getLogger(__name__)
 
 
@@ -60,16 +58,7 @@ def get_reduced_message_list(prompt_template, message_list):
     return new_message_list
 
 
-def get_course_id(course_run_id):
-    """
-    Given a course run id (str), return the associated course key.
-    """
-    course_data = get_cache_course_run_data(course_run_id, ['course'])
-    course_key = course_data['course']
-    return course_key
-
-
-def create_request_body(prompt_template, message_list, courserun_id):
+def create_request_body(prompt_template, message_list, course_id):
     """
     Form request body to be passed to the chat endpoint.
     """
@@ -77,7 +66,7 @@ def create_request_body(prompt_template, message_list, courserun_id):
         'context': {
             'content': prompt_template,
             'render': {
-                'doc_id': get_course_id(courserun_id),
+                'doc_id': course_id,
                 'fields': ['skillNames', 'title']
             }
         },
@@ -87,7 +76,7 @@ def create_request_body(prompt_template, message_list, courserun_id):
     return response_body
 
 
-def get_chat_response(prompt_template, message_list, courserun_id):
+def get_chat_response(prompt_template, message_list, course_id):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
@@ -98,7 +87,7 @@ def get_chat_response(prompt_template, message_list, courserun_id):
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
-        body = create_request_body(prompt_template, message_list, courserun_id)
+        body = create_request_body(prompt_template, message_list, course_id)
 
         try:
             response = requests.post(

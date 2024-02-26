@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.1.0 - 2024-02-26
+******************
+* Use course cache to inject course title and course skill names into prompt template.
+
 4.0.0 - 2024-02-21
 ******************
 * Remove use of course waffle flag. Use the django setting LEARNING_ASSISTANT_AVAILABLE

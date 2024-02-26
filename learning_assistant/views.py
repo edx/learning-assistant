@@ -19,7 +19,7 @@ try:
 except ImportError:
     pass
 
-from learning_assistant.api import learning_assistant_enabled, render_prompt_template
+from learning_assistant.api import get_course_id, learning_assistant_enabled, render_prompt_template
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.utils import get_chat_response, user_role_is_staff
 
@@ -34,9 +34,9 @@ class CourseChatView(APIView):
     authentication_classes = (SessionAuthentication, JwtAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, course_id):
+    def post(self, request, course_run_id):
         """
-        Given a course ID, retrieve a chat response for that course.
+        Given a course run ID, retrieve a chat response for that course.
 
         Expected POST data: {
             [
@@ -46,7 +46,7 @@ class CourseChatView(APIView):
         }
         """
         try:
-            courserun_key = CourseKey.from_string(course_id)
+            courserun_key = CourseKey.from_string(course_run_id)
         except InvalidKeyError:
             return Response(
                 status=http_status.HTTP_400_BAD_REQUEST,
@@ -89,11 +89,13 @@ class CourseChatView(APIView):
             'Attempting to retrieve chat response for user_id=%(user_id)s in course_id=%(course_id)s',
             {
                 'user_id': request.user.id,
-                'course_id': course_id
+                'course_id': course_run_id
             }
         )
 
-        prompt_template = render_prompt_template(request, request.user.id, course_id, unit_id)
+        course_id = get_course_id(course_run_id)
+
+        prompt_template = render_prompt_template(request, request.user.id, course_run_id, unit_id, course_id)
 
         status_code, message = get_chat_response(prompt_template, message_list, course_id)
 
@@ -122,16 +124,16 @@ class LearningAssistantEnabledView(APIView):
     authentication_classes = (SessionAuthentication, JwtAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, course_id):
+    def get(self, request, course_run_id):
         """
-        Given a course ID, retrieve whether the Learning Assistant is enabled for the corresponding course.
+        Given a course run ID, retrieve whether the Learning Assistant is enabled for the corresponding course.
 
         The response will be in the following format.
 
             {'enabled': <bool>}
         """
         try:
-            courserun_key = CourseKey.from_string(course_id)
+            courserun_key = CourseKey.from_string(course_run_id)
         except InvalidKeyError:
             return Response(
                 status=http_status.HTTP_400_BAD_REQUEST,
