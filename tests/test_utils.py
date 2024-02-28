@@ -27,7 +27,7 @@ class GetChatResponseTests(TestCase):
         self.course_id = 'edx+test'
 
     def get_response(self):
-        return get_chat_response(self.prompt_template, self.message_list, self.course_id)
+        return get_chat_response(self.prompt_template, self.message_list)
 
     @override_settings(CHAT_COMPLETION_API=None)
     def test_no_endpoint_setting(self):
@@ -89,14 +89,7 @@ class GetChatResponseTests(TestCase):
         headers = {'Content-Type': 'application/json', 'x-api-key': settings.CHAT_COMPLETION_API_KEY}
 
         response_body = {
-            'context': {
-                'content': self.prompt_template,
-                'render': {
-                    'doc_id': self.course_id,
-                    'fields': ['skillNames', 'title']
-                }
-            },
-            'message_list': self.message_list
+            'message_list': [{'role': 'system', 'content': self.prompt_template}] + self.message_list
         }
 
         self.get_response()
@@ -120,7 +113,7 @@ class GetReducedMessageListTests(TestCase):
             {'role': 'user', 'content': 'Goodbye'},
         ]
 
-    @override_settings(CHAT_COMPLETION_MAX_TOKENS=90)
+    @override_settings(CHAT_COMPLETION_MAX_TOKENS=30)
     @override_settings(CHAT_COMPLETION_RESPONSE_TOKENS=1)
     def test_message_list_reduced(self):
         """
@@ -128,13 +121,19 @@ class GetReducedMessageListTests(TestCase):
         """
         # pass in copy of list, as it is modified as part of the reduction
         reduced_message_list = get_reduced_message_list(self.prompt_template, self.message_list)
-        self.assertEqual(len(reduced_message_list), 1)
-        self.assertEqual(reduced_message_list, self.message_list[-1:])
+        self.assertEqual(len(reduced_message_list), 2)
+        self.assertEqual(
+            reduced_message_list,
+            [{'role': 'system', 'content': self.prompt_template}] + self.message_list[-1:]
+        )
 
     def test_message_list(self):
         reduced_message_list = get_reduced_message_list(self.prompt_template, self.message_list)
-        self.assertEqual(len(reduced_message_list), 2)
-        self.assertEqual(reduced_message_list, self.message_list)
+        self.assertEqual(len(reduced_message_list), 3)
+        self.assertEqual(
+            reduced_message_list,
+            [{'role': 'system', 'content': self.prompt_template}] + self.message_list
+        )
 
 
 @ddt.ddt

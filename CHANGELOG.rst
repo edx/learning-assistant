@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.2.0 - 2024-02-28
+******************
+* Modify call to Xpert backend to prevent use of course index.
+
 4.1.0 - 2024-02-26
 ******************
 * Use course cache to inject course title and course skill names into prompt template.
