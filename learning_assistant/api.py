@@ -15,6 +15,8 @@ from learning_assistant.models import LearningAssistantCourseEnabled
 from learning_assistant.platform_imports import (
     block_get_children,
     block_leaf_filter,
+    get_cache_course_data,
+    get_cache_course_run_data,
     get_single_block,
     get_text_transcript,
     traverse_block_pre_order,
@@ -101,19 +103,23 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
     return cache_data['content_length'], cache_data['content_items']
 
 
-def render_prompt_template(request, user_id, course_id, unit_usage_key):
+def render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id):
     """
     Return a rendered prompt template, specified by the LEARNING_ASSISTANT_PROMPT_TEMPLATE setting.
     """
     unit_content = ''
 
-    course_run_key = CourseKey.from_string(course_id)
+    course_run_key = CourseKey.from_string(course_run_id)
     if unit_usage_key and course_content_enabled(course_run_key):
-        _, unit_content = get_block_content(request, user_id, course_id, unit_usage_key)
+        _, unit_content = get_block_content(request, user_id, course_run_id, unit_usage_key)
+
+    course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
+    skill_names = course_data['skill_names']
+    title = course_data['title']
 
     template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
     template = Environment(loader=BaseLoader).from_string(template_string)
-    data = template.render(unit_content=unit_content)
+    data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
     return data
 
 
@@ -168,3 +174,12 @@ def set_learning_assistant_enabled(course_key, enabled):
         course_key=obj.course_id,
         enabled=obj.enabled
     )
+
+
+def get_course_id(course_run_id):
+    """
+    Given a course run id (str), return the associated course key.
+    """
+    course_data = get_cache_course_run_data(course_run_id, ['course'])
+    course_key = course_data['course']
+    return course_key

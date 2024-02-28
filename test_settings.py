@@ -83,6 +83,8 @@ LEARNING_ASSISTANT_PROMPT_TEMPLATE = (
     "{{ unit_content }}"
     "\""
     "{% endif %}"
+    "{{ skill_names }}"
+    "{{ title }}"
 )
 
 LEARNING_ASSISTANT_AVAILABLE = True

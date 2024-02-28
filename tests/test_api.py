@@ -82,7 +82,7 @@ class GetBlockContentAPITests(TestCase):
         ]
         self.block = FakeBlock(self.children)
 
-        self.course_id = 'course-v1:edx+test+23'
+        self.course_run_id = 'course-v1:edx+test+23'
 
     @ddt.data(
         ('video', True),
@@ -156,7 +156,7 @@ class GetBlockContentAPITests(TestCase):
         # args does not matter for this test right now, as the `get_single_block` function is entirely mocked.
         request = MagicMock()
         user_id = 1
-        course_id = self.course_id
+        course_id = self.course_run_id
         unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
 
         length, items = get_block_content(request, user_id, course_id, unit_usage_key)
@@ -183,25 +183,34 @@ class GetBlockContentAPITests(TestCase):
         ('', False),
     )
     @ddt.unpack
+    @patch('learning_assistant.api.get_cache_course_data')
     @patch('learning_assistant.toggles._is_learning_assistant_waffle_flag_enabled')
     @patch('learning_assistant.api.get_block_content')
-    def test_render_prompt_template(self, unit_content, flag_enabled, mock_get_content, mock_is_flag_enabled):
+    def test_render_prompt_template(
+        self, unit_content, flag_enabled, mock_get_content, mock_is_flag_enabled, mock_cache
+    ):
         mock_get_content.return_value = (len(unit_content), unit_content)
         mock_is_flag_enabled.return_value = flag_enabled
+        skills_content = ['skills']
+        title = 'title'
+        mock_cache.return_value = {'skill_names': skills_content, 'title': title}
 
         # mock arguments that are passed through to `get_block_content` function. the value of these
         # args does not matter for this test right now, as the `get_block_content` function is entirely mocked.
         request = MagicMock()
         user_id = 1
-        course_id = self.course_id
+        course_run_id = self.course_run_id
         unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
+        course_id = 'edx+test'
 
-        prompt_text = render_prompt_template(request, user_id, course_id, unit_usage_key)
+        prompt_text = render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id)
 
         if unit_content and flag_enabled:
             self.assertIn(unit_content, prompt_text)
         else:
             self.assertNotIn('The following text is useful.', prompt_text)
+        self.assertIn(str(skills_content), prompt_text)
+        self.assertIn(title, prompt_text)
 
 
 @ddt.ddt
