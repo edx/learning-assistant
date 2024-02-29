@@ -97,7 +97,7 @@ class CourseChatView(APIView):
 
         prompt_template = render_prompt_template(request, request.user.id, course_run_id, unit_id, course_id)
 
-        status_code, message = get_chat_response(prompt_template, message_list, course_id)
+        status_code, message = get_chat_response(prompt_template, message_list)
 
         return Response(status=status_code, data=message)
 
