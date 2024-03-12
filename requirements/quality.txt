@@ -87,7 +87,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-edx-django-utils==5.10.1
+edx-django-utils==5.11.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
@@ -128,11 +128,11 @@ markupsafe==2.1.5
     #   jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==9.7.0
+newrelic==9.7.1
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-packaging==23.2
+packaging==24.0
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -186,7 +186,7 @@ pynacl==1.5.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-pytest==8.0.2
+pytest==8.1.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
