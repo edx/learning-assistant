@@ -18,6 +18,7 @@ backports-zoneinfo==0.2.1
     # via
     #   -r requirements/test.txt
     #   django
+    #   djangorestframework
 build==1.1.1
     # via -r requirements/doc.in
 certifi==2024.2.2
@@ -38,9 +39,9 @@ click==8.1.7
     #   -r requirements/test.txt
     #   code-annotations
     #   edx-django-utils
-code-annotations==1.6.0
+code-annotations==1.7.0
     # via -r requirements/test.txt
-coverage[toml]==7.4.3
+coverage[toml]==7.4.4
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -73,7 +74,7 @@ django-waffle==4.1.0
     #   -r requirements/test.txt
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.14.0
+djangorestframework==3.15.0
     # via
     #   -r requirements/test.txt
     #   drf-jwt
@@ -90,7 +91,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-edx-django-utils==5.10.1
+edx-django-utils==5.11.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
@@ -113,13 +114,14 @@ idna==3.6
     #   requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==7.0.1
+importlib-metadata==6.11.0
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   build
     #   keyring
     #   sphinx
     #   twine
-importlib-resources==6.1.2
+importlib-resources==6.3.1
     # via keyring
 iniconfig==2.0.0
     # via
@@ -148,13 +150,13 @@ mdurl==0.1.2
     # via markdown-it-py
 more-itertools==10.2.0
     # via jaraco-classes
-newrelic==9.7.0
+newrelic==9.7.1
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
 nh3==0.2.15
     # via readme-renderer
-packaging==23.2
+packaging==24.0
     # via
     #   -r requirements/test.txt
     #   build
@@ -200,7 +202,7 @@ pynacl==1.5.0
     #   edx-django-utils
 pyproject-hooks==1.0.0
     # via build
-pytest==8.0.2
+pytest==8.1.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -214,10 +216,7 @@ python-slugify==8.0.4
     #   -r requirements/test.txt
     #   code-annotations
 pytz==2024.1
-    # via
-    #   -r requirements/test.txt
-    #   babel
-    #   djangorestframework
+    # via babel
 pyyaml==6.0.1
     # via
     #   -r requirements/test.txt
@@ -308,7 +307,7 @@ urllib3==2.2.1
     #   requests
     #   responses
     #   twine
-zipp==3.17.0
+zipp==3.18.1
     # via
     #   importlib-metadata
     #   importlib-resources
