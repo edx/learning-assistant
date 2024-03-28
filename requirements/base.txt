@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-asgiref==3.7.2
+asgiref==3.8.1
     # via django
 attrs==23.2.0
     # via -r requirements/base.in
@@ -43,7 +43,7 @@ django-waffle==4.1.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.15.0
+djangorestframework==3.15.1
     # via
     #   -r requirements/base.in
     #   drf-jwt
