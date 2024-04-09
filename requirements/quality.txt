@@ -41,7 +41,7 @@ click==8.1.7
     #   edx-lint
 click-log==0.4.0
     # via edx-lint
-code-annotations==1.7.0
+code-annotations==1.8.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -101,7 +101,7 @@ edx-opaque-keys==2.5.1
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-edx-rest-api-client==5.6.1
+edx-rest-api-client==5.7.0
     # via -r requirements/test.txt
 exceptiongroup==1.2.0
     # via
@@ -248,7 +248,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.12.4
     # via pylint
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via
     #   -r requirements/test.txt
     #   asgiref
