@@ -60,9 +60,9 @@ edx-opaque-keys==2.5.1
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
-edx-rest-api-client==5.6.1
+edx-rest-api-client==5.7.0
     # via -r requirements/base.in
-idna==3.6
+idna==3.7
     # via requests
 jinja2==3.1.3
     # via -r requirements/base.in
@@ -94,13 +94,13 @@ semantic-version==2.10.0
     # via edx-drf-extensions
 slumber==0.7.1
     # via edx-rest-api-client
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via django
 stevedore==5.2.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via
     #   asgiref
     #   edx-opaque-keys
