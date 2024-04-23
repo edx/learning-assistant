@@ -97,13 +97,13 @@ edx-drf-extensions==10.3.0
     # via -r requirements/test.txt
 edx-lint==5.3.6
     # via -r requirements/quality.in
-edx-opaque-keys==2.5.1
+edx-opaque-keys==2.8.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
 edx-rest-api-client==5.7.0
     # via -r requirements/test.txt
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -129,7 +129,7 @@ markupsafe==2.1.5
     #   jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==9.8.0
+newrelic==9.9.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -143,7 +143,7 @@ pbr==6.0.0
     #   stevedore
 platformdirs==4.2.0
     # via pylint
-pluggy==1.4.0
+pluggy==1.5.0
     # via
     #   -r requirements/test.txt
     #   pytest

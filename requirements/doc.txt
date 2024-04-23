@@ -14,7 +14,7 @@ attrs==23.2.0
     # via -r requirements/test.txt
 babel==2.14.0
     # via sphinx
-backports-tarfile==1.1.0
+backports-tarfile==1.1.1
     # via jaraco-context
 backports-zoneinfo==0.2.1
     # via
@@ -100,13 +100,13 @@ edx-django-utils==5.12.0
     #   edx-rest-api-client
 edx-drf-extensions==10.3.0
     # via -r requirements/test.txt
-edx-opaque-keys==2.5.1
+edx-opaque-keys==2.8.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
 edx-rest-api-client==5.7.0
     # via -r requirements/test.txt
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -133,7 +133,7 @@ jaraco-classes==3.4.0
     # via keyring
 jaraco-context==5.3.0
     # via keyring
-jaraco-functools==4.0.0
+jaraco-functools==4.0.1
     # via keyring
 jeepney==0.8.0
     # via
@@ -158,7 +158,7 @@ more-itertools==10.2.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-newrelic==9.8.0
+newrelic==9.9.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -176,7 +176,7 @@ pbr==6.0.0
     #   stevedore
 pkginfo==1.10.0
     # via twine
-pluggy==1.4.0
+pluggy==1.5.0
     # via
     #   -r requirements/test.txt
     #   pytest
