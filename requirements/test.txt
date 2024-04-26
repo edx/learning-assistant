@@ -35,7 +35,7 @@ click==8.1.7
     #   edx-django-utils
 code-annotations==1.8.0
     # via -r requirements/test.in
-coverage[toml]==7.4.4
+coverage[toml]==7.5.0
     # via pytest-cov
 cryptography==42.0.5
     # via
@@ -69,6 +69,10 @@ djangorestframework==3.15.1
     #   -r requirements/base.txt
     #   drf-jwt
     #   edx-drf-extensions
+dnspython==2.6.1
+    # via
+    #   -r requirements/base.txt
+    #   pymongo
 drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
@@ -80,13 +84,13 @@ edx-django-utils==5.12.0
     #   edx-rest-api-client
 edx-drf-extensions==10.3.0
     # via -r requirements/base.txt
-edx-opaque-keys==2.5.1
+edx-opaque-keys==2.9.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
 edx-rest-api-client==5.7.0
     # via -r requirements/base.txt
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via pytest
 idna==3.7
     # via
@@ -102,7 +106,7 @@ markupsafe==2.1.5
     # via
     #   -r requirements/base.txt
     #   jinja2
-newrelic==9.8.0
+newrelic==9.9.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -112,7 +116,7 @@ pbr==6.0.0
     # via
     #   -r requirements/base.txt
     #   stevedore
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
 psutil==5.9.8
     # via
@@ -128,7 +132,7 @@ pyjwt[crypto]==2.8.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pymongo==3.13.0
+pymongo==4.4.0
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
@@ -136,7 +140,7 @@ pynacl==1.5.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pytest==8.1.1
+pytest==8.1.2
     # via
     #   pytest-cov
     #   pytest-django
