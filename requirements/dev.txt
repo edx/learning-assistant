@@ -123,7 +123,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-django-utils==5.12.0
+edx-django-utils==5.13.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
@@ -144,7 +144,7 @@ exceptiongroup==1.2.1
     # via
     #   -r requirements/quality.txt
     #   pytest
-filelock==3.13.4
+filelock==3.14.0
     # via
     #   -r requirements/ci.txt
     #   tox
@@ -274,12 +274,12 @@ pyproject-api==1.6.1
     # via
     #   -r requirements/ci.txt
     #   tox
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via
     #   -r requirements/pip-tools.txt
     #   build
     #   pip-tools
-pytest==8.1.2
+pytest==8.2.0
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
@@ -347,14 +347,13 @@ tomli==2.0.1
     #   pip-tools
     #   pylint
     #   pyproject-api
-    #   pyproject-hooks
     #   pytest
     #   tox
 tomlkit==0.12.4
     # via
     #   -r requirements/quality.txt
     #   pylint
-tox==4.14.2
+tox==4.15.0
     # via -r requirements/ci.txt
 typing-extensions==4.11.0
     # via
@@ -368,7 +367,7 @@ urllib3==2.2.1
     #   -r requirements/quality.txt
     #   requests
     #   responses
-virtualenv==20.26.0
+virtualenv==20.26.1
     # via
     #   -r requirements/ci.txt
     #   tox

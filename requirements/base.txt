@@ -52,7 +52,7 @@ dnspython==2.6.1
     # via pymongo
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.12.0
+edx-django-utils==5.13.0
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
