@@ -8,7 +8,7 @@ asgiref==3.8.1
     # via
     #   -r requirements/test.txt
     #   django
-astroid==3.1.0
+astroid==3.2.0
     # via
     #   pylint
     #   pylint-celery
@@ -57,7 +57,7 @@ ddt==1.7.2
     # via -r requirements/test.txt
 dill==0.3.8
     # via pylint
-django==4.2.11
+django==4.2.13
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -133,7 +133,7 @@ markupsafe==2.1.5
     #   jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==9.9.0
+newrelic==9.9.1
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -169,7 +169,7 @@ pyjwt[crypto]==2.8.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.1.0
+pylint==3.2.0
     # via
     #   edx-lint
     #   pylint-celery
@@ -250,7 +250,7 @@ tomli==2.0.1
     #   coverage
     #   pylint
     #   pytest
-tomlkit==0.12.4
+tomlkit==0.12.5
     # via pylint
 typing-extensions==4.11.0
     # via
