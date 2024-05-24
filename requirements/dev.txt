@@ -8,7 +8,7 @@ asgiref==3.8.1
     # via
     #   -r requirements/quality.txt
     #   django
-astroid==3.2.0
+astroid==3.2.2
     # via
     #   -r requirements/quality.txt
     #   pylint
@@ -206,7 +206,7 @@ pbr==6.0.0
     #   stevedore
 pip-tools==7.4.1
     # via -r requirements/pip-tools.txt
-platformdirs==4.2.1
+platformdirs==4.2.2
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
@@ -242,7 +242,7 @@ pyjwt[crypto]==2.8.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.2.0
+pylint==3.2.2
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -279,7 +279,7 @@ pyproject-hooks==1.1.0
     #   -r requirements/pip-tools.txt
     #   build
     #   pip-tools
-pytest==8.2.0
+pytest==8.2.1
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
@@ -375,7 +375,7 @@ wheel==0.43.0
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
-zipp==3.18.1
+zipp==3.18.2
     # via
     #   -r requirements/pip-tools.txt
     #   importlib-metadata
