@@ -28,7 +28,7 @@ cachetools==5.3.3
     # via
     #   -r requirements/ci.txt
     #   tox
-certifi==2024.2.2
+certifi==2024.6.2
     # via
     #   -r requirements/quality.txt
     #   requests
@@ -67,7 +67,7 @@ colorama==0.4.6
     # via
     #   -r requirements/ci.txt
     #   tox
-coverage[toml]==7.5.1
+coverage[toml]==7.5.3
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
@@ -123,7 +123,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-django-utils==5.13.0
+edx-django-utils==5.14.2
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
@@ -185,7 +185,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/quality.txt
     #   pylint
-newrelic==9.9.1
+newrelic==9.10.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
@@ -279,7 +279,7 @@ pyproject-hooks==1.1.0
     #   -r requirements/pip-tools.txt
     #   build
     #   pip-tools
-pytest==8.2.1
+pytest==8.2.2
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
@@ -355,7 +355,7 @@ tomlkit==0.12.5
     #   pylint
 tox==4.15.0
     # via -r requirements/ci.txt
-typing-extensions==4.11.0
+typing-extensions==4.12.1
     # via
     #   -r requirements/quality.txt
     #   asgiref
@@ -375,7 +375,7 @@ wheel==0.43.0
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
-zipp==3.18.2
+zipp==3.19.1
     # via
     #   -r requirements/pip-tools.txt
     #   importlib-metadata

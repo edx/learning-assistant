@@ -19,7 +19,7 @@ backports-zoneinfo==0.2.1
     #   -r requirements/test.txt
     #   django
     #   djangorestframework
-certifi==2024.2.2
+certifi==2024.6.2
     # via
     #   -r requirements/test.txt
     #   requests
@@ -45,7 +45,7 @@ code-annotations==1.8.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.5.1
+coverage[toml]==7.5.3
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -92,7 +92,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-edx-django-utils==5.13.0
+edx-django-utils==5.14.2
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
@@ -133,7 +133,7 @@ markupsafe==2.1.5
     #   jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==9.9.1
+newrelic==9.10.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -191,7 +191,7 @@ pynacl==1.5.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-pytest==8.2.1
+pytest==8.2.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -252,7 +252,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.12.5
     # via pylint
-typing-extensions==4.11.0
+typing-extensions==4.12.1
     # via
     #   -r requirements/test.txt
     #   asgiref
