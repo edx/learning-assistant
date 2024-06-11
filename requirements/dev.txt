@@ -71,7 +71,7 @@ coverage[toml]==7.5.3
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
-cryptography==42.0.7
+cryptography==42.0.8
     # via
     #   -r requirements/quality.txt
     #   pyjwt
@@ -134,7 +134,7 @@ edx-i18n-tools==1.6.0
     # via -r requirements/dev.in
 edx-lint==5.3.6
     # via -r requirements/quality.txt
-edx-opaque-keys==2.9.0
+edx-opaque-keys==2.10.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
@@ -189,7 +189,7 @@ newrelic==9.10.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
-packaging==24.0
+packaging==24.1
     # via
     #   -r requirements/ci.txt
     #   -r requirements/pip-tools.txt
@@ -242,7 +242,7 @@ pyjwt[crypto]==2.8.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.2.2
+pylint==3.2.3
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -262,7 +262,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/quality.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.4.0
+pymongo==4.7.3
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
@@ -305,7 +305,7 @@ requests==2.31.0
     #   edx-rest-api-client
     #   responses
     #   slumber
-responses==0.25.0
+responses==0.25.2
     # via -r requirements/quality.txt
 semantic-version==2.10.0
     # via
@@ -353,9 +353,9 @@ tomlkit==0.12.5
     # via
     #   -r requirements/quality.txt
     #   pylint
-tox==4.15.0
+tox==4.15.1
     # via -r requirements/ci.txt
-typing-extensions==4.12.1
+typing-extensions==4.12.2
     # via
     #   -r requirements/quality.txt
     #   asgiref
@@ -375,7 +375,7 @@ wheel==0.43.0
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
-zipp==3.19.1
+zipp==3.19.2
     # via
     #   -r requirements/pip-tools.txt
     #   importlib-metadata

@@ -49,7 +49,7 @@ coverage[toml]==7.5.3
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==42.0.7
+cryptography==42.0.8
     # via
     #   -r requirements/test.txt
     #   pyjwt
@@ -101,7 +101,7 @@ edx-drf-extensions==10.3.0
     # via -r requirements/test.txt
 edx-lint==5.3.6
     # via -r requirements/quality.in
-edx-opaque-keys==2.9.0
+edx-opaque-keys==2.10.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
@@ -137,7 +137,7 @@ newrelic==9.10.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-packaging==24.0
+packaging==24.1
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -169,7 +169,7 @@ pyjwt[crypto]==2.8.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.2.2
+pylint==3.2.3
     # via
     #   edx-lint
     #   pylint-celery
@@ -183,7 +183,7 @@ pylint-plugin-utils==0.8.2
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==4.4.0
+pymongo==4.7.3
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
@@ -216,7 +216,7 @@ requests==2.31.0
     #   edx-rest-api-client
     #   responses
     #   slumber
-responses==0.25.0
+responses==0.25.2
     # via -r requirements/test.txt
 semantic-version==2.10.0
     # via
@@ -252,7 +252,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.12.5
     # via pylint
-typing-extensions==4.12.1
+typing-extensions==4.12.2
     # via
     #   -r requirements/test.txt
     #   asgiref
