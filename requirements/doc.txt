@@ -162,7 +162,7 @@ more-itertools==10.3.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-newrelic==9.10.0
+newrelic==9.11.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -248,7 +248,7 @@ requests==2.31.0
     #   twine
 requests-toolbelt==1.0.0
     # via twine
-responses==0.25.2
+responses==0.25.3
     # via -r requirements/test.txt
 restructuredtext-lint==1.4.0
     # via doc8
@@ -312,7 +312,7 @@ typing-extensions==4.12.2
     #   asgiref
     #   edx-opaque-keys
     #   rich
-urllib3==2.2.1
+urllib3==2.2.2
     # via
     #   -r requirements/test.txt
     #   requests
