@@ -106,7 +106,7 @@ markupsafe==2.1.5
     # via
     #   -r requirements/base.txt
     #   jinja2
-newrelic==9.10.0
+newrelic==9.11.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -161,7 +161,7 @@ requests==2.31.0
     #   edx-rest-api-client
     #   responses
     #   slumber
-responses==0.25.2
+responses==0.25.3
     # via -r requirements/test.in
 semantic-version==2.10.0
     # via
@@ -192,7 +192,7 @@ typing-extensions==4.12.2
     #   -r requirements/base.txt
     #   asgiref
     #   edx-opaque-keys
-urllib3==2.2.1
+urllib3==2.2.2
     # via
     #   -r requirements/base.txt
     #   requests
