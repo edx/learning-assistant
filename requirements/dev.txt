@@ -67,7 +67,7 @@ colorama==0.4.6
     # via
     #   -r requirements/ci.txt
     #   tox
-coverage[toml]==7.5.3
+coverage[toml]==7.5.4
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
@@ -110,7 +110,7 @@ django-waffle==4.1.0
     #   -r requirements/quality.txt
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.15.1
+djangorestframework==3.15.2
     # via
     #   -r requirements/quality.txt
     #   drf-jwt
@@ -138,13 +138,13 @@ edx-opaque-keys==2.10.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-rest-api-client==5.7.0
+edx-rest-api-client==5.7.1
     # via -r requirements/quality.txt
 exceptiongroup==1.2.1
     # via
     #   -r requirements/quality.txt
     #   pytest
-filelock==3.15.1
+filelock==3.15.4
     # via
     #   -r requirements/ci.txt
     #   tox
@@ -222,7 +222,7 @@ pluggy==1.5.0
     #   tox
 polib==1.2.0
     # via edx-i18n-tools
-psutil==5.9.8
+psutil==6.0.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
@@ -270,7 +270,7 @@ pynacl==1.5.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
-pyproject-api==1.6.1
+pyproject-api==1.7.1
     # via
     #   -r requirements/ci.txt
     #   tox
@@ -298,7 +298,7 @@ pyyaml==6.0.1
     #   code-annotations
     #   edx-i18n-tools
     #   responses
-requests==2.31.0
+requests==2.32.3
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
@@ -367,7 +367,7 @@ urllib3==2.2.2
     #   -r requirements/quality.txt
     #   requests
     #   responses
-virtualenv==20.26.2
+virtualenv==20.26.3
     # via
     #   -r requirements/ci.txt
     #   tox
