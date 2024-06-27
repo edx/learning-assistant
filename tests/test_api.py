@@ -5,6 +5,7 @@ import itertools
 from unittest.mock import MagicMock, patch
 
 import ddt
+from django.conf import settings
 from django.core.cache import cache
 from django.test import TestCase, override_settings
 from opaque_keys.edx.keys import CourseKey, UsageKey
@@ -202,8 +203,11 @@ class GetBlockContentAPITests(TestCase):
         course_run_id = self.course_run_id
         unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
         course_id = 'edx+test'
+        template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
 
-        prompt_text = render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id)
+        prompt_text = render_prompt_template(
+            request, user_id, course_run_id, unit_usage_key, course_id, template_string
+        )
 
         if unit_content and flag_enabled:
             self.assertIn(unit_content, prompt_text)

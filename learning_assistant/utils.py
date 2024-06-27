@@ -52,18 +52,19 @@ def get_reduced_message_list(prompt_template, message_list):
     return [system_message] + new_message_list
 
 
-def create_request_body(prompt_template, message_list):
+def create_request_body(prompt_template, message_list, gpt_model):
     """
     Form request body to be passed to the chat endpoint.
     """
     response_body = {
-        'message_list': get_reduced_message_list(prompt_template, message_list)
+        'message_list': get_reduced_message_list(prompt_template, message_list),
+        'model': gpt_model,
     }
 
     return response_body
 
 
-def get_chat_response(prompt_template, message_list):
+def get_chat_response(prompt_template, message_list, gpt_model):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
@@ -74,7 +75,7 @@ def get_chat_response(prompt_template, message_list):
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
-        body = create_request_body(prompt_template, message_list)
+        body = create_request_body(prompt_template, message_list, gpt_model)
 
         try:
             response = requests.post(

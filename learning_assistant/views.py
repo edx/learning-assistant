@@ -3,6 +3,7 @@ V1 API Views.
 """
 import logging
 
+from django.conf import settings
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -20,6 +21,7 @@ except ImportError:
     pass
 
 from learning_assistant.api import get_course_id, learning_assistant_enabled, render_prompt_template
+from learning_assistant.constants import GptModels, ResponseVariations
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.utils import get_chat_response, user_role_is_staff
 
@@ -73,6 +75,7 @@ class CourseChatView(APIView):
             )
 
         unit_id = request.query_params.get('unit_id')
+        response_variation = request.query_params.get('response_variation')
 
         message_list = request.data
         serializer = MessageSerializer(data=message_list, many=True)
@@ -95,9 +98,17 @@ class CourseChatView(APIView):
 
         course_id = get_course_id(course_run_id)
 
-        prompt_template = render_prompt_template(request, request.user.id, course_run_id, unit_id, course_id)
+        if response_variation == ResponseVariations.GPT4_UPDATED_PROMPT:
+            gpt_model = GptModels.GPT_4o
+            template_string = getattr(settings, 'LEARNING_ASSISTANT_EXPERIMENTAL_PROMPT_TEMPLATE', '')
+        else:
+            gpt_model = GptModels.GPT_3_5_TURBO
+            template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
 
-        status_code, message = get_chat_response(prompt_template, message_list)
+        prompt_template = render_prompt_template(
+            request, request.user.id, course_run_id, unit_id, course_id, template_string
+        )
+        status_code, message = get_chat_response(prompt_template, message_list, gpt_model)
 
         return Response(status=status_code, data=message)
 
