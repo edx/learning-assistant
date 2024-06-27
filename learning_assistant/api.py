@@ -105,7 +105,7 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
 
 def render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id, template_string):
     """
-    Return a rendered prompt template, specified by the LEARNING_ASSISTANT_PROMPT_TEMPLATE setting.
+    Return a rendered prompt template.
     """
     unit_content = ''
 
