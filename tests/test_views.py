@@ -189,7 +189,7 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_chat_response.assert_called_with(
             'Rendered template mock',
             test_data,
-            GptModels.GPT_3_5_TURBO
+            GptModels.GPT_3_5_TURBO_0125
         )
 
     @ddt.data(ResponseVariations.GPT4_UPDATED_PROMPT, 'invalid-variation')
@@ -232,7 +232,7 @@ class CourseChatViewTests(LoggedInTestCase):
             expected_model = GptModels.GPT_4o
         else:
             expected_template = 'This is the default template'
-            expected_model = GptModels.GPT_3_5_TURBO
+            expected_model = GptModels.GPT_3_5_TURBO_0125
 
         render_args = mock_render.call_args.args
         self.assertIn(test_unit_id, render_args)

@@ -18,6 +18,7 @@ CATEGORY_TYPE_MAP = {
 
 class GptModels:
     GPT_3_5_TURBO = 'gpt-3.5-turbo'
+    GPT_3_5_TURBO_0125 = 'gpt-3.5-turbo-0125'
     GPT_4o = 'gpt-4o'
 
 

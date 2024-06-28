@@ -102,7 +102,7 @@ class CourseChatView(APIView):
             gpt_model = GptModels.GPT_4o
             template_string = getattr(settings, 'LEARNING_ASSISTANT_EXPERIMENTAL_PROMPT_TEMPLATE', '')
         else:
-            gpt_model = GptModels.GPT_3_5_TURBO
+            gpt_model = GptModels.GPT_3_5_TURBO_0125
             template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
 
         prompt_template = render_prompt_template(
