@@ -27,7 +27,7 @@ class GetChatResponseTests(TestCase):
         self.course_id = 'edx+test'
 
     def get_response(self):
-        return get_chat_response(self.prompt_template, self.message_list)
+        return get_chat_response(self.prompt_template, self.message_list, 'gpt-version-test')
 
     @override_settings(CHAT_COMPLETION_API=None)
     def test_no_endpoint_setting(self):
@@ -89,7 +89,8 @@ class GetChatResponseTests(TestCase):
         headers = {'Content-Type': 'application/json', 'x-api-key': settings.CHAT_COMPLETION_API_KEY}
 
         response_body = {
-            'message_list': [{'role': 'system', 'content': self.prompt_template}] + self.message_list
+            'message_list': [{'role': 'system', 'content': self.prompt_template}] + self.message_list,
+            'model': 'gpt-version-test',
         }
 
         self.get_response()

@@ -103,9 +103,9 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
     return cache_data['content_length'], cache_data['content_items']
 
 
-def render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id):
+def render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id, template_string):
     """
-    Return a rendered prompt template, specified by the LEARNING_ASSISTANT_PROMPT_TEMPLATE setting.
+    Return a rendered prompt template.
     """
     unit_content = ''
 
@@ -117,7 +117,6 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     skill_names = course_data['skill_names']
     title = course_data['title']
 
-    template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
     template = Environment(loader=BaseLoader).from_string(template_string)
     data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
     return data

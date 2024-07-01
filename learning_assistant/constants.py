@@ -14,3 +14,13 @@ CATEGORY_TYPE_MAP = {
     "html": "TEXT",
     "video": "VIDEO",
 }
+
+
+class GptModels:
+    GPT_3_5_TURBO = 'gpt-3.5-turbo'
+    GPT_3_5_TURBO_0125 = 'gpt-3.5-turbo-0125'
+    GPT_4o = 'gpt-4o'
+
+
+class ResponseVariations:
+    GPT4_UPDATED_PROMPT = 'updated_prompt'
