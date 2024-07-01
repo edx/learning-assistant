@@ -5,9 +5,9 @@
 | Name                                                                        |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |---------------------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | learning\_assistant/\_\_init\_\_.py                                         |        2 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/api.py                                                  |       74 |        0 |       12 |        0 |    100% |           |
+| learning\_assistant/api.py                                                  |       73 |        0 |       12 |        0 |    100% |           |
 | learning\_assistant/apps.py                                                 |        4 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/constants.py                                            |        5 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/constants.py                                            |       11 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/data.py                                                 |        6 |        0 |        2 |        0 |    100% |           |
 | learning\_assistant/management/\_\_init\_\_.py                              |        0 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/management/commands/\_\_init\_\_.py                     |        0 |        0 |        0 |        0 |    100% |           |
@@ -27,8 +27,8 @@
 | learning\_assistant/toggles.py                                              |       10 |        5 |        0 |        0 |     50% |     23-27 |
 | learning\_assistant/urls.py                                                 |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/utils.py                                                |       54 |        0 |        6 |        0 |    100% |           |
-| learning\_assistant/views.py                                                |       54 |        4 |        6 |        0 |     93% |19-20, 50-51 |
-|                                                                   **TOTAL** |  **337** |   **32** |   **34** |    **1** | **91%** |           |
+| learning\_assistant/views.py                                                |       62 |        4 |        8 |        0 |     94% |20-21, 52-53 |
+|                                                                   **TOTAL** |  **350** |   **32** |   **36** |    **1** | **91%** |           |
 
 
 ## Setup coverage badge
