@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.3.0 - 2024-07-01
+******************
+* Adds optinal parameter to use updated prompt and model for the chat response.
+
 4.2.0 - 2024-02-28
 ******************
 * Modify call to Xpert backend to prevent use of course index.
