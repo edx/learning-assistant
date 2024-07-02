@@ -169,7 +169,7 @@ pyjwt[crypto]==2.8.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.2.3
+pylint==3.2.5
     # via
     #   edx-lint
     #   pylint-celery
@@ -183,7 +183,7 @@ pylint-plugin-utils==0.8.2
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==4.7.3
+pymongo==4.8.0
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
