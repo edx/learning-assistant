@@ -12,7 +12,7 @@ backports-zoneinfo==0.2.1
     # via
     #   django
     #   djangorestframework
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 cffi==1.16.0
     # via
@@ -24,7 +24,7 @@ click==8.1.7
     # via edx-django-utils
 cryptography==42.0.8
     # via pyjwt
-django==4.2.13
+django==4.2.14
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in

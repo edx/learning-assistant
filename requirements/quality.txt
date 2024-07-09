@@ -19,7 +19,7 @@ backports-zoneinfo==0.2.1
     #   -r requirements/test.txt
     #   django
     #   djangorestframework
-certifi==2024.6.2
+certifi==2024.7.4
     # via
     #   -r requirements/test.txt
     #   requests
@@ -57,7 +57,7 @@ ddt==1.7.2
     # via -r requirements/test.txt
 dill==0.3.8
     # via pylint
-django==4.2.13
+django==4.2.14
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt

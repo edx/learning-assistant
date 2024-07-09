@@ -15,7 +15,7 @@ backports-zoneinfo==0.2.1
     #   -r requirements/base.txt
     #   django
     #   djangorestframework
-certifi==2024.6.2
+certifi==2024.7.4
     # via
     #   -r requirements/base.txt
     #   requests
