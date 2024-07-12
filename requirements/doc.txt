@@ -23,7 +23,7 @@ backports-zoneinfo==0.2.1
     #   djangorestframework
 build==1.2.1
     # via -r requirements/doc.in
-certifi==2024.6.2
+certifi==2024.7.4
     # via
     #   -r requirements/test.txt
     #   requests
@@ -54,7 +54,7 @@ cryptography==42.0.8
     #   secretstorage
 ddt==1.7.2
     # via -r requirements/test.txt
-django==4.2.13
+django==4.2.14
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -166,7 +166,7 @@ newrelic==9.11.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-nh3==0.2.17
+nh3==0.2.18
     # via readme-renderer
 packaging==24.1
     # via
