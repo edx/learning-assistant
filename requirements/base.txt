@@ -18,7 +18,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==42.0.8
+cryptography==43.0.0
     # via pyjwt
 django==4.2.14
     # via
