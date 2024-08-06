@@ -6,7 +6,7 @@
 #
 asgiref==3.8.1
     # via django
-attrs==23.2.0
+attrs==24.2.0
     # via -r requirements/base.in
 certifi==2024.7.4
     # via requests
@@ -20,7 +20,7 @@ click==8.1.7
     # via edx-django-utils
 cryptography==43.0.0
     # via pyjwt
-django==4.2.14
+django==4.2.15
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
@@ -48,7 +48,7 @@ dnspython==2.6.1
     # via pymongo
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==5.14.2
+edx-django-utils==5.15.0
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
@@ -74,7 +74,7 @@ psutil==6.0.0
     # via edx-django-utils
 pycparser==2.22
     # via cffi
-pyjwt[crypto]==2.8.0
+pyjwt[crypto]==2.9.0
     # via
     #   drf-jwt
     #   edx-drf-extensions
