@@ -105,13 +105,13 @@ edx-opaque-keys==2.10.0
     #   edx-drf-extensions
 edx-rest-api-client==5.7.1
     # via -r requirements/test.txt
-idna==3.7
+idna==3.8
     # via
     #   -r requirements/test.txt
     #   requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==8.3.0
+importlib-metadata==8.4.0
     # via
     #   keyring
     #   twine
@@ -160,7 +160,7 @@ packaging==24.1
     #   build
     #   pytest
     #   sphinx
-pbr==6.0.0
+pbr==6.1.0
     # via
     #   -r requirements/test.txt
     #   stevedore
@@ -238,7 +238,7 @@ restructuredtext-lint==1.4.0
     # via doc8
 rfc3986==2.0.0
     # via twine
-rich==13.7.1
+rich==13.8.0
     # via twine
 secretstorage==3.3.3
     # via keyring
@@ -270,7 +270,7 @@ sqlparse==0.5.1
     # via
     #   -r requirements/test.txt
     #   django
-stevedore==5.2.0
+stevedore==5.3.0
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -293,5 +293,5 @@ urllib3==2.2.2
     #   requests
     #   responses
     #   twine
-zipp==3.20.0
+zipp==3.20.1
     # via importlib-metadata
