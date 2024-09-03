@@ -82,7 +82,7 @@ distlib==0.3.8
     # via
     #   -r requirements/ci.txt
     #   virtualenv
-django==4.2.15
+django==4.2.16
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/quality.txt
@@ -123,7 +123,7 @@ edx-django-utils==5.15.0
     #   -r requirements/quality.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==10.3.0
+edx-drf-extensions==10.4.0
     # via -r requirements/quality.txt
 edx-i18n-tools==1.6.2
     # via -r requirements/dev.in
@@ -224,7 +224,7 @@ pyjwt[crypto]==2.9.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.2.6
+pylint==3.2.7
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -268,7 +268,7 @@ pytest==8.3.2
     #   pytest-django
 pytest-cov==5.0.0
     # via -r requirements/quality.txt
-pytest-django==4.8.0
+pytest-django==4.9.0
     # via -r requirements/quality.txt
 python-slugify==8.0.4
     # via
