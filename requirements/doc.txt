@@ -49,7 +49,7 @@ cryptography==43.0.0
     #   secretstorage
 ddt==1.7.2
     # via -r requirements/test.txt
-django==4.2.15
+django==4.2.16
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -80,9 +80,9 @@ dnspython==2.6.1
     # via
     #   -r requirements/test.txt
     #   pymongo
-doc8==1.1.1
+doc8==1.1.2
     # via -r requirements/doc.in
-docutils==0.20.1
+docutils==0.21.2
     # via
     #   doc8
     #   readme-renderer
@@ -97,7 +97,7 @@ edx-django-utils==5.15.0
     #   -r requirements/test.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==10.3.0
+edx-drf-extensions==10.4.0
     # via -r requirements/test.txt
 edx-opaque-keys==2.10.0
     # via
@@ -207,7 +207,7 @@ pytest==8.3.2
     #   pytest-django
 pytest-cov==5.0.0
     # via -r requirements/test.txt
-pytest-django==4.8.0
+pytest-django==4.9.0
     # via -r requirements/test.txt
 python-slugify==8.0.4
     # via
@@ -218,7 +218,7 @@ pyyaml==6.0.2
     #   -r requirements/test.txt
     #   code-annotations
     #   responses
-readme-renderer==43.0
+readme-renderer==44.0
     # via twine
 requests==2.32.3
     # via
