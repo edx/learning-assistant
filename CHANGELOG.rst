@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.3.1 - 2024-09-10
+******************
+* Remove GPT model field as part of POST request to Xpert backend
+
 4.3.0 - 2024-07-01
 ******************
 * Adds optional parameter to use updated prompt and model for the chat response.
