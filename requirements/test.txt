@@ -14,7 +14,7 @@ certifi==2024.8.30
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.17.0
+cffi==1.17.1
     # via
     #   -r requirements/base.txt
     #   cryptography
@@ -32,7 +32,7 @@ code-annotations==1.8.0
     # via -r requirements/test.in
 coverage[toml]==7.6.1
     # via pytest-cov
-cryptography==43.0.0
+cryptography==43.0.1
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -52,7 +52,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-model-utils==4.5.1
+django-model-utils==5.0.0
     # via -r requirements/base.txt
 django-waffle==4.1.0
     # via
@@ -79,11 +79,11 @@ edx-django-utils==5.15.0
     #   edx-rest-api-client
 edx-drf-extensions==10.4.0
     # via -r requirements/base.txt
-edx-opaque-keys==2.10.0
+edx-opaque-keys==2.11.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
-edx-rest-api-client==5.7.1
+edx-rest-api-client==6.0.0
     # via -r requirements/base.txt
 idna==3.8
     # via
@@ -133,7 +133,7 @@ pynacl==1.5.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   pytest-cov
     #   pytest-django
@@ -153,17 +153,12 @@ requests==2.32.3
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   responses
-    #   slumber
 responses==0.25.3
     # via -r requirements/test.in
 semantic-version==2.10.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
-slumber==0.7.1
-    # via
-    #   -r requirements/base.txt
-    #   edx-rest-api-client
 sqlparse==0.5.1
     # via
     #   -r requirements/base.txt
