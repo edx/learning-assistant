@@ -14,8 +14,6 @@ from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
-from learning_assistant.constants import GptModels, ResponseVariations
-
 User = get_user_model()
 
 
@@ -158,7 +156,7 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
+    @override_settings(LEARNING_ASSISTANT_EXPERIMENTAL_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_default(
         self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response, mock_render
     ):
@@ -189,59 +187,6 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_chat_response.assert_called_with(
             'Rendered template mock',
             test_data,
-            GptModels.GPT_3_5_TURBO_0125
-        )
-
-    @ddt.data(ResponseVariations.GPT4_UPDATED_PROMPT, 'invalid-variation')
-    @patch('learning_assistant.views.render_prompt_template')
-    @patch('learning_assistant.views.get_chat_response')
-    @patch('learning_assistant.views.learning_assistant_enabled')
-    @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
-    @patch('learning_assistant.views.CourseMode')
-    @override_settings(LEARNING_ASSISTANT_EXPERIMENTAL_PROMPT_TEMPLATE='This is a template for GPT-4o variation')
-    @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
-    def test_chat_response_variation(
-        self, variation, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response, mock_render
-    ):
-        mock_waffle.return_value = True
-        mock_role.return_value = 'student'
-        mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = MagicMock(mode='verified')
-        mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
-        mock_render.return_value = 'Rendered template mock'
-        test_unit_id = 'test-unit-id'
-
-        test_data = [
-            {'role': 'user', 'content': 'What is 2+2?'},
-            {'role': 'assistant', 'content': 'It is 4'}
-        ]
-
-        response = self.client.post(
-            reverse(
-                'chat',
-                kwargs={'course_run_id': self.course_id}
-            )+f'?unit_id={test_unit_id}&response_variation={variation}',
-            data=json.dumps(test_data),
-            content_type='application/json',
-        )
-        self.assertEqual(response.status_code, 200)
-
-        if variation == ResponseVariations.GPT4_UPDATED_PROMPT:
-            expected_template = 'This is a template for GPT-4o variation'
-            expected_model = GptModels.GPT_4o
-        else:
-            expected_template = 'This is the default template'
-            expected_model = GptModels.GPT_3_5_TURBO_0125
-
-        render_args = mock_render.call_args.args
-        self.assertIn(test_unit_id, render_args)
-        self.assertIn(expected_template, render_args)
-
-        mock_chat_response.assert_called_with(
-            'Rendered template mock',
-            test_data,
-            expected_model,
         )
 
 
