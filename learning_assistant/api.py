@@ -112,7 +112,7 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
         try:
             _, unit_content = get_block_content(request, user_id, course_run_id, unit_usage_key)
         except InvalidKeyError:
-            log.info(
+            log.warning(
                 'Failed to retrieve course content for course_id=%(course_run_id)s because of '
                 'invalid unit_id=%(unit_usage_key)s',
                 {'course_run_id': course_run_id, 'unit_usage_key': unit_usage_key}
