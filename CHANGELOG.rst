@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.3.2 - 2024-09-19
+******************
+* Add error handling for invalid unit usage keys
+
 4.3.1 - 2024-09-10
 ******************
 * Remove GPT model field as part of POST request to Xpert backend

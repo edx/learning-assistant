@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.cache import cache
 from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys import InvalidKeyError
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantCourseEnabledData
@@ -22,7 +22,6 @@ from learning_assistant.platform_imports import (
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
-from learning_assistant.toggles import course_content_enabled
 
 log = logging.getLogger(__name__)
 
@@ -109,9 +108,15 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     """
     unit_content = ''
 
-    course_run_key = CourseKey.from_string(course_run_id)
-    if unit_usage_key and course_content_enabled(course_run_key):
-        _, unit_content = get_block_content(request, user_id, course_run_id, unit_usage_key)
+    if unit_usage_key:
+        try:
+            _, unit_content = get_block_content(request, user_id, course_run_id, unit_usage_key)
+        except InvalidKeyError:
+            log.info(
+                'Failed to retrieve course content for course_id=%(course_run_id)s because of '
+                'invalid unit_id=%(unit_usage_key)s',
+                {'course_run_id': course_run_id, 'unit_usage_key': unit_usage_key}
+            )
 
     course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
     skill_names = course_data['skill_names']
