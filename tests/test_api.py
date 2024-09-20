@@ -8,6 +8,7 @@ import ddt
 from django.conf import settings
 from django.core.cache import cache
 from django.test import TestCase, override_settings
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from learning_assistant.api import (
@@ -178,20 +179,13 @@ class GetBlockContentAPITests(TestCase):
         self.assertEqual(items, content_items)
 
     @ddt.data(
-        ('This is content.', True),
-        ('', True),
-        ('This is content.', False),
-        ('', False),
+        'This is content.',
+        ''
     )
-    @ddt.unpack
     @patch('learning_assistant.api.get_cache_course_data')
-    @patch('learning_assistant.toggles._is_learning_assistant_waffle_flag_enabled')
     @patch('learning_assistant.api.get_block_content')
-    def test_render_prompt_template(
-        self, unit_content, flag_enabled, mock_get_content, mock_is_flag_enabled, mock_cache
-    ):
+    def test_render_prompt_template(self, unit_content, mock_get_content, mock_cache):
         mock_get_content.return_value = (len(unit_content), unit_content)
-        mock_is_flag_enabled.return_value = flag_enabled
         skills_content = ['skills']
         title = 'title'
         mock_cache.return_value = {'skill_names': skills_content, 'title': title}
@@ -209,12 +203,32 @@ class GetBlockContentAPITests(TestCase):
             request, user_id, course_run_id, unit_usage_key, course_id, template_string
         )
 
-        if unit_content and flag_enabled:
+        if unit_content:
             self.assertIn(unit_content, prompt_text)
         else:
             self.assertNotIn('The following text is useful.', prompt_text)
         self.assertIn(str(skills_content), prompt_text)
         self.assertIn(title, prompt_text)
+
+    @patch('learning_assistant.api.get_cache_course_data', MagicMock())
+    @patch('learning_assistant.api.get_block_content')
+    def test_render_prompt_template_invalid_unit_key(self, mock_get_content):
+        mock_get_content.side_effect = InvalidKeyError('foo', 'bar')
+
+        # mock arguments that are passed through to `get_block_content` function. the value of these
+        # args does not matter for this test right now, as the `get_block_content` function is entirely mocked.
+        request = MagicMock()
+        user_id = 1
+        course_run_id = self.course_run_id
+        unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
+        course_id = 'edx+test'
+        template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
+
+        prompt_text = render_prompt_template(
+            request, user_id, course_run_id, unit_usage_key, course_id, template_string
+        )
+
+        self.assertNotIn('The following text is useful.', prompt_text)
 
 
 @ddt.ddt
