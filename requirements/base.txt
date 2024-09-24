@@ -10,7 +10,7 @@ attrs==24.2.0
     # via -r requirements/base.in
 certifi==2024.8.30
     # via requests
-cffi==1.17.0
+cffi==1.17.1
     # via
     #   cryptography
     #   pynacl
@@ -18,7 +18,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==43.0.0
+cryptography==43.0.1
     # via pyjwt
 django==4.2.16
     # via
@@ -33,7 +33,7 @@ django==4.2.16
     #   edx-drf-extensions
 django-crum==0.7.9
     # via edx-django-utils
-django-model-utils==4.5.1
+django-model-utils==5.0.0
     # via -r requirements/base.in
 django-waffle==4.1.0
     # via
@@ -54,13 +54,13 @@ edx-django-utils==5.15.0
     #   edx-rest-api-client
 edx-drf-extensions==10.4.0
     # via -r requirements/base.in
-edx-opaque-keys==2.10.0
+edx-opaque-keys==2.11.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
-edx-rest-api-client==5.7.1
+edx-rest-api-client==6.0.0
     # via -r requirements/base.in
-idna==3.8
+idna==3.10
     # via requests
 jinja2==3.1.4
     # via -r requirements/base.in
@@ -79,7 +79,7 @@ pyjwt[crypto]==2.9.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pymongo==4.8.0
+pymongo==4.9.1
     # via edx-opaque-keys
 pynacl==1.5.0
     # via edx-django-utils
@@ -87,11 +87,8 @@ requests==2.32.3
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
-    #   slumber
 semantic-version==2.10.0
     # via edx-drf-extensions
-slumber==0.7.1
-    # via edx-rest-api-client
 sqlparse==0.5.1
     # via django
 stevedore==5.3.0
@@ -100,5 +97,5 @@ stevedore==5.3.0
     #   edx-opaque-keys
 typing-extensions==4.12.2
     # via edx-opaque-keys
-urllib3==2.2.2
+urllib3==2.2.3
     # via requests
