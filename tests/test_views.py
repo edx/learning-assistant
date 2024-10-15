@@ -156,7 +156,7 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    @override_settings(LEARNING_ASSISTANT_EXPERIMENTAL_PROMPT_TEMPLATE='This is the default template')
+    @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_default(
         self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response, mock_render
     ):
