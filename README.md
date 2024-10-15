@@ -8,7 +8,7 @@
 | learning\_assistant/api.py                                                  |       74 |        0 |       12 |        1 |     99% |  111->121 |
 | learning\_assistant/apps.py                                                 |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/constants.py                                            |        5 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/data.py                                                 |        6 |        0 |        2 |        0 |    100% |           |
+| learning\_assistant/data.py                                                 |        6 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/management/\_\_init\_\_.py                              |        0 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/management/commands/\_\_init\_\_.py                     |        0 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/management/commands/tests/\_\_init\_\_.py               |        0 |        0 |        0 |        0 |    100% |           |
@@ -28,7 +28,7 @@
 | learning\_assistant/urls.py                                                 |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/utils.py                                                |       54 |        0 |        6 |        0 |    100% |           |
 | learning\_assistant/views.py                                                |       56 |        4 |        6 |        0 |     94% |20-21, 51-52 |
-|                                                                   **TOTAL** |  **339** |   **37** |   **34** |    **2** | **89%** |           |
+|                                                                   **TOTAL** |  **339** |   **37** |   **32** |    **2** | **89%** |           |
 
 
 ## Setup coverage badge
