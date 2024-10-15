@@ -14,12 +14,12 @@ certifi==2024.8.30
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.17.0
+cffi==1.17.1
     # via
     #   -r requirements/base.txt
     #   cryptography
     #   pynacl
-charset-normalizer==3.3.2
+charset-normalizer==3.4.0
     # via
     #   -r requirements/base.txt
     #   requests
@@ -30,9 +30,9 @@ click==8.1.7
     #   edx-django-utils
 code-annotations==1.8.0
     # via -r requirements/test.in
-coverage[toml]==7.6.1
+coverage[toml]==7.6.3
     # via pytest-cov
-cryptography==43.0.0
+cryptography==43.0.1
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -52,7 +52,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-model-utils==4.5.1
+django-model-utils==5.0.0
     # via -r requirements/base.txt
 django-waffle==4.1.0
     # via
@@ -64,7 +64,7 @@ djangorestframework==3.15.2
     #   -r requirements/base.txt
     #   drf-jwt
     #   edx-drf-extensions
-dnspython==2.6.1
+dnspython==2.7.0
     # via
     #   -r requirements/base.txt
     #   pymongo
@@ -72,20 +72,20 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
-edx-django-utils==5.15.0
+edx-django-utils==6.0.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
 edx-drf-extensions==10.4.0
     # via -r requirements/base.txt
-edx-opaque-keys==2.10.0
+edx-opaque-keys==2.11.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
-edx-rest-api-client==5.7.1
+edx-rest-api-client==6.0.0
     # via -r requirements/base.txt
-idna==3.8
+idna==3.10
     # via
     #   -r requirements/base.txt
     #   requests
@@ -95,11 +95,11 @@ jinja2==3.1.4
     # via
     #   -r requirements/base.txt
     #   code-annotations
-markupsafe==2.1.5
+markupsafe==3.0.1
     # via
     #   -r requirements/base.txt
     #   jinja2
-newrelic==9.13.0
+newrelic==10.1.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -125,7 +125,7 @@ pyjwt[crypto]==2.9.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pymongo==4.8.0
+pymongo==4.10.1
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
@@ -133,7 +133,7 @@ pynacl==1.5.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   pytest-cov
     #   pytest-django
@@ -153,17 +153,12 @@ requests==2.32.3
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   responses
-    #   slumber
 responses==0.25.3
     # via -r requirements/test.in
 semantic-version==2.10.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
-slumber==0.7.1
-    # via
-    #   -r requirements/base.txt
-    #   edx-rest-api-client
 sqlparse==0.5.1
     # via
     #   -r requirements/base.txt
@@ -180,7 +175,7 @@ typing-extensions==4.12.2
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
-urllib3==2.2.2
+urllib3==2.2.3
     # via
     #   -r requirements/base.txt
     #   requests
