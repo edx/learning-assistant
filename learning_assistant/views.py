@@ -96,7 +96,7 @@ class CourseChatView(APIView):
 
         course_id = get_course_id(course_run_id)
 
-        template_string = getattr(settings, 'LEARNING_ASSISTANT_EXPERIMENTAL_PROMPT_TEMPLATE', '')
+        template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
 
         prompt_template = render_prompt_template(
             request, request.user.id, course_run_id, unit_id, course_id, template_string
