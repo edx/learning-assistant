@@ -18,8 +18,9 @@
 | learning\_assistant/migrations/0004\_remove\_courseprompt\_prompt.py        |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/migrations/0005\_learningassistantcourseenabled.py      |        7 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/migrations/0006\_delete\_courseprompt.py                |        4 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0007\_learningassistantmessage.py            |        9 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/migrations/\_\_init\_\_.py                              |        0 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/models.py                                               |        6 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/models.py                                               |       13 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/platform\_imports.py                                    |       29 |       21 |        0 |        0 |     28% |12-19, 25-26, 32-33, 39-40, 46-47, 58-59, 70-71, 86-87 |
 | learning\_assistant/plugins\_api.py                                         |       16 |        0 |        2 |        0 |    100% |           |
 | learning\_assistant/serializers.py                                          |        9 |        0 |        2 |        0 |    100% |           |
@@ -28,7 +29,7 @@
 | learning\_assistant/urls.py                                                 |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/utils.py                                                |       54 |        0 |        6 |        0 |    100% |           |
 | learning\_assistant/views.py                                                |       56 |        4 |        6 |        0 |     94% |20-21, 51-52 |
-|                                                                   **TOTAL** |  **339** |   **37** |   **32** |    **2** | **89%** |           |
+|                                                                   **TOTAL** |  **355** |   **37** |   **32** |    **2** | **89%** |           |
 
 
 ## Setup coverage badge
