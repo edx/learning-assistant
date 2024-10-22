@@ -1,9 +1,12 @@
 """
 Database models for learning_assistant.
 """
+from django.contrib.auth import get_user_model
 from django.db import models
 from model_utils.models import TimeStampedModel
 from opaque_keys.edx.django.models import CourseKeyField
+
+USER_MODEL = get_user_model()
 
 
 class LearningAssistantCourseEnabled(TimeStampedModel):
@@ -21,3 +24,18 @@ class LearningAssistantCourseEnabled(TimeStampedModel):
     course_id = CourseKeyField(max_length=255, db_index=True, unique=True)
 
     enabled = models.BooleanField()
+
+
+class LearningAssistantMessage(TimeStampedModel):
+    """
+    This model stores messages sent to and received from the learning assistant.
+
+    .. pii: content
+    .. pii_types: other
+    .. pii_retirement: third_party
+    """
+
+    course_id = CourseKeyField(max_length=255, db_index=True)
+    user = models.ForeignKey(USER_MODEL, db_index=True, on_delete=models.CASCADE)
+    role = models.CharField(max_length=64)
+    content = models.TextField()
