@@ -157,6 +157,7 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
     @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
+    # pylint: disable=too-many-positional-arguments)
     def test_chat_response_default(
         self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response, mock_render
     ):
