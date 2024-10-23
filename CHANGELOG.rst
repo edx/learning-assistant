@@ -16,6 +16,10 @@ Unreleased
 
 4.3.3 - 2024-10-15
 ******************
+* Upgraded to use ``Python 3.12``
+
+4.3.3 - 2024-10-15
+******************
 * Use `LEARNING_ASSISTANT_PROMPT_TEMPLATE` for prompt
 
 4.3.2 - 2024-09-19
