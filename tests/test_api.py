@@ -252,6 +252,7 @@ class LearningAssistantCourseEnabledApiTests(TestCase):
     )
     @ddt.unpack
     @patch('learning_assistant.api.learning_assistant_available')
+    # pylint: disable=too-many-positional-arguments)
     def test_learning_assistant_enabled(
         self,
         obj_exists,
