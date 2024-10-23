@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 **********
+* Add LearningAssistantMessage model
 
 4.3.3 - 2024-10-15
 ******************
