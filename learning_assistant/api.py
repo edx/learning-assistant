@@ -11,7 +11,7 @@ from opaque_keys import InvalidKeyError
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantCourseEnabledData
-from learning_assistant.models import LearningAssistantCourseEnabled
+from learning_assistant.models import LearningAssistantCourseEnabled, LearningAssistantMessage
 from learning_assistant.platform_imports import (
     block_get_children,
     block_leaf_filter,
@@ -187,3 +187,13 @@ def get_course_id(course_run_id):
     course_data = get_cache_course_run_data(course_run_id, ['course'])
     course_key = course_data['course']
     return course_key
+
+
+def get_message_history(course_id, user):
+    """
+    Given ARG, return RET
+    """
+    # NOTE: How much should we limit the message history to?
+    # note for self: this is descending order for the created date, which shows the latest first.
+    message_history = LearningAssistantMessage.objects.filter(course_id=course_id, user=user).order_by('-created')[:50]
+    return message_history.content
