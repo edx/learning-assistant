@@ -1,7 +1,6 @@
 """
 Plugins for the Learning Assistant application.
 """
-# pylint: disable=import-error
 from openedx.core.djangoapps.course_apps.plugins import CourseApp
 
 from learning_assistant import plugins_api

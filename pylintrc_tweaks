@@ -9,3 +9,5 @@ disable+=
     django-not-configured,
     consider-using-with,
     bad-option-value,
+    import-error,
+    too-many-positional-arguments,

@@ -15,7 +15,7 @@ Unreleased
 **********
 * Add LearningAssistantMessage model
 
-4.3.3 - 2024-10-15
+4.4.0 - 2024-10-25
 ******************
 * Upgraded to use ``Python 3.12``
 

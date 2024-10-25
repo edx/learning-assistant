@@ -102,7 +102,6 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
     return cache_data['content_length'], cache_data['content_items']
 
 
-# pylint: disable=too-many-positional-arguments)
 def render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id, template_string):
     """
     Return a rendered prompt template.
