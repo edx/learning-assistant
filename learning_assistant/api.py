@@ -189,11 +189,12 @@ def get_course_id(course_run_id):
     return course_key
 
 
-def get_message_history(course_id, user):
+def get_message_history(course_id, user, message_limit):
     """
     Given ARG, return RET
     """
-    # NOTE: How much should we limit the message history to?
+    # NOTE: message_limit = how many messages back we go
     # note for self: this is descending order for the created date, which shows the latest first.
-    message_history = LearningAssistantMessage.objects.filter(course_id=course_id, user=user).order_by('-created')[:50]
+    message_history = LearningAssistantMessage.objects.filter(
+        course_id=course_id, user=user).order_by('-created')[:message_limit]
     return message_history.content

@@ -14,3 +14,5 @@ CATEGORY_TYPE_MAP = {
     "html": "TEXT",
     "video": "VIDEO",
 }
+
+MESSAGE_LIMIT = r'^[0-9]+$'

@@ -165,7 +165,7 @@ class LearningAssistantMessageHistoryView(APIView):
 
     Accepts: [GET]
 
-    Path: /learning_assistant/v1/course_id/{course_key}/history
+    Path: /learning_assistant/v1/course_id/{course_key}/history/{message_limit}
 
     Parameters:
         * course_key: the ID of the course
@@ -178,13 +178,20 @@ class LearningAssistantMessageHistoryView(APIView):
     authentication_classes = (SessionAuthentication, JwtAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, course_run_id):
+    def get(self, request, course_run_id, message_limit):
         """
         Given a course run ID, retrieve the message history for the corresponding user.
 
         The response will be in the following format.
 
-            {'enabled': <bool>}
+            {
+                'status': <str>,
+                'data: {
+                    'detail': <str>,
+                    OR
+                    'message_history': <str object>,
+                },
+            }
         """
 
         try:
@@ -195,7 +202,6 @@ class LearningAssistantMessageHistoryView(APIView):
                 data={'detail': 'Course ID is not a valid course ID.'}
             )
 
-        # TODO: Maybe put this in an api function
         if not learning_assistant_enabled(courserun_key):
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,
@@ -203,6 +209,7 @@ class LearningAssistantMessageHistoryView(APIView):
             )
 
         # If user does not have an enrollment record, or is not staff, they should not have access
+        # NOTE: Do we need this? Do we currently not have any plans to show message history to audit mode learners?
         user_role = get_user_role(request.user, courserun_key)
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
@@ -217,6 +224,6 @@ class LearningAssistantMessageHistoryView(APIView):
 
         course_id = get_course_id(course_run_id)
         user = request.user
-        data = get_message_history(course_id, user)
-        
+        data = get_message_history(course_id, user, message_limit)
+
         return Response(status=http_status.HTTP_200_OK, data=data)
