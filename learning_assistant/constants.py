@@ -15,4 +15,4 @@ CATEGORY_TYPE_MAP = {
     "video": "VIDEO",
 }
 
-MESSAGE_LIMIT = r'^[0-9]+$'
+MESSAGE_COUNT = r'^[0-9]+$'
