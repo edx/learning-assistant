@@ -193,7 +193,6 @@ class LearningAssistantMessageHistoryView(APIView):
                 },
             }
         """
-
         try:
             courserun_key = CourseKey.from_string(course_run_id)
         except InvalidKeyError:

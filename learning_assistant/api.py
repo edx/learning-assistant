@@ -191,10 +191,10 @@ def get_course_id(course_run_id):
 
 def get_message_history(course_id, user, message_count):
     """
-    Given ARG, return RET
+    Given a course run id (str), user (User), and message count (int), return the associated message history.
+
+    Returns a number of messages equal to the message_count value.
     """
-    # NOTE: message_count = how many messages back we go
-    # note for self: this is descending order for the created date, which shows the latest first.
     message_history = LearningAssistantMessage.objects.filter(
         course_id=course_id, user=user).order_by('-created')[:message_count]
     return message_history.content
