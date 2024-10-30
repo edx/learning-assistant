@@ -195,13 +195,6 @@ def get_message_history(course_id, user, message_count):
 
     Returns a number of messages equal to the message_count value.
     """
-    # If the received message count exceeds the number of messages present, we return all the messages queried.
-    actual_message_count = LearningAssistantMessage.objects.count()
-    if message_count > actual_message_count:
-        amount_to_get = actual_message_count
-    else:
-        amount_to_get = message_count
-
     message_history = LearningAssistantMessage.objects.filter(
-        course_id=course_id, user=user).order_by('-created')[:amount_to_get]
+        course_id=course_id, user=user).order_by('-created')[:message_count]
     return message_history

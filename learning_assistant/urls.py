@@ -20,7 +20,7 @@ urlpatterns = [
         name='enabled',
     ),
     re_path(
-        fr'learning_assistant/v1/course_id/{COURSE_ID_PATTERN}/history/<int:message_count>',
+        fr'learning_assistant/v1/course_id/{COURSE_ID_PATTERN}/history',
         LearningAssistantMessageHistoryView.as_view(),
         name='message-history',
     ),

@@ -178,7 +178,7 @@ class LearningAssistantMessageHistoryView(APIView):
     authentication_classes = (SessionAuthentication, JwtAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, course_run_id, message_count=50):
+    def get(self, request, course_run_id):
         """
         Given a course run ID, retrieve the message history for the corresponding user.
 
@@ -217,6 +217,7 @@ class LearningAssistantMessageHistoryView(APIView):
         course_id = get_course_id(course_run_id)
         user = request.user
 
+        message_count = int(request.GET.get('message_count', 50))
         message_history = get_message_history(course_id, user, message_count)
         data = MessageSerializer(message_history, many=True).data
         return Response(status=http_status.HTTP_200_OK, data=data)
