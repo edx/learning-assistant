@@ -305,7 +305,13 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
     @patch('learning_assistant.views.get_course_id')
-    def test_learning_message_history_view_get(self, mock_get_course_id, mock_mode, mock_enrollment, mock_role, mock_waffle):
+    def test_learning_message_history_view_get(self,
+                                               mock_get_course_id,
+                                               mock_mode,
+                                               mock_enrollment,
+                                               mock_role,
+                                               mock_waffle
+                                               ):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']

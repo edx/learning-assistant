@@ -347,7 +347,7 @@ class GetMessageHistoryTests(TestCase):
         self.assertEqual(len(return_value), len(expected_value))
 
         # Ensure values are as expected for all LearningAssistantMessage instances
-        for i in range(0, len(return_value)):
+        for i, _ in enumerate(return_value):
             self.assertEqual(return_value[i].course_id, expected_value[i].course_id)
             self.assertEqual(return_value[i].user, expected_value[i].user)
             self.assertEqual(return_value[i].role, expected_value[i].role)
@@ -406,7 +406,7 @@ class GetMessageHistoryTests(TestCase):
         self.assertEqual(len(return_value), len(expected_value))
 
         # Ensure values are as expected for all LearningAssistantMessage instances
-        for i in range(0, len(return_value)):
+        for i, _ in enumerate(return_value):
             self.assertEqual(return_value[i].course_id, expected_value[i].course_id)
             self.assertEqual(return_value[i].user, expected_value[i].user)
             self.assertEqual(return_value[i].role, expected_value[i].role)
@@ -443,7 +443,7 @@ class GetMessageHistoryTests(TestCase):
         self.assertEqual(len(return_value), len(expected_value))
 
         # Ensure values are as expected for all LearningAssistantMessage instances
-        for i in range(0, len(return_value)):
+        for i, _ in enumerate(return_value):
             self.assertEqual(return_value[i].course_id, expected_value[i].course_id)
             self.assertEqual(return_value[i].user, expected_value[i].user)
             self.assertEqual(return_value[i].role, expected_value[i].role)
