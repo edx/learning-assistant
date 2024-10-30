@@ -178,20 +178,13 @@ class LearningAssistantMessageHistoryView(APIView):
     authentication_classes = (SessionAuthentication, JwtAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, course_run_id, message_count):
+    def get(self, request, course_run_id, message_count=50):
         """
         Given a course run ID, retrieve the message history for the corresponding user.
 
         The response will be in the following format.
 
-            {
-                'status': <str>,
-                'data: {
-                    'detail': <str>,
-                    OR
-                    'message_history': <str object>,
-                },
-            }
+            [{'role': 'assistant', 'content': 'something'}]
         """
         try:
             courserun_key = CourseKey.from_string(course_run_id)
@@ -208,21 +201,22 @@ class LearningAssistantMessageHistoryView(APIView):
             )
 
         # If user does not have an enrollment record, or is not staff, they should not have access
-        # NOTE: Do we need this? Do we currently not have any plans to show message history to audit mode learners?
+        # NOTE: This will likely be removed once work is done to allow audit learners to access xpert
         user_role = get_user_role(request.user, courserun_key)
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
-        if (
-            (enrollment_mode not in CourseMode.VERIFIED_MODES)
-            and not user_role_is_staff(user_role)
-        ):
-            return Response(
-                status=http_status.HTTP_403_FORBIDDEN,
-                data={'detail': 'Must be staff or have valid enrollment.'}
-            )
+        # if (
+        #     (enrollment_mode not in CourseMode.VERIFIED_MODES)
+        #     and not user_role_is_staff(user_role)
+        # ):
+        #     return Response(
+        #         status=http_status.HTTP_403_FORBIDDEN,
+        #         data={'detail': 'Must be staff or have valid enrollment.'}
+        #     )
 
         course_id = get_course_id(course_run_id)
         user = request.user
-        data = get_message_history(course_id, user, message_count)
 
+        message_history = get_message_history(course_id, user, message_count)
+        data = MessageSerializer(message_history, many=True).data
         return Response(status=http_status.HTTP_200_OK, data=data)

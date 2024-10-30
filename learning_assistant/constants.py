@@ -14,5 +14,3 @@ CATEGORY_TYPE_MAP = {
     "html": "TEXT",
     "video": "VIDEO",
 }
-
-MESSAGE_COUNT = r'^[0-9]+$'
