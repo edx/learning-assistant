@@ -4,6 +4,7 @@ Library for the learning_assistant app.
 import logging
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
@@ -24,6 +25,7 @@ from learning_assistant.platform_imports import (
 from learning_assistant.text_utils import html_to_text
 
 log = logging.getLogger(__name__)
+User = get_user_model()
 
 
 def _extract_block_contents(child, category):
@@ -187,6 +189,24 @@ def get_course_id(course_run_id):
     course_data = get_cache_course_run_data(course_run_id, ['course'])
     course_key = course_data['course']
     return course_key
+
+def save_chat_message(user_id, chat_role, message):
+    """
+    Saves the chat message to the database.
+    """
+
+    user = None
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        raise Exception("User does not exists.")
+
+    # Save the user message to the database.
+    LearningAssistantMessage.objects.create(
+        user=user,
+        role=chat_role,
+        content=message,
+    )
 
 
 def get_message_history(course_id, user, message_count):
