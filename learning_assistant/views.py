@@ -43,6 +43,27 @@ class CourseChatView(APIView):
     authentication_classes = (SessionAuthentication, JwtAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def __save_user_interaction(self, user_id, user_message, assistant_message):
+        """
+        Saves the last question/response to the database.
+        """
+        user = User.objects.get(id=user_id)
+
+        # Save the user message to the database.
+        LearningAssistantMessage.objects.create(
+            user=user,
+            role=LearningAssistantMessage.USER_ROLE,
+            content=user_message,
+        )
+
+        # Save the assistant response to the database.
+        LearningAssistantMessage.objects.create(
+            user=user,
+            role=LearningAssistantMessage.ASSISTANT_ROLE,
+            content=assistant_message,
+        )
+
+
     def post(self, request, course_run_id):
         """
         Given a course run ID, retrieve a chat response for that course.
@@ -120,20 +141,10 @@ class CourseChatView(APIView):
         )
         status_code, message = get_chat_response(prompt_template, message_list)
 
-        user = User.objects.get(id=request.user.id)  # Based on the previous code, user exists.
-
-        # Save the user message to the database.
-        LearningAssistantMessage.objects.create(
-            user=user,
-            role=LearningAssistantMessage.USER_ROLE,
-            content=new_user_message['content'],
-        )
-
-        # Save the assistant response to the database.
-        LearningAssistantMessage.objects.create(
-            user=user,
-            role=LearningAssistantMessage.ASSISTANT_ROLE,
-            content=message['content'],
+        self.__save_user_interaction(
+            user_id=request.user.id,
+            user_message=new_user_message['content'],
+            assistant_message=message['content']
         )
 
         return Response(status=status_code, data=message)
