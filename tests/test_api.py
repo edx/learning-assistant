@@ -329,9 +329,6 @@ class GetMessageHistoryTests(TestCase):
         self.role = 'verified'
 
     def test_get_message_history(self):
-        """
-        Test that get_message_history queries all the objects for a course_id and user.
-        """
         message_count = 5
         for i in range(1, message_count + 1):
             LearningAssistantMessage.objects.create(
@@ -360,10 +357,6 @@ class GetMessageHistoryTests(TestCase):
         0, 1, 5, 10, 50
     )
     def test_get_message_history_message_count(self, actual_message_count):
-        """
-        Test that get_message_history returns the expected number of messages based on the message_count
-        parameter and how many LearningAssistantMessage instances actually exist.
-        """
         for i in range(1, actual_message_count + 1):
             LearningAssistantMessage.objects.create(
                 course_id=self.course_id,
@@ -382,9 +375,6 @@ class GetMessageHistoryTests(TestCase):
         self.assertEqual(len(return_value), len(expected_value))
 
     def test_get_message_history_user_difference(self):
-        """
-        Test that get_message_history filters messages by user.
-        """
         # Default Message
         LearningAssistantMessage.objects.create(
             course_id=self.course_id,
@@ -423,9 +413,6 @@ class GetMessageHistoryTests(TestCase):
             self.assertEqual(return_value[i].content, expected_value[i].content)
 
     def test_get_message_course_id_differences(self):
-        """
-        Test that get_message_history filters messages by course_id.
-        """
         # Default Message
         LearningAssistantMessage.objects.create(
             course_id=self.course_id,

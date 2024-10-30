@@ -205,14 +205,14 @@ class LearningAssistantMessageHistoryView(APIView):
         user_role = get_user_role(request.user, courserun_key)
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
-        # if (
-        #     (enrollment_mode not in CourseMode.VERIFIED_MODES)
-        #     and not user_role_is_staff(user_role)
-        # ):
-        #     return Response(
-        #         status=http_status.HTTP_403_FORBIDDEN,
-        #         data={'detail': 'Must be staff or have valid enrollment.'}
-        #     )
+        if (
+            (enrollment_mode not in CourseMode.VERIFIED_MODES)
+            and not user_role_is_staff(user_role)
+        ):
+            return Response(
+                status=http_status.HTTP_403_FORBIDDEN,
+                data={'detail': 'Must be staff or have valid enrollment.'}
+            )
 
         course_id = get_course_id(course_run_id)
         user = request.user
