@@ -4,6 +4,7 @@ V1 API Views.
 import logging
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -26,10 +27,12 @@ from learning_assistant.api import (
     learning_assistant_enabled,
     render_prompt_template,
 )
+from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.utils import get_chat_response, user_role_is_staff
 
 log = logging.getLogger(__name__)
+User = get_user_model()
 
 
 class CourseChatView(APIView):
@@ -81,6 +84,15 @@ class CourseChatView(APIView):
         unit_id = request.query_params.get('unit_id')
 
         message_list = request.data
+
+        # Check that the last message in the list corresponds to a user
+        new_user_message = message_list[-1]
+        if new_user_message['role'] != LearningAssistantMessage.USER_ROLE:
+            return Response(
+                status=http_status.HTTP_400_BAD_REQUEST,
+                data={'detail': "Expects user role on last message."}
+            )
+
         serializer = MessageSerializer(data=message_list, many=True)
 
         # serializer will not be valid in the case that the message list contains any roles other than
@@ -107,6 +119,22 @@ class CourseChatView(APIView):
             request, request.user.id, course_run_id, unit_id, course_id, template_string
         )
         status_code, message = get_chat_response(prompt_template, message_list)
+
+        user = User.objects.get(id=request.user.id)  # Based on the previous code, user exists.
+
+        # Save the user message to the database.
+        LearningAssistantMessage.objects.create(
+            user=user,
+            role=LearningAssistantMessage.USER_ROLE,
+            content=new_user_message['content'],
+        )
+
+        # Save the assistant response to the database.
+        LearningAssistantMessage.objects.create(
+            user=user,
+            role=LearningAssistantMessage.ASSISTANT_ROLE,
+            content=message['content'],
+        )
 
         return Response(status=status_code, data=message)
 

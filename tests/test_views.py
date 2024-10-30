@@ -173,7 +173,8 @@ class CourseChatViewTests(LoggedInTestCase):
 
         test_data = [
             {'role': 'user', 'content': 'What is 2+2?'},
-            {'role': 'assistant', 'content': 'It is 4'}
+            {'role': 'assistant', 'content': 'It is 4'},
+            {'role': 'user', 'content': 'And what else?'},
         ]
 
         response = self.client.post(
@@ -181,7 +182,19 @@ class CourseChatViewTests(LoggedInTestCase):
             data=json.dumps(test_data),
             content_type='application/json'
         )
+
         self.assertEqual(response.status_code, 200)
+
+        last_rows = LearningAssistantMessage.objects.all().order_by('-created').values()[:2][::-1]
+
+        user_msg = last_rows[0]
+        assistant_msg = last_rows[1]
+
+        self.assertEqual(user_msg['role'], LearningAssistantMessage.USER_ROLE)
+        self.assertEqual(user_msg['content'], test_data[2]['content'])
+
+        self.assertEqual(assistant_msg['role'], LearningAssistantMessage.ASSISTANT_ROLE)
+        self.assertEqual(assistant_msg['content'], 'Something else')
 
         render_args = mock_render.call_args.args
         self.assertIn(test_unit_id, render_args)
