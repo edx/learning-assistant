@@ -190,16 +190,16 @@ def get_course_id(course_run_id):
     course_key = course_data['course']
     return course_key
 
+
 def save_chat_message(user_id, chat_role, message):
     """
-    Saves the chat message to the database.
+    Save the chat message to the database.
     """
-
     user = None
     try:
         user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        raise Exception("User does not exists.")
+    except User.DoesNotExist as exc:
+        raise Exception("User does not exists.") from exc
 
     # Save the user message to the database.
     LearningAssistantMessage.objects.create(

@@ -4,7 +4,6 @@ V1 API Views.
 import logging
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -26,13 +25,14 @@ from learning_assistant.api import (
     get_message_history,
     learning_assistant_enabled,
     render_prompt_template,
+    save_chat_message,
 )
 from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.serializers import MessageSerializer
+from learning_assistant.toggles import chat_history_enabled
 from learning_assistant.utils import get_chat_response, user_role_is_staff
 
 log = logging.getLogger(__name__)
-User = get_user_model()
 
 
 class CourseChatView(APIView):
@@ -42,27 +42,6 @@ class CourseChatView(APIView):
 
     authentication_classes = (SessionAuthentication, JwtAuthentication,)
     permission_classes = (IsAuthenticated,)
-
-    def __save_user_interaction(self, user_id, user_message, assistant_message):
-        """
-        Saves the last question/response to the database.
-        """
-        user = User.objects.get(id=user_id)
-
-        # Save the user message to the database.
-        LearningAssistantMessage.objects.create(
-            user=user,
-            role=LearningAssistantMessage.USER_ROLE,
-            content=user_message,
-        )
-
-        # Save the assistant response to the database.
-        LearningAssistantMessage.objects.create(
-            user=user,
-            role=LearningAssistantMessage.ASSISTANT_ROLE,
-            content=assistant_message,
-        )
-
 
     def post(self, request, course_run_id):
         """
@@ -114,6 +93,12 @@ class CourseChatView(APIView):
                 data={'detail': "Expects user role on last message."}
             )
 
+        course_id = get_course_id(course_run_id)
+        user_id = request.user.id
+
+        if chat_history_enabled(course_id):
+            save_chat_message(user_id, LearningAssistantMessage.USER_ROLE, new_user_message['content'])
+
         serializer = MessageSerializer(data=message_list, many=True)
 
         # serializer will not be valid in the case that the message list contains any roles other than
@@ -132,8 +117,6 @@ class CourseChatView(APIView):
             }
         )
 
-        course_id = get_course_id(course_run_id)
-
         template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
 
         prompt_template = render_prompt_template(
@@ -141,11 +124,8 @@ class CourseChatView(APIView):
         )
         status_code, message = get_chat_response(prompt_template, message_list)
 
-        self.__save_user_interaction(
-            user_id=request.user.id,
-            user_message=new_user_message['content'],
-            assistant_message=message['content']
-        )
+        if chat_history_enabled(course_id):
+            save_chat_message(user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
 
         return Response(status=status_code, data=message)
 

@@ -235,6 +235,7 @@ class GetBlockContentAPITests(TestCase):
 
         self.assertNotIn('The following text is useful.', prompt_text)
 
+
 @ddt.ddt
 class TestLearningAssistantCourseEnabledApi(TestCase):
     """
@@ -257,7 +258,6 @@ class TestLearningAssistantCourseEnabledApi(TestCase):
 
         self.assertEqual(row.role, chat_role)
         self.assertEqual(row.content, message)
-
 
 
 @ddt.ddt

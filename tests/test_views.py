@@ -4,7 +4,7 @@ Tests for the learning assistant views.
 import json
 import sys
 from importlib import import_module
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import ddt
 from django.conf import settings
@@ -19,7 +19,7 @@ from learning_assistant.models import LearningAssistantMessage
 User = get_user_model()
 
 
-class TestClient(Client):
+class FakeClient(Client):
     """
     Allows for 'fake logins' of a user so we don't need to expose a 'login' HTTP endpoint.
     """
@@ -66,14 +66,14 @@ class LoggedInTestCase(TestCase):
         Setup for tests.
         """
         super().setUp()
-        self.client = TestClient()
+        self.client = FakeClient()
         self.user = User(username='tester', email='tester@test.com', is_staff=True)
         self.user.save()
         self.client.login_user(self.user)
 
 
 @ddt.ddt
-class CourseChatViewTests(LoggedInTestCase):
+class TestCourseChatView(LoggedInTestCase):
     """
     Test for the CourseChatView
     """
@@ -153,15 +153,27 @@ class CourseChatViewTests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    @ddt.data(True, False)  # TODO: Fix this - See below.
     @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.get_chat_response')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
+    @patch('learning_assistant.api.save_chat_message')
+    @patch('learning_assistant.toggles.chat_history_enabled')
     @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_default(
-        self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_chat_response, mock_render
+        self,
+        enabled_flag,
+        mock_chat_history_enabled,
+        mock_save_chat_message,
+        mock_mode,
+        mock_enrollment,
+        mock_role,
+        mock_waffle,
+        mock_chat_response,
+        mock_render,
     ):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
@@ -170,6 +182,14 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'Rendered template mock'
         test_unit_id = 'test-unit-id'
+
+        # TODO: Fix this...
+        # For some reason this only works the first time. The 2nd time (enabled_flag = False)
+        # Doesn't actually work since the mocked chat_history_enabled() will return False no matter what.
+        # Swap the order of the @ddt.data() above by: @ddt.data(False, True) and watch it fail.
+        # The value for enabled_flag is corrct on this scope, but the mocked method doesn't update.
+        # It even happens if we split the test cases into two different methods.
+        mock_chat_history_enabled.return_value = enabled_flag
 
         test_data = [
             {'role': 'user', 'content': 'What is 2+2?'},
@@ -182,19 +202,7 @@ class CourseChatViewTests(LoggedInTestCase):
             data=json.dumps(test_data),
             content_type='application/json'
         )
-
         self.assertEqual(response.status_code, 200)
-
-        last_rows = LearningAssistantMessage.objects.all().order_by('-created').values()[:2][::-1]
-
-        user_msg = last_rows[0]
-        assistant_msg = last_rows[1]
-
-        self.assertEqual(user_msg['role'], LearningAssistantMessage.USER_ROLE)
-        self.assertEqual(user_msg['content'], test_data[2]['content'])
-
-        self.assertEqual(assistant_msg['role'], LearningAssistantMessage.ASSISTANT_ROLE)
-        self.assertEqual(assistant_msg['content'], 'Something else')
 
         render_args = mock_render.call_args.args
         self.assertIn(test_unit_id, render_args)
@@ -204,6 +212,14 @@ class CourseChatViewTests(LoggedInTestCase):
             'Rendered template mock',
             test_data,
         )
+
+        if enabled_flag:
+            mock_save_chat_message.assert_has_calls([
+                call(self.user.id, LearningAssistantMessage.USER_ROLE, test_data[-1]['content']),
+                call(self.user.id, LearningAssistantMessage.ASSISTANT_ROLE, 'Something else')
+            ])
+        else:
+            mock_save_chat_message.assert_not_called()
 
 
 @ddt.ddt
