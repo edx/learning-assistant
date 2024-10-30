@@ -347,11 +347,11 @@ class GetMessageHistoryTests(TestCase):
         self.assertEqual(len(return_value), len(expected_value))
 
         # Ensure values are as expected for all LearningAssistantMessage instances
-        for i, _ in enumerate(return_value):
-            self.assertEqual(return_value[i].course_id, expected_value[i].course_id)
-            self.assertEqual(return_value[i].user, expected_value[i].user)
-            self.assertEqual(return_value[i].role, expected_value[i].role)
-            self.assertEqual(return_value[i].content, expected_value[i].content)
+        for i, return_value in enumerate(return_value):
+            self.assertEqual(return_value.course_id, expected_value[i].course_id)
+            self.assertEqual(return_value.user, expected_value[i].user)
+            self.assertEqual(return_value.role, expected_value[i].role)
+            self.assertEqual(return_value.content, expected_value[i].content)
 
     @ddt.data(
         0, 1, 5, 10, 50
@@ -406,11 +406,11 @@ class GetMessageHistoryTests(TestCase):
         self.assertEqual(len(return_value), len(expected_value))
 
         # Ensure values are as expected for all LearningAssistantMessage instances
-        for i, _ in enumerate(return_value):
-            self.assertEqual(return_value[i].course_id, expected_value[i].course_id)
-            self.assertEqual(return_value[i].user, expected_value[i].user)
-            self.assertEqual(return_value[i].role, expected_value[i].role)
-            self.assertEqual(return_value[i].content, expected_value[i].content)
+        for i, return_value in enumerate(return_value):
+            self.assertEqual(return_value.course_id, expected_value[i].course_id)
+            self.assertEqual(return_value.user, expected_value[i].user)
+            self.assertEqual(return_value.role, expected_value[i].role)
+            self.assertEqual(return_value.content, expected_value[i].content)
 
     def test_get_message_course_id_differences(self):
         # Default Message
@@ -443,8 +443,8 @@ class GetMessageHistoryTests(TestCase):
         self.assertEqual(len(return_value), len(expected_value))
 
         # Ensure values are as expected for all LearningAssistantMessage instances
-        for i, _ in enumerate(return_value):
-            self.assertEqual(return_value[i].course_id, expected_value[i].course_id)
-            self.assertEqual(return_value[i].user, expected_value[i].user)
-            self.assertEqual(return_value[i].role, expected_value[i].role)
-            self.assertEqual(return_value[i].content, expected_value[i].content)
+        for i, return_value in enumerate(return_value):
+            self.assertEqual(return_value.course_id, expected_value[i].course_id)
+            self.assertEqual(return_value.user, expected_value[i].user)
+            self.assertEqual(return_value.role, expected_value[i].role)
+            self.assertEqual(return_value.content, expected_value[i].content)
