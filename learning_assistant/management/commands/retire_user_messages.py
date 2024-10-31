@@ -2,9 +2,9 @@
 Django management command to remove LearningAssistantMessage objects
 if they have reached their expiration date.
 """
-from datetime import datetime, timedelta
 import logging
 import time
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand

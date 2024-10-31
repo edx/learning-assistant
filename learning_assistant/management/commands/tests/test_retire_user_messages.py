@@ -66,4 +66,3 @@ class RetireUserMessagesTests(TestCase):
 
         current_messages = LearningAssistantMessage.objects.filter()
         self.assertEqual(len(current_messages), 2)
-
