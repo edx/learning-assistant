@@ -14,6 +14,7 @@ Change Log
 Unreleased
 **********
 * Add LearningAssistantMessage model
+* Add management command to remove expired messages
 
 4.4.0 - 2024-10-30
 ******************
