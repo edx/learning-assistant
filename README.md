@@ -5,7 +5,7 @@
 | Name                                                                        |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |---------------------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | learning\_assistant/\_\_init\_\_.py                                         |        2 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/api.py                                                  |       74 |        0 |       12 |        1 |     99% |  111->121 |
+| learning\_assistant/api.py                                                  |       77 |        0 |       12 |        1 |     99% |  111->121 |
 | learning\_assistant/apps.py                                                 |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/constants.py                                            |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/data.py                                                 |        6 |        0 |        0 |        0 |    100% |           |
@@ -28,8 +28,8 @@
 | learning\_assistant/toggles.py                                              |       10 |       10 |        0 |        0 |      0% |      5-34 |
 | learning\_assistant/urls.py                                                 |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/utils.py                                                |       54 |        0 |        6 |        0 |    100% |           |
-| learning\_assistant/views.py                                                |       56 |        4 |        6 |        0 |     94% |20-21, 51-52 |
-|                                                                   **TOTAL** |  **355** |   **37** |   **32** |    **2** | **89%** |           |
+| learning\_assistant/views.py                                                |       77 |        6 |       10 |        0 |     93% |20-21, 56-57, 191-192 |
+|                                                                   **TOTAL** |  **379** |   **39** |   **36** |    **2** | **90%** |           |
 
 
 ## Setup coverage badge
