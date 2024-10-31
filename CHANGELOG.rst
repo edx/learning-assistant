@@ -13,11 +13,14 @@ Change Log
 
 Unreleased
 **********
-* Add LearningAssistantMessage model
+
+4.4.1 - 2024-10-31
+******************
 * Add management command to remove expired messages
 
 4.4.0 - 2024-10-30
 ******************
+* Add LearningAssistantMessage model
 * Add new GET endpoint to retrieve a user's message history in a given course.
 
 4.3.3 - 2024-10-15
