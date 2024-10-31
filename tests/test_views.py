@@ -184,11 +184,13 @@ class TestCourseChatView(LoggedInTestCase):
         test_unit_id = 'test-unit-id'
 
         # TODO: Fix this...
-        # For some reason this only works the first time. The 2nd time (enabled_flag = False)
-        # Doesn't actually work since the mocked chat_history_enabled() will return False no matter what.
-        # Swap the order of the @ddt.data() above by: @ddt.data(False, True) and watch it fail.
-        # The value for enabled_flag is corrct on this scope, but the mocked method doesn't update.
-        # It even happens if we split the test cases into two different methods.
+        # For some reason this assignment only works the first iteration. The 2nd time onwards the return value is
+        # always falsy. Swap the order of the @ddt.data() above by: @ddt.data(False, True) to see it fail.
+        # I'm leaving it like this because we are testing the False return in the second iteration, but it's important
+        # to consider whenever this test needs to be updated.
+        # It even happens if we split the test cases into two different methods (instead of @ddt.data()), so there's
+        # probably some scoping issues in how the test is set up.
+        # Note: There's a similar test for LearningAssistantEnabledView in this file that works just fine.
         mock_chat_history_enabled.return_value = enabled_flag
 
         test_data = [

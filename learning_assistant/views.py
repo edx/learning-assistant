@@ -93,10 +93,9 @@ class CourseChatView(APIView):
                 data={'detail': "Expects user role on last message."}
             )
 
-        course_id = get_course_id(course_run_id)
         user_id = request.user.id
 
-        if chat_history_enabled(course_id):
+        if chat_history_enabled(courserun_key):
             save_chat_message(user_id, LearningAssistantMessage.USER_ROLE, new_user_message['content'])
 
         serializer = MessageSerializer(data=message_list, many=True)
@@ -117,6 +116,8 @@ class CourseChatView(APIView):
             }
         )
 
+        course_id = get_course_id(course_run_id)
+
         template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
 
         prompt_template = render_prompt_template(
@@ -124,7 +125,7 @@ class CourseChatView(APIView):
         )
         status_code, message = get_chat_response(prompt_template, message_list)
 
-        if chat_history_enabled(course_id):
+        if chat_history_enabled(courserun_key):
             save_chat_message(user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
 
         return Response(status=status_code, data=message)
