@@ -165,7 +165,7 @@ class LearningAssistantMessageHistoryView(APIView):
 
     Accepts: [GET]
 
-    Path: /learning_assistant/v1/course_id/{course_key}/history/{message_count}
+    Path: /learning_assistant/v1/course_id/{course_key}/history
 
     Parameters:
         * course_key: the ID of the course
@@ -201,7 +201,6 @@ class LearningAssistantMessageHistoryView(APIView):
             )
 
         # If user does not have an enrollment record, or is not staff, they should not have access
-        # NOTE: This will likely be removed once work is done to allow audit learners to access xpert
         user_role = get_user_role(request.user, courserun_key)
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
