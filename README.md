@@ -2,34 +2,36 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/edx/learning-assistant/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                                                        |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|---------------------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| learning\_assistant/\_\_init\_\_.py                                         |        2 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/api.py                                                  |       77 |        0 |       12 |        1 |     99% |  111->121 |
-| learning\_assistant/apps.py                                                 |        4 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/constants.py                                            |        5 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/data.py                                                 |        6 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/management/\_\_init\_\_.py                              |        0 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/management/commands/\_\_init\_\_.py                     |        0 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/management/commands/tests/\_\_init\_\_.py               |        0 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/0001\_initial.py                             |        8 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/0002\_alter\_courseprompt\_prompt.py         |        4 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/0003\_courseprompt\_json\_prompt\_content.py |        4 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/0004\_remove\_courseprompt\_prompt.py        |        4 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/0005\_learningassistantcourseenabled.py      |        7 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/0006\_delete\_courseprompt.py                |        4 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/0007\_learningassistantmessage.py            |        9 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/migrations/\_\_init\_\_.py                              |        0 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/models.py                                               |       13 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/platform\_imports.py                                    |       29 |       21 |        0 |        0 |     28% |12-19, 25-26, 32-33, 39-40, 46-47, 58-59, 70-71, 86-87 |
-| learning\_assistant/plugins\_api.py                                         |       16 |        0 |        2 |        0 |    100% |           |
-| learning\_assistant/serializers.py                                          |        9 |        0 |        2 |        0 |    100% |           |
-| learning\_assistant/text\_utils.py                                          |       32 |        2 |        4 |        1 |     86% |42->exit, 47-48 |
-| learning\_assistant/toggles.py                                              |       10 |       10 |        0 |        0 |      0% |      5-34 |
-| learning\_assistant/urls.py                                                 |        5 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/utils.py                                                |       54 |        0 |        6 |        0 |    100% |           |
-| learning\_assistant/views.py                                                |       77 |        6 |       10 |        0 |     93% |20-21, 56-57, 191-192 |
-|                                                                   **TOTAL** |  **379** |   **39** |   **36** |    **2** | **90%** |           |
+| Name                                                                          |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|------------------------------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
+| learning\_assistant/\_\_init\_\_.py                                           |        2 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/api.py                                                    |       77 |        0 |       12 |        1 |     99% |  111->121 |
+| learning\_assistant/apps.py                                                   |        4 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/constants.py                                              |        5 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/data.py                                                   |        6 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/management/\_\_init\_\_.py                                |        0 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/management/commands/\_\_init\_\_.py                       |        0 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/management/commands/retire\_user\_messages.py             |       26 |        0 |        2 |        0 |    100% |           |
+| learning\_assistant/management/commands/tests/\_\_init\_\_.py                 |        0 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/management/commands/tests/test\_retire\_user\_messages.py |       21 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0001\_initial.py                               |        8 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0002\_alter\_courseprompt\_prompt.py           |        4 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0003\_courseprompt\_json\_prompt\_content.py   |        4 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0004\_remove\_courseprompt\_prompt.py          |        4 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0005\_learningassistantcourseenabled.py        |        7 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0006\_delete\_courseprompt.py                  |        4 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0007\_learningassistantmessage.py              |        9 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/\_\_init\_\_.py                                |        0 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/models.py                                                 |       13 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/platform\_imports.py                                      |       29 |       21 |        0 |        0 |     28% |12-19, 25-26, 32-33, 39-40, 46-47, 58-59, 70-71, 86-87 |
+| learning\_assistant/plugins\_api.py                                           |       16 |        0 |        2 |        0 |    100% |           |
+| learning\_assistant/serializers.py                                            |        9 |        0 |        2 |        0 |    100% |           |
+| learning\_assistant/text\_utils.py                                            |       32 |        2 |        4 |        1 |     86% |42->exit, 47-48 |
+| learning\_assistant/toggles.py                                                |       10 |       10 |        0 |        0 |      0% |      5-34 |
+| learning\_assistant/urls.py                                                   |        5 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/utils.py                                                  |       54 |        0 |        6 |        0 |    100% |           |
+| learning\_assistant/views.py                                                  |       77 |        6 |       10 |        0 |     93% |20-21, 56-57, 191-192 |
+|                                                                     **TOTAL** |  **426** |   **39** |   **38** |    **2** | **91%** |           |
 
 
 ## Setup coverage badge
