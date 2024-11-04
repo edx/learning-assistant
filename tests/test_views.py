@@ -153,15 +153,15 @@ class TestCourseChatView(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    @ddt.data(True, False)  # TODO: Fix this - See below.
+    @ddt.data(False, True)
     @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.get_chat_response')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    @patch('learning_assistant.api.save_chat_message')
-    @patch('learning_assistant.toggles.chat_history_enabled')
+    @patch('learning_assistant.views.save_chat_message')
+    @patch('learning_assistant.views.chat_history_enabled')
     @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_default(
         self,
@@ -183,14 +183,6 @@ class TestCourseChatView(LoggedInTestCase):
         mock_render.return_value = 'Rendered template mock'
         test_unit_id = 'test-unit-id'
 
-        # TODO: Fix this...
-        # For some reason this assignment only works the first iteration. The 2nd time onwards the return value is
-        # always falsy. Swap the order of the @ddt.data() above by: @ddt.data(False, True) to see it fail.
-        # I'm leaving it like this because we are testing the False return in the second iteration, but it's important
-        # to consider whenever this test needs to be updated.
-        # It even happens if we split the test cases into two different methods (instead of @ddt.data()), so there's
-        # probably some scoping issues in how the test is set up.
-        # Note: There's a similar test for LearningAssistantEnabledView in this file that works just fine.
         mock_chat_history_enabled.return_value = enabled_flag
 
         test_data = [
