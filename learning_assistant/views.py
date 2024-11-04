@@ -25,8 +25,11 @@ from learning_assistant.api import (
     get_message_history,
     learning_assistant_enabled,
     render_prompt_template,
+    save_chat_message,
 )
+from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.serializers import MessageSerializer
+from learning_assistant.toggles import chat_history_enabled
 from learning_assistant.utils import get_chat_response, user_role_is_staff
 
 log = logging.getLogger(__name__)
@@ -81,6 +84,20 @@ class CourseChatView(APIView):
         unit_id = request.query_params.get('unit_id')
 
         message_list = request.data
+
+        # Check that the last message in the list corresponds to a user
+        new_user_message = message_list[-1]
+        if new_user_message['role'] != LearningAssistantMessage.USER_ROLE:
+            return Response(
+                status=http_status.HTTP_400_BAD_REQUEST,
+                data={'detail': "Expects user role on last message."}
+            )
+
+        user_id = request.user.id
+
+        if chat_history_enabled(courserun_key):
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.USER_ROLE, new_user_message['content'])
+
         serializer = MessageSerializer(data=message_list, many=True)
 
         # serializer will not be valid in the case that the message list contains any roles other than
@@ -107,6 +124,9 @@ class CourseChatView(APIView):
             request, request.user.id, course_run_id, unit_id, course_id, template_string
         )
         status_code, message = get_chat_response(prompt_template, message_list)
+
+        if chat_history_enabled(courserun_key):
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
 
         return Response(status=status_code, data=message)
 

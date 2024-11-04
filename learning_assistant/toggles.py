@@ -14,6 +14,16 @@ WAFFLE_NAMESPACE = 'learning_assistant'
 # .. toggle_tickets: COSMO-80
 ENABLE_COURSE_CONTENT = 'enable_course_content'
 
+# .. toggle_name: learning_assistant.enable_chat_history
+# .. toggle_implementation: CourseWaffleFlag
+# .. toggle_default: False
+# .. toggle_description: Waffle flag to enable the chat history with the learning assistant
+# .. toggle_use_cases: temporary
+# .. toggle_creation_date: 2024-10-30
+# .. toggle_target_removal_date: 2024-12-31
+# .. toggle_tickets: COSMO-436
+ENABLE_CHAT_HISTORY = 'enable_chat_history'
+
 
 def _is_learning_assistant_waffle_flag_enabled(flag_name, course_key):
     """
@@ -32,3 +42,10 @@ def course_content_enabled(course_key):
     Return whether the learning_assistant.enable_course_content WaffleFlag is on.
     """
     return _is_learning_assistant_waffle_flag_enabled(ENABLE_COURSE_CONTENT, course_key)
+
+
+def chat_history_enabled(course_key):
+    """
+    Return whether the learning_assistant.enable_chat_history WaffleFlag is on.
+    """
+    return _is_learning_assistant_waffle_flag_enabled(ENABLE_CHAT_HISTORY, course_key)

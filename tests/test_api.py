@@ -21,13 +21,13 @@ from learning_assistant.api import (
     learning_assistant_available,
     learning_assistant_enabled,
     render_prompt_template,
+    save_chat_message,
     set_learning_assistant_enabled,
 )
 from learning_assistant.data import LearningAssistantCourseEnabledData
 from learning_assistant.models import LearningAssistantCourseEnabled, LearningAssistantMessage
 
 fake_transcript = 'This is the text version from the transcript'
-
 User = get_user_model()
 
 
@@ -234,6 +234,32 @@ class GetBlockContentAPITests(TestCase):
         )
 
         self.assertNotIn('The following text is useful.', prompt_text)
+
+
+@ddt.ddt
+class TestLearningAssistantCourseEnabledApi(TestCase):
+    """
+    Test suite for save_chat_message.
+    """
+    def setUp(self):
+        super().setUp()
+
+        self.test_user = User.objects.create(username='username', password='password')
+        self.course_run_key = CourseKey.from_string('course-v1:edx+test+23')
+
+    @ddt.data(
+        (LearningAssistantMessage.USER_ROLE, 'What is the meaning of life, the universe and everything?'),
+        (LearningAssistantMessage.ASSISTANT_ROLE, '42'),
+    )
+    @ddt.unpack
+    def test_save_chat_message(self, chat_role, message):
+        save_chat_message(self.course_run_key, self.test_user.id, chat_role, message)
+
+        row = LearningAssistantMessage.objects.all().last()
+
+        self.assertEqual(row.course_id, self.course_run_key)
+        self.assertEqual(row.role, chat_role)
+        self.assertEqual(row.content, message)
 
 
 @ddt.ddt
