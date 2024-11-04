@@ -191,7 +191,7 @@ def get_course_id(course_run_id):
     return course_key
 
 
-def save_chat_message(user_id, chat_role, message):
+def save_chat_message(courserun_key, user_id, chat_role, message):
     """
     Save the chat message to the database.
     """
@@ -203,9 +203,11 @@ def save_chat_message(user_id, chat_role, message):
 
     # Save the user message to the database.
     LearningAssistantMessage.objects.create(
+        course_id=courserun_key,
         user=user,
         role=chat_role,
         content=message,
+
     )
 
 

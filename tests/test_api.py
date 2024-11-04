@@ -245,6 +245,7 @@ class TestLearningAssistantCourseEnabledApi(TestCase):
         super().setUp()
 
         self.test_user = User.objects.create(username='username', password='password')
+        self.course_run_key = CourseKey.from_string('course-v1:edx+test+23')
 
     @ddt.data(
         (LearningAssistantMessage.USER_ROLE, 'What is the meaning of life, the universe and everything?'),
@@ -252,10 +253,11 @@ class TestLearningAssistantCourseEnabledApi(TestCase):
     )
     @ddt.unpack
     def test_save_chat_message(self, chat_role, message):
-        save_chat_message(self.test_user.id, chat_role, message)
+        save_chat_message(self.course_run_key, self.test_user.id, chat_role, message)
 
         row = LearningAssistantMessage.objects.all().last()
 
+        self.assertEqual(row.course_id, self.course_run_key)
         self.assertEqual(row.role, chat_role)
         self.assertEqual(row.content, message)
 

@@ -96,7 +96,7 @@ class CourseChatView(APIView):
         user_id = request.user.id
 
         if chat_history_enabled(courserun_key):
-            save_chat_message(user_id, LearningAssistantMessage.USER_ROLE, new_user_message['content'])
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.USER_ROLE, new_user_message['content'])
 
         serializer = MessageSerializer(data=message_list, many=True)
 
@@ -126,7 +126,7 @@ class CourseChatView(APIView):
         status_code, message = get_chat_response(prompt_template, message_list)
 
         if chat_history_enabled(courserun_key):
-            save_chat_message(user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
 
         return Response(status=status_code, data=message)
 

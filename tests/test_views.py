@@ -13,6 +13,7 @@ from django.http import HttpRequest
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
+from opaque_keys.edx.keys import CourseKey
 
 from learning_assistant.models import LearningAssistantMessage
 
@@ -85,6 +86,7 @@ class TestCourseChatView(LoggedInTestCase):
     def setUp(self):
         super().setUp()
         self.course_id = 'course-v1:edx+test+23'
+        self.course_run_key = CourseKey.from_string(self.course_id)
 
         self.patcher = patch(
             'learning_assistant.api.get_cache_course_run_data',
@@ -209,8 +211,8 @@ class TestCourseChatView(LoggedInTestCase):
 
         if enabled_flag:
             mock_save_chat_message.assert_has_calls([
-                call(self.user.id, LearningAssistantMessage.USER_ROLE, test_data[-1]['content']),
-                call(self.user.id, LearningAssistantMessage.ASSISTANT_ROLE, 'Something else')
+                call(self.course_run_key, self.user.id, LearningAssistantMessage.USER_ROLE, test_data[-1]['content']),
+                call(self.course_run_key, self.user.id, LearningAssistantMessage.ASSISTANT_ROLE, 'Something else')
             ])
         else:
             mock_save_chat_message.assert_not_called()
