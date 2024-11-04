@@ -5,7 +5,7 @@
 | Name                                                                          |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | learning\_assistant/\_\_init\_\_.py                                           |        2 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/api.py                                                    |       77 |        0 |       12 |        1 |     99% |  111->121 |
+| learning\_assistant/api.py                                                    |       86 |        2 |       12 |        1 |     97% |113->123, 201-202 |
 | learning\_assistant/apps.py                                                   |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/constants.py                                              |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/data.py                                                   |        6 |        0 |        0 |        0 |    100% |           |
@@ -21,17 +21,18 @@
 | learning\_assistant/migrations/0005\_learningassistantcourseenabled.py        |        7 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/migrations/0006\_delete\_courseprompt.py                  |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/migrations/0007\_learningassistantmessage.py              |        9 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/migrations/0008\_alter\_learningassistantmessage\_role.py |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/migrations/\_\_init\_\_.py                                |        0 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/models.py                                                 |       13 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/models.py                                                 |       16 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/platform\_imports.py                                      |       29 |       21 |        0 |        0 |     28% |12-19, 25-26, 32-33, 39-40, 46-47, 58-59, 70-71, 86-87 |
 | learning\_assistant/plugins\_api.py                                           |       16 |        0 |        2 |        0 |    100% |           |
-| learning\_assistant/serializers.py                                            |        9 |        0 |        2 |        0 |    100% |           |
+| learning\_assistant/serializers.py                                            |       10 |        1 |        2 |        1 |     83% |        23 |
 | learning\_assistant/text\_utils.py                                            |       32 |        2 |        4 |        1 |     86% |42->exit, 47-48 |
-| learning\_assistant/toggles.py                                                |       10 |       10 |        0 |        0 |      0% |      5-34 |
+| learning\_assistant/toggles.py                                                |       13 |        7 |        0 |        0 |     46% |33-37, 44, 51 |
 | learning\_assistant/urls.py                                                   |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/utils.py                                                  |       54 |        0 |        6 |        0 |    100% |           |
-| learning\_assistant/views.py                                                  |       77 |        6 |       10 |        0 |     93% |20-21, 56-57, 191-192 |
-|                                                                     **TOTAL** |  **426** |   **39** |   **38** |    **2** | **91%** |           |
+| learning\_assistant/views.py                                                  |       87 |        7 |       16 |        1 |     92% |20-21, 59-60, 106, 211-212 |
+|                                                                     **TOTAL** |  **456** |   **40** |   **44** |    **4** | **91%** |           |
 
 
 ## Setup coverage badge
