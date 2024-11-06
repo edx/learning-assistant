@@ -13,6 +13,19 @@ class MessageSerializer(serializers.Serializer):  # pylint: disable=abstract-met
 
     role = serializers.CharField(required=True)
     content = serializers.CharField(required=True)
+    timestamp = serializers.DateTimeField(required=False, source='created')
+
+    class Meta:
+        """
+        Serializer metadata.
+        """
+
+        model = LearningAssistantMessage
+        fields = (
+            'role',
+            'content',
+            'timestamp',
+        )
 
     def validate_role(self, value):
         """
