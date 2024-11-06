@@ -347,8 +347,7 @@ class GetMessageHistoryTests(TestCase):
 
     def setUp(self):
         super().setUp()
-        self.course_id = 'course-v1:edx+fake+1'
-        self.course_key = CourseKey.from_string(self.course_id)
+        self.course_key = CourseKey.from_string('course-v1:edx+fake+1')
         self.user = User(username='tester', email='tester@test.com')
         self.user.save()
 
@@ -358,16 +357,16 @@ class GetMessageHistoryTests(TestCase):
         message_count = 5
         for i in range(1, message_count + 1):
             LearningAssistantMessage.objects.create(
-                course_id=self.course_id,
+                course_id=self.course_key,
                 user=self.user,
                 role=self.role,
                 content=f'Content of message {i}',
             )
 
-        return_value = get_message_history(self.course_id, self.user, message_count)
+        return_value = get_message_history(self.course_key, self.user, message_count)
 
         expected_value = LearningAssistantMessage.objects.filter(
-            course_id=self.course_id, user=self.user).order_by('-created')[:message_count]
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count]
 
         # Ensure same number of entries
         self.assertEqual(len(return_value), len(expected_value))
@@ -385,17 +384,17 @@ class GetMessageHistoryTests(TestCase):
     def test_get_message_history_message_count(self, actual_message_count):
         for i in range(1, actual_message_count + 1):
             LearningAssistantMessage.objects.create(
-                course_id=self.course_id,
+                course_id=self.course_key,
                 user=self.user,
                 role=self.role,
                 content=f'Content of message {i}',
             )
 
         message_count_parameter = 5
-        return_value = get_message_history(self.course_id, self.user, message_count_parameter)
+        return_value = get_message_history(self.course_key, self.user, message_count_parameter)
 
         expected_value = LearningAssistantMessage.objects.filter(
-            course_id=self.course_id, user=self.user).order_by('-created')[:message_count_parameter]
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count_parameter]
 
         # Ensure same number of entries
         self.assertEqual(len(return_value), len(expected_value))
@@ -403,7 +402,7 @@ class GetMessageHistoryTests(TestCase):
     def test_get_message_history_user_difference(self):
         # Default Message
         LearningAssistantMessage.objects.create(
-            course_id=self.course_id,
+            course_id=self.course_key,
             user=self.user,
             role=self.role,
             content='Expected content of message',
@@ -413,17 +412,17 @@ class GetMessageHistoryTests(TestCase):
         new_user = User(username='not_tester', email='not_tester@test.com')
         new_user.save()
         LearningAssistantMessage.objects.create(
-            course_id=self.course_id,
+            course_id=self.course_key,
             user=new_user,
             role=self.role,
             content='Expected content of message',
         )
 
         message_count = 2
-        return_value = get_message_history(self.course_id, self.user, message_count)
+        return_value = get_message_history(self.course_key, self.user, message_count)
 
         expected_value = LearningAssistantMessage.objects.filter(
-            course_id=self.course_id, user=self.user).order_by('-created')[:message_count]
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count]
 
         # Ensure we filtered one of the two present messages
         self.assertNotEqual(len(return_value), LearningAssistantMessage.objects.count())
@@ -441,7 +440,7 @@ class GetMessageHistoryTests(TestCase):
     def test_get_message_course_id_differences(self):
         # Default Message
         LearningAssistantMessage.objects.create(
-            course_id=self.course_id,
+            course_id=self.course_key,
             user=self.user,
             role=self.role,
             content='Expected content of message',
@@ -457,10 +456,10 @@ class GetMessageHistoryTests(TestCase):
         )
 
         message_count = 2
-        return_value = get_message_history(self.course_id, self.user, message_count)
+        return_value = get_message_history(self.course_key, self.user, message_count)
 
         expected_value = LearningAssistantMessage.objects.filter(
-            course_id=self.course_id, user=self.user).order_by('-created')[:message_count]
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count]
 
         # Ensure we filtered one of the two present messages
         self.assertNotEqual(len(return_value), LearningAssistantMessage.objects.count())
