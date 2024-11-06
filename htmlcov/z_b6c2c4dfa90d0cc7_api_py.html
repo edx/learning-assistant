@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_b6c2c4dfa90d0cc7_apps_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-06 16:11 +0000
+            created at 2024-11-06 19:54 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -295,14 +295,14 @@
     <p class="pln"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t"><span class="key">def</span> <span class="nam">get_message_history</span><span class="op">(</span><span class="nam">course_id</span><span class="op">,</span> <span class="nam">user</span><span class="op">,</span> <span class="nam">message_count</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t"><span class="key">def</span> <span class="nam">get_message_history</span><span class="op">(</span><span class="nam">courserun_key</span><span class="op">,</span> <span class="nam">user</span><span class="op">,</span> <span class="nam">message_count</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t"><span class="str">    Given a course run id (str), user (User), and message count (int), return the associated message history.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t"><span class="str">    Given a courserun key (CourseKey), user (User), and message count (int), return the associated message history.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t"><span class="str">    Returns a number of messages equal to the message_count value.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t219" href="#t219">219</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t220" href="#t220">220</a></span><span class="t">    <span class="nam">message_history</span> <span class="op">=</span> <span class="nam">LearningAssistantMessage</span><span class="op">.</span><span class="nam">objects</span><span class="op">.</span><span class="nam">filter</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t221" href="#t221">221</a></span><span class="t">        <span class="nam">course_id</span><span class="op">=</span><span class="nam">course_id</span><span class="op">,</span> <span class="nam">user</span><span class="op">=</span><span class="nam">user</span><span class="op">)</span><span class="op">.</span><span class="nam">order_by</span><span class="op">(</span><span class="str">'-created'</span><span class="op">)</span><span class="op">[</span><span class="op">:</span><span class="nam">message_count</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t221" href="#t221">221</a></span><span class="t">        <span class="nam">course_id</span><span class="op">=</span><span class="nam">courserun_key</span><span class="op">,</span> <span class="nam">user</span><span class="op">=</span><span class="nam">user</span><span class="op">)</span><span class="op">.</span><span class="nam">order_by</span><span class="op">(</span><span class="str">'-created'</span><span class="op">)</span><span class="op">[</span><span class="op">:</span><span class="nam">message_count</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t222" href="#t222">222</a></span><span class="t">    <span class="key">return</span> <span class="nam">message_history</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
@@ -313,7 +313,7 @@
             <a class="nav" href="z_b6c2c4dfa90d0cc7_apps_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-06 16:11 +0000
+            created at 2024-11-06 19:54 +0000
         </p>
     </div>
 </footer>

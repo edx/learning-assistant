@@ -31,8 +31,8 @@
 | learning\_assistant/toggles.py                                                |       13 |        7 |        0 |        0 |     46% |33-37, 44, 51 |
 | learning\_assistant/urls.py                                                   |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/utils.py                                                  |       54 |        0 |        6 |        0 |    100% |           |
-| learning\_assistant/views.py                                                  |       87 |        7 |       16 |        1 |     92% |20-21, 59-60, 106, 211-212 |
-|                                                                     **TOTAL** |  **456** |   **40** |   **44** |    **4** | **91%** |           |
+| learning\_assistant/views.py                                                  |       86 |        7 |       16 |        1 |     92% |20-21, 59-60, 106, 211-212 |
+|                                                                     **TOTAL** |  **455** |   **40** |   **44** |    **4** | **91%** |           |
 
 
 ## Setup coverage badge
