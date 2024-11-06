@@ -211,12 +211,12 @@ def save_chat_message(courserun_key, user_id, chat_role, message):
     )
 
 
-def get_message_history(course_id, user, message_count):
+def get_message_history(courserun_key, user, message_count):
     """
-    Given a course run id (str), user (User), and message count (int), return the associated message history.
+    Given a courserun key (CourseKey), user (User), and message count (int), return the associated message history.
 
     Returns a number of messages equal to the message_count value.
     """
     message_history = LearningAssistantMessage.objects.filter(
-        course_id=course_id, user=user).order_by('-created')[:message_count]
+        course_id=courserun_key, user=user).order_by('-created')[:message_count]
     return message_history

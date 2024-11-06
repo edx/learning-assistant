@@ -233,10 +233,9 @@ class LearningAssistantMessageHistoryView(APIView):
                 data={'detail': 'Must be staff or have valid enrollment.'}
             )
 
-        course_id = get_course_id(course_run_id)
         user = request.user
 
         message_count = int(request.GET.get('message_count', 50))
-        message_history = get_message_history(course_id, user, message_count)
+        message_history = get_message_history(courserun_key, user, message_count)
         data = MessageSerializer(message_history, many=True).data
         return Response(status=http_status.HTTP_200_OK, data=data)
