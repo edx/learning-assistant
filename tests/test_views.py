@@ -365,3 +365,4 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
         actual_message = LearningAssistantMessage.objects.get(course_id=self.course_id)
         self.assertEqual(data[0]['role'], actual_message.role)
         self.assertEqual(data[0]['content'], actual_message.content)
+        self.assertEqual(data[0]['timestamp'], actual_message.created.isoformat())
