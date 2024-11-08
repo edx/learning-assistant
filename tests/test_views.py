@@ -1,6 +1,7 @@
 """
 Tests for the learning assistant views.
 """
+import datetime
 import json
 import sys
 from importlib import import_module
@@ -347,22 +348,33 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
             course_id=self.course_id,
             user=self.user,
             role='staff',
-            content='Expected content of message',
+            content='Older message',
+            created=datetime.date(2024, 10, 1)
         )
-        message_count = 1
+
+        LearningAssistantMessage.objects.create(
+            course_id=self.course_id,
+            user=self.user,
+            role='staff',
+            content='Newer message',
+            created=datetime.date(2024, 10, 3)
+        )
+
+        db_messages = LearningAssistantMessage.objects.all().order_by('created')
+        db_messages_count = len(db_messages)
+
         mock_get_course_id.return_value = self.course_id
         response = self.client.get(
-            reverse('message-history', kwargs={'course_run_id': self.course_id})+f'?message_count={message_count}',
+            reverse('message-history', kwargs={'course_run_id': self.course_id})+f'?message_count={db_messages_count}',
             content_type='application/json'
         )
         data = response.data
 
         # Ensure same number of entries
-        actual_message_count = LearningAssistantMessage.objects.count()
-        self.assertEqual(len(data), actual_message_count)
+        self.assertEqual(len(data), db_messages_count)
 
         # Ensure values are as expected
-        actual_message = LearningAssistantMessage.objects.get(course_id=self.course_id)
-        self.assertEqual(data[0]['role'], actual_message.role)
-        self.assertEqual(data[0]['content'], actual_message.content)
-        self.assertEqual(data[0]['timestamp'], actual_message.created.isoformat())
+        for i, expected in enumerate(db_messages):
+            self.assertEqual(expected.role, data[i]['role'])
+            self.assertEqual(expected.content, data[i]['content'])
+            self.assertEqual(expected.created.isoformat(), data[i]['timestamp'])

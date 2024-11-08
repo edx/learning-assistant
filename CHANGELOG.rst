@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 **********
+* Updated Learning Assistant History payload to return in ascending order
 
 4.4.4 - 2024-11-06
 ******************
