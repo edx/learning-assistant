@@ -236,6 +236,6 @@ class LearningAssistantMessageHistoryView(APIView):
         user = request.user
 
         message_count = int(request.GET.get('message_count', 50))
-        message_history = reversed(list(get_message_history(courserun_key, user, message_count)))  # Reversing order
+        message_history = get_message_history(courserun_key, user, message_count)
         data = MessageSerializer(message_history, many=True).data
         return Response(status=http_status.HTTP_200_OK, data=data)

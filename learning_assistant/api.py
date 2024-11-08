@@ -217,6 +217,6 @@ def get_message_history(courserun_key, user, message_count):
 
     Returns a number of messages equal to the message_count value.
     """
-    message_history = LearningAssistantMessage.objects.filter(
-        course_id=courserun_key, user=user).order_by('-created')[:message_count]
+    message_history = list(LearningAssistantMessage.objects.filter(
+        course_id=courserun_key, user=user).order_by('-created')[:message_count])[::-1]
     return message_history

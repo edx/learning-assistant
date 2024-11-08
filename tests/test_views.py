@@ -374,7 +374,7 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
         self.assertEqual(len(data), db_messages_count)
 
         # Ensure values are as expected
-        for i, expected in enumerate(db_messages):
-            self.assertEqual(expected.role, data[i]['role'])
-            self.assertEqual(expected.content, data[i]['content'])
-            self.assertEqual(expected.created.isoformat(), data[i]['timestamp'])
+        for i, message in enumerate(data):
+            self.assertEqual(message['role'], db_messages[i].role)
+            self.assertEqual(message['content'], db_messages[i].content)
+            self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
