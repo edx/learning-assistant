@@ -365,8 +365,8 @@ class GetMessageHistoryTests(TestCase):
 
         return_value = get_message_history(self.course_key, self.user, message_count)
 
-        expected_value = LearningAssistantMessage.objects.filter(
-            course_id=self.course_key, user=self.user).order_by('-created')[:message_count]
+        expected_value = list(LearningAssistantMessage.objects.filter(
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count])[::-1]
 
         # Ensure same number of entries
         self.assertEqual(len(return_value), len(expected_value))
