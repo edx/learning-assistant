@@ -8,14 +8,14 @@ asgiref==3.8.1
     # via
     #   -r requirements/quality.txt
     #   django
-astroid==3.2.4
+astroid==3.3.5
     # via
     #   -r requirements/quality.txt
     #   pylint
     #   pylint-celery
 attrs==24.2.0
     # via -r requirements/quality.txt
-build==1.2.1
+build==1.2.2.post1
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
@@ -27,7 +27,7 @@ certifi==2024.8.30
     # via
     #   -r requirements/quality.txt
     #   requests
-cffi==1.17.0
+cffi==1.17.1
     # via
     #   -r requirements/quality.txt
     #   cryptography
@@ -37,7 +37,7 @@ chardet==5.2.0
     #   -r requirements/ci.txt
     #   diff-cover
     #   tox
-charset-normalizer==3.3.2
+charset-normalizer==3.4.0
     # via
     #   -r requirements/quality.txt
     #   requests
@@ -62,23 +62,23 @@ colorama==0.4.6
     # via
     #   -r requirements/ci.txt
     #   tox
-coverage[toml]==7.6.1
+coverage[toml]==7.6.4
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
-cryptography==43.0.0
+cryptography==43.0.3
     # via
     #   -r requirements/quality.txt
     #   pyjwt
 ddt==1.7.2
     # via -r requirements/quality.txt
-diff-cover==9.1.1
+diff-cover==9.2.0
     # via -r requirements/dev.in
-dill==0.3.8
+dill==0.3.9
     # via
     #   -r requirements/quality.txt
     #   pylint
-distlib==0.3.8
+distlib==0.3.9
     # via
     #   -r requirements/ci.txt
     #   virtualenv
@@ -98,7 +98,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
-django-model-utils==4.5.1
+django-model-utils==5.0.0
     # via -r requirements/quality.txt
 django-waffle==4.1.0
     # via
@@ -110,7 +110,7 @@ djangorestframework==3.15.2
     #   -r requirements/quality.txt
     #   drf-jwt
     #   edx-drf-extensions
-dnspython==2.6.1
+dnspython==2.7.0
     # via
     #   -r requirements/quality.txt
     #   pymongo
@@ -118,29 +118,29 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-django-utils==5.15.0
+edx-django-utils==7.0.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==10.4.0
+edx-drf-extensions==10.5.0
     # via -r requirements/quality.txt
-edx-i18n-tools==1.6.2
+edx-i18n-tools==1.6.3
     # via -r requirements/dev.in
-edx-lint==5.4.0
+edx-lint==5.4.1
     # via -r requirements/quality.txt
-edx-opaque-keys==2.10.0
+edx-opaque-keys==2.11.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-rest-api-client==5.7.1
+edx-rest-api-client==6.0.0
     # via -r requirements/quality.txt
-filelock==3.15.4
+filelock==3.16.1
     # via
     #   -r requirements/ci.txt
     #   tox
     #   virtualenv
-idna==3.8
+idna==3.10
     # via
     #   -r requirements/quality.txt
     #   requests
@@ -157,9 +157,13 @@ jinja2==3.1.4
     #   -r requirements/quality.txt
     #   code-annotations
     #   diff-cover
-lxml==5.3.0
-    # via edx-i18n-tools
-markupsafe==2.1.5
+lxml[html-clean,html_clean]==5.3.0
+    # via
+    #   edx-i18n-tools
+    #   lxml-html-clean
+lxml-html-clean==0.3.1
+    # via lxml
+markupsafe==3.0.2
     # via
     #   -r requirements/quality.txt
     #   jinja2
@@ -167,11 +171,11 @@ mccabe==0.7.0
     # via
     #   -r requirements/quality.txt
     #   pylint
-newrelic==9.13.0
+newrelic==10.2.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
-packaging==24.1
+packaging==24.2
     # via
     #   -r requirements/ci.txt
     #   -r requirements/pip-tools.txt
@@ -188,7 +192,7 @@ pbr==6.1.0
     #   stevedore
 pip-tools==7.4.1
     # via -r requirements/pip-tools.txt
-platformdirs==4.2.2
+platformdirs==4.3.6
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
@@ -204,7 +208,7 @@ pluggy==1.5.0
     #   tox
 polib==1.2.0
     # via edx-i18n-tools
-psutil==6.0.0
+psutil==6.1.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
@@ -224,7 +228,7 @@ pyjwt[crypto]==2.9.0
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.2.7
+pylint==3.3.1
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -235,7 +239,7 @@ pylint-celery==0.3
     # via
     #   -r requirements/quality.txt
     #   edx-lint
-pylint-django==2.5.5
+pylint-django==2.6.1
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -244,7 +248,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/quality.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.8.0
+pymongo==4.10.1
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
@@ -252,21 +256,21 @@ pynacl==1.5.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
-pyproject-api==1.7.1
+pyproject-api==1.8.0
     # via
     #   -r requirements/ci.txt
     #   tox
-pyproject-hooks==1.1.0
+pyproject-hooks==1.2.0
     # via
     #   -r requirements/pip-tools.txt
     #   build
     #   pip-tools
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==5.0.0
+pytest-cov==6.0.0
     # via -r requirements/quality.txt
 pytest-django==4.9.0
     # via -r requirements/quality.txt
@@ -286,7 +290,6 @@ requests==2.32.3
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   responses
-    #   slumber
 responses==0.25.3
     # via -r requirements/quality.txt
 semantic-version==2.10.0
@@ -297,10 +300,6 @@ six==1.16.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
-slumber==0.7.1
-    # via
-    #   -r requirements/quality.txt
-    #   edx-rest-api-client
 snowballstemmer==2.2.0
     # via
     #   -r requirements/quality.txt
@@ -323,22 +322,22 @@ tomlkit==0.13.2
     # via
     #   -r requirements/quality.txt
     #   pylint
-tox==4.18.0
+tox==4.23.2
     # via -r requirements/ci.txt
 typing-extensions==4.12.2
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
-urllib3==2.2.2
+urllib3==2.2.3
     # via
     #   -r requirements/quality.txt
     #   requests
     #   responses
-virtualenv==20.26.3
+virtualenv==20.27.1
     # via
     #   -r requirements/ci.txt
     #   tox
-wheel==0.44.0
+wheel==0.45.0
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
