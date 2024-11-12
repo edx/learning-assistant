@@ -217,6 +217,10 @@ def get_message_history(courserun_key, user, message_count):
 
     Returns a number of messages equal to the message_count value.
     """
+    # Explanation over the double reverse: This fetches the last message_count elements ordered by creating order DESC.
+    # Slicing the list in the model is an equivalent of adding LIMIT on the query.
+    # The result is the last chat messages for that user and course but in inversed order, so in order to flip them
+    # its first turn into a list and then reversed.
     message_history = list(LearningAssistantMessage.objects.filter(
         course_id=courserun_key, user=user).order_by('-created')[:message_count])[::-1]
     return message_history
