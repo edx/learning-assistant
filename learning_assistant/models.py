@@ -47,3 +47,18 @@ class LearningAssistantMessage(TimeStampedModel):
     user = models.ForeignKey(USER_MODEL, db_index=True, on_delete=models.CASCADE)
     role = models.CharField(choices=Roles, max_length=64)
     content = models.TextField()
+
+
+class LearningAssistantAuditTrial(TimeStampedModel):
+    """
+    This model stores the trial period for an audit learner using the learning assistant.
+
+    A LearningAssistantAuditTrial instance will be created on a per user basis,
+    when an audit learner first sends a message using Xpert LA.
+
+    .. no_pii: This model has no PII.
+    """
+
+    # Unique constraint since each user should only have one trial
+    user = models.ForeignKey(USER_MODEL, db_index=True, on_delete=models.CASCADE, unique=True)
+    start_date = models.DateTimeField()
