@@ -61,4 +61,4 @@ class LearningAssistantAuditTrial(TimeStampedModel):
 
     # Unique constraint since each user should only have one trial
     user = models.ForeignKey(USER_MODEL, db_index=True, on_delete=models.CASCADE, unique=True)
-    start_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateTimeField()
