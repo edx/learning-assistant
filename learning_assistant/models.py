@@ -56,10 +56,7 @@ class LearningAssistantAuditTrial(TimeStampedModel):
     A LearningAssistantAuditTrial instance will be created on a per user basis,
     when an audit learner first sends a message using Xpert LA.
 
-    # TODO: Figure out if this is PII or not.
-    .. pii: ?????????
-    .. pii_types: ?????????
-    .. pii_retirement: ?????????
+    .. no_pii: This model has no PII.
     """
 
     # Unique constraint since each user should only have one trial
