@@ -40,6 +40,10 @@ Unreleased
 * Add LearningAssistantMessage model
 * Add new GET endpoint to retrieve a user's message history in a given course.
 
+4.4.0 - 2024-10-25
+******************
+* Upgraded to use ``Python 3.12``
+
 4.3.3 - 2024-10-15
 ******************
 * Use `LEARNING_ASSISTANT_PROMPT_TEMPLATE` for prompt
