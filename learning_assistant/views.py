@@ -20,8 +20,16 @@ try:
 except ImportError:
     pass
 
-from learning_assistant.api import get_course_id, learning_assistant_enabled, render_prompt_template
+from learning_assistant.api import (
+    get_course_id,
+    get_message_history,
+    learning_assistant_enabled,
+    render_prompt_template,
+    save_chat_message,
+)
+from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.serializers import MessageSerializer
+from learning_assistant.toggles import chat_history_enabled
 from learning_assistant.utils import get_chat_response, user_role_is_staff
 
 log = logging.getLogger(__name__)
@@ -76,6 +84,20 @@ class CourseChatView(APIView):
         unit_id = request.query_params.get('unit_id')
 
         message_list = request.data
+
+        # Check that the last message in the list corresponds to a user
+        new_user_message = message_list[-1]
+        if new_user_message['role'] != LearningAssistantMessage.USER_ROLE:
+            return Response(
+                status=http_status.HTTP_400_BAD_REQUEST,
+                data={'detail': "Expects user role on last message."}
+            )
+
+        user_id = request.user.id
+
+        if chat_history_enabled(courserun_key):
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.USER_ROLE, new_user_message['content'])
+
         serializer = MessageSerializer(data=message_list, many=True)
 
         # serializer will not be valid in the case that the message list contains any roles other than
@@ -102,6 +124,9 @@ class CourseChatView(APIView):
             request, request.user.id, course_run_id, unit_id, course_id, template_string
         )
         status_code, message = get_chat_response(prompt_template, message_list)
+
+        if chat_history_enabled(courserun_key):
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
 
         return Response(status=status_code, data=message)
 
@@ -148,4 +173,69 @@ class LearningAssistantEnabledView(APIView):
             'enabled': learning_assistant_enabled(courserun_key),
         }
 
+        return Response(status=http_status.HTTP_200_OK, data=data)
+
+
+class LearningAssistantMessageHistoryView(APIView):
+    """
+    View to retrieve the message history for user in a course.
+
+    This endpoint returns the message history stored in the LearningAssistantMessage table in a course
+    represented by the course_key, which is provided in the URL.
+
+    Accepts: [GET]
+
+    Path: /learning_assistant/v1/course_id/{course_key}/history
+
+    Parameters:
+        * course_key: the ID of the course
+
+    Responses:
+        * 200: OK
+        * 400: Malformed Request - Course ID is not a valid course ID.
+    """
+
+    authentication_classes = (SessionAuthentication, JwtAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, course_run_id):
+        """
+        Given a course run ID, retrieve the message history for the corresponding user.
+
+        The response will be in the following format.
+
+            [{'role': 'assistant', 'content': 'something'}]
+        """
+        try:
+            courserun_key = CourseKey.from_string(course_run_id)
+        except InvalidKeyError:
+            return Response(
+                status=http_status.HTTP_400_BAD_REQUEST,
+                data={'detail': 'Course ID is not a valid course ID.'}
+            )
+
+        if not learning_assistant_enabled(courserun_key):
+            return Response(
+                status=http_status.HTTP_403_FORBIDDEN,
+                data={'detail': 'Learning assistant not enabled for course.'}
+            )
+
+        # If user does not have an enrollment record, or is not staff, they should not have access
+        user_role = get_user_role(request.user, courserun_key)
+        enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
+        enrollment_mode = enrollment_object.mode if enrollment_object else None
+        if (
+            (enrollment_mode not in CourseMode.VERIFIED_MODES)
+            and not user_role_is_staff(user_role)
+        ):
+            return Response(
+                status=http_status.HTTP_403_FORBIDDEN,
+                data={'detail': 'Must be staff or have valid enrollment.'}
+            )
+
+        user = request.user
+
+        message_count = int(request.GET.get('message_count', 50))
+        message_history = get_message_history(courserun_key, user, message_count)
+        data = MessageSerializer(message_history, many=True).data
         return Response(status=http_status.HTTP_200_OK, data=data)

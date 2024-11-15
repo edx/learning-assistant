@@ -19,6 +19,7 @@ class PluginApiTests(TestCase):
     """
     Test suite for the plugins_api module.
     """
+
     def setUp(self):
         super().setUp()
         self.course_key = CourseKey.from_string('course-v1:edx+fake+1')

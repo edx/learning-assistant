@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import ddt
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import TestCase, override_settings
 from opaque_keys import InvalidKeyError
@@ -16,15 +17,18 @@ from learning_assistant.api import (
     _get_children_contents,
     _leaf_filter,
     get_block_content,
+    get_message_history,
     learning_assistant_available,
     learning_assistant_enabled,
     render_prompt_template,
+    save_chat_message,
     set_learning_assistant_enabled,
 )
 from learning_assistant.data import LearningAssistantCourseEnabledData
-from learning_assistant.models import LearningAssistantCourseEnabled
+from learning_assistant.models import LearningAssistantCourseEnabled, LearningAssistantMessage
 
 fake_transcript = 'This is the text version from the transcript'
+User = get_user_model()
 
 
 class FakeChild:
@@ -49,6 +53,7 @@ class FakeChild:
 
 class FakeBlock:
     "Fake block for testing, returns given children"
+
     def __init__(self, children):
         self.children = children
         self.scope_ids = lambda: None
@@ -232,10 +237,37 @@ class GetBlockContentAPITests(TestCase):
 
 
 @ddt.ddt
+class TestLearningAssistantCourseEnabledApi(TestCase):
+    """
+    Test suite for save_chat_message.
+    """
+    def setUp(self):
+        super().setUp()
+
+        self.test_user = User.objects.create(username='username', password='password')
+        self.course_run_key = CourseKey.from_string('course-v1:edx+test+23')
+
+    @ddt.data(
+        (LearningAssistantMessage.USER_ROLE, 'What is the meaning of life, the universe and everything?'),
+        (LearningAssistantMessage.ASSISTANT_ROLE, '42'),
+    )
+    @ddt.unpack
+    def test_save_chat_message(self, chat_role, message):
+        save_chat_message(self.course_run_key, self.test_user.id, chat_role, message)
+
+        row = LearningAssistantMessage.objects.all().last()
+
+        self.assertEqual(row.course_id, self.course_run_key)
+        self.assertEqual(row.role, chat_role)
+        self.assertEqual(row.content, message)
+
+
+@ddt.ddt
 class LearningAssistantCourseEnabledApiTests(TestCase):
     """
     Test suite for learning_assistant_available, learning_assistant_enabled, and set_learning_assistant_enabled.
     """
+
     def setUp(self):
         super().setUp()
         self.course_key = CourseKey.from_string('course-v1:edx+fake+1')
@@ -305,3 +337,139 @@ class LearningAssistantCourseEnabledApiTests(TestCase):
 
         expected_value = learning_assistant_available_setting_value
         self.assertEqual(return_value, expected_value)
+
+
+@ddt.ddt
+class GetMessageHistoryTests(TestCase):
+    """
+    Test suite for get_message_history.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.course_key = CourseKey.from_string('course-v1:edx+fake+1')
+        self.user = User(username='tester', email='tester@test.com')
+        self.user.save()
+
+        self.role = 'verified'
+
+    def test_get_message_history(self):
+        message_count = 5
+        for i in range(1, message_count + 1):
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_key,
+                user=self.user,
+                role=self.role,
+                content=f'Content of message {i}',
+            )
+
+        return_value = get_message_history(self.course_key, self.user, message_count)
+
+        expected_value = list(LearningAssistantMessage.objects.filter(
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count])[::-1]
+
+        # Ensure same number of entries
+        self.assertEqual(len(return_value), len(expected_value))
+
+        # Ensure values are as expected for all LearningAssistantMessage instances
+        for i, return_value in enumerate(return_value):
+            self.assertEqual(return_value.course_id, expected_value[i].course_id)
+            self.assertEqual(return_value.user, expected_value[i].user)
+            self.assertEqual(return_value.role, expected_value[i].role)
+            self.assertEqual(return_value.content, expected_value[i].content)
+
+    @ddt.data(
+        0, 1, 5, 10, 50
+    )
+    def test_get_message_history_message_count(self, actual_message_count):
+        for i in range(1, actual_message_count + 1):
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_key,
+                user=self.user,
+                role=self.role,
+                content=f'Content of message {i}',
+            )
+
+        message_count_parameter = 5
+        return_value = get_message_history(self.course_key, self.user, message_count_parameter)
+
+        expected_value = LearningAssistantMessage.objects.filter(
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count_parameter]
+
+        # Ensure same number of entries
+        self.assertEqual(len(return_value), len(expected_value))
+
+    def test_get_message_history_user_difference(self):
+        # Default Message
+        LearningAssistantMessage.objects.create(
+            course_id=self.course_key,
+            user=self.user,
+            role=self.role,
+            content='Expected content of message',
+        )
+
+        # New message w/ new user
+        new_user = User(username='not_tester', email='not_tester@test.com')
+        new_user.save()
+        LearningAssistantMessage.objects.create(
+            course_id=self.course_key,
+            user=new_user,
+            role=self.role,
+            content='Expected content of message',
+        )
+
+        message_count = 2
+        return_value = get_message_history(self.course_key, self.user, message_count)
+
+        expected_value = LearningAssistantMessage.objects.filter(
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count]
+
+        # Ensure we filtered one of the two present messages
+        self.assertNotEqual(len(return_value), LearningAssistantMessage.objects.count())
+
+        # Ensure same number of entries
+        self.assertEqual(len(return_value), len(expected_value))
+
+        # Ensure values are as expected for all LearningAssistantMessage instances
+        for i, return_value in enumerate(return_value):
+            self.assertEqual(return_value.course_id, expected_value[i].course_id)
+            self.assertEqual(return_value.user, expected_value[i].user)
+            self.assertEqual(return_value.role, expected_value[i].role)
+            self.assertEqual(return_value.content, expected_value[i].content)
+
+    def test_get_message_course_id_differences(self):
+        # Default Message
+        LearningAssistantMessage.objects.create(
+            course_id=self.course_key,
+            user=self.user,
+            role=self.role,
+            content='Expected content of message',
+        )
+
+        # New message
+        wrong_course_id = 'course-v1:wrong+id+1'
+        LearningAssistantMessage.objects.create(
+            course_id=wrong_course_id,
+            user=self.user,
+            role=self.role,
+            content='Expected content of message',
+        )
+
+        message_count = 2
+        return_value = get_message_history(self.course_key, self.user, message_count)
+
+        expected_value = LearningAssistantMessage.objects.filter(
+            course_id=self.course_key, user=self.user).order_by('-created')[:message_count]
+
+        # Ensure we filtered one of the two present messages
+        self.assertNotEqual(len(return_value), LearningAssistantMessage.objects.count())
+
+        # Ensure same number of entries
+        self.assertEqual(len(return_value), len(expected_value))
+
+        # Ensure values are as expected for all LearningAssistantMessage instances
+        for i, return_value in enumerate(return_value):
+            self.assertEqual(return_value.course_id, expected_value[i].course_id)
+            self.assertEqual(return_value.user, expected_value[i].user)
+            self.assertEqual(return_value.role, expected_value[i].role)
+            self.assertEqual(return_value.content, expected_value[i].content)

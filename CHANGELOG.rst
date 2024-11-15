@@ -13,7 +13,32 @@ Change Log
 
 Unreleased
 **********
+
+4.4.5 - 2024-11-12
+******************
+* Updated Learning Assistant History payload to return in ascending order
+
+4.4.4 - 2024-11-06
+******************
+* Fixed Learning Assistant History endpoint
+* Added timestamp to the Learning Assistant History payload
+
+4.4.3 - 2024-11-06
+******************
+* Fixed package version
+
+4.4.2 - 2024-11-04
+******************
+* Added chat messages to the DB
+
+4.4.1 - 2024-10-31
+******************
+* Add management command to remove expired messages
+
+4.4.0 - 2024-10-30
+******************
 * Add LearningAssistantMessage model
+* Add new GET endpoint to retrieve a user's message history in a given course.
 
 4.4.0 - 2024-10-25
 ******************
