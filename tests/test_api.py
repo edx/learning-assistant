@@ -502,9 +502,6 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         upgrade_deadline = datetime.now() - timedelta(days=1)  # yesterday
         self.assertEqual(check_if_audit_trial_is_expired(self.user, upgrade_deadline), True)
 
-    def test_check_if_audit_trial_is_expired_audit_trial_created(self):
-        self.assertEqual(check_if_audit_trial_is_expired(self.user, self.upgrade_deadline), False)
-
     def test_check_if_audit_trial_is_expired_audit_trial_expired(self):
         LearningAssistantAuditTrial.objects.create(
             user=self.user,

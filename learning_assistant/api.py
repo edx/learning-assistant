@@ -240,20 +240,15 @@ def check_if_audit_trial_is_expired(user, upgrade_deadline):
     if DAYS_SINCE_UPGRADE_DEADLINE >= timedelta(days=0):
         return True
 
-    audit_trial, created = LearningAssistantAuditTrial.objects.get_or_create(
+    audit_trial, _ = LearningAssistantAuditTrial.objects.get_or_create(
         user=user,
         defaults={
             "start_date": datetime.now(),
         },
     )
 
-    # If the trial was just created, then it definitely isn't expired, so return False
-    if created:
-        return False
-
     # If the user's trial is past its expiry date, return "True" for expired. Else, return False
     DAYS_SINCE_TRIAL_START_DATE = datetime.now() - audit_trial.start_date
-    print("DAYS_SINCE_TRIAL_START_DATE:", DAYS_SINCE_TRIAL_START_DATE)
-    if DAYS_SINCE_TRIAL_START_DATE > timedelta(days=AUDIT_TRIAL_MAX_DAYS):
+    if DAYS_SINCE_TRIAL_START_DATE >= timedelta(days=AUDIT_TRIAL_MAX_DAYS):
         return True
     return False
