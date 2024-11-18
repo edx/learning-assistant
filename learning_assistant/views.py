@@ -21,6 +21,7 @@ except ImportError:
     pass
 
 from learning_assistant.api import (
+    check_if_audit_trial_is_expired,
     get_course_id,
     get_message_history,
     learning_assistant_enabled,
@@ -68,18 +69,24 @@ class CourseChatView(APIView):
                 data={'detail': 'Learning assistant not enabled for course.'}
             )
 
-        # If user does not have an enrollment record, or is not staff, they should not have access
+        # If user does not have a verified enrollment record, or is not staff, they should not have full access
         user_role = get_user_role(request.user, courserun_key)
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
         if (
-            (enrollment_mode not in CourseMode.VERIFIED_MODES)
+            # NOTE: Will there ever be a case where the user has a course mod that's
+            # in neither VERIFIED_MODES nor AUDIT_MODES that we need to worry about?
+            enrollment_mode not in CourseMode.VERIFIED_MODES
+            and enrollment_mode in CourseMode.AUDIT_MODES
             and not user_role_is_staff(user_role)
         ):
-            return Response(
-                status=http_status.HTTP_403_FORBIDDEN,
-                data={'detail': 'Must be staff or have valid enrollment.'}
-            )
+            # If user has an audit enrollment record, get or create their trial
+            user_audit_trial_expired = check_if_audit_trial_is_expired(user_id=request.user.id)
+            if user_audit_trial_expired:
+                return Response(
+                    status=http_status.HTTP_403_FORBIDDEN,
+                    data={'detail': 'Must be staff or have valid enrollment.'}
+                )
 
         unit_id = request.query_params.get('unit_id')
 

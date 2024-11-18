@@ -10,9 +10,15 @@ from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
 
-from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
+from datetime import datetime
+
+from learning_assistant.constants import AUDIT_TRIAL_MAX_DAYS, ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantCourseEnabledData
-from learning_assistant.models import LearningAssistantCourseEnabled, LearningAssistantMessage
+from learning_assistant.models import (
+    LearningAssistantAuditTrial,
+    LearningAssistantCourseEnabled,
+    LearningAssistantMessage,
+)
 from learning_assistant.platform_imports import (
     block_get_children,
     block_leaf_filter,
@@ -224,3 +230,20 @@ def get_message_history(courserun_key, user, message_count):
     message_history = list(LearningAssistantMessage.objects.filter(
         course_id=courserun_key, user=user).order_by('-created')[:message_count])[::-1]
     return message_history
+
+
+def check_if_audit_trial_is_expired(user_id):
+    """
+    Given a user (User), get the corresponding LearningAssistantAuditTrial trial object,
+    or create one if one does not exist yet.
+    """
+    audit_trial, created = LearningAssistantAuditTrial.objects.get_or_create(user_id)
+
+    # If the trial was just created, then it definitely isn't expired, so return False
+    if created:
+        return False
+
+    # If the user's trial is expired, return True. Else, return False
+    if (datetime.now() - audit_trial.start_date) < AUDIT_TRIAL_MAX_DAYS:
+        return True
+    return False
