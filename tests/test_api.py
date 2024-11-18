@@ -496,20 +496,25 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         self.user.save()
 
         self.role = 'verified'
+        self.upgrade_deadline = datetime.now() + timedelta(days=1)  # 1 day from now
+
+    def test_check_if_past_upgrade_deadline(self):
+        upgrade_deadline = datetime.now() - timedelta(days=1)  # yesterday
+        self.assertEqual(check_if_audit_trial_is_expired(self.user, upgrade_deadline), True)
 
     def test_check_if_audit_trial_is_expired_audit_trial_created(self):
-        self.assertEqual(check_if_audit_trial_is_expired(self.user), False)
+        self.assertEqual(check_if_audit_trial_is_expired(self.user, self.upgrade_deadline), False)
 
     def test_check_if_audit_trial_is_expired_audit_trial_expired(self):
         LearningAssistantAuditTrial.objects.create(
             user=self.user,
-            start_date=datetime.now() - timedelta(days=AUDIT_TRIAL_MAX_DAYS + 1),
+            start_date=datetime.now() - timedelta(days=AUDIT_TRIAL_MAX_DAYS + 1),  # 1 day more than trial deadline
         )
-        self.assertEqual(check_if_audit_trial_is_expired(self.user), True)
+        self.assertEqual(check_if_audit_trial_is_expired(self.user, self.upgrade_deadline), True)
 
     def test_check_if_audit_trial_is_expired_audit_trial_unexpired(self):
         LearningAssistantAuditTrial.objects.create(
             user=self.user,
-            start_date=datetime.now() - timedelta(days=AUDIT_TRIAL_MAX_DAYS - 0.99),
+            start_date=datetime.now() - timedelta(days=AUDIT_TRIAL_MAX_DAYS - 0.99),  # 0.99 days less than deadline
         )
-        self.assertEqual(check_if_audit_trial_is_expired(self.user), False)
+        self.assertEqual(check_if_audit_trial_is_expired(self.user, self.upgrade_deadline), False)

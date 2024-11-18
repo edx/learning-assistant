@@ -1,9 +1,9 @@
 """
 Tests for the learning assistant views.
 """
-import datetime
 import json
 import sys
+from datetime import date, datetime, timedelta
 from importlib import import_module
 from unittest.mock import MagicMock, call, patch
 
@@ -119,6 +119,8 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
         mock_mode.AUDIT_MODES = ['audit']
+        mock_mode.objects.get.return_value = MagicMock()
+        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
         mock_enrollment.return_value = MagicMock(mode='audit')
         mock_expired.return_value = True
 
@@ -340,7 +342,7 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
             user=self.user,
             role='staff',
             content='Older message',
-            created=datetime.date(2024, 10, 1)
+            created=date(2024, 10, 1)
         )
 
         LearningAssistantMessage.objects.create(
@@ -348,7 +350,7 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
             user=self.user,
             role='staff',
             content='Newer message',
-            created=datetime.date(2024, 10, 3)
+            created=date(2024, 10, 3)
         )
 
         db_messages = LearningAssistantMessage.objects.all().order_by('created')
