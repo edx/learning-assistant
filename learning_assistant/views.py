@@ -81,7 +81,7 @@ class CourseChatView(APIView):
             and not user_role_is_staff(user_role)
         ):
             # If user has an audit enrollment record, get or create their trial
-            user_audit_trial_expired = check_if_audit_trial_is_expired(user_id=request.user.id)
+            user_audit_trial_expired = check_if_audit_trial_is_expired(user=request.user)
             if user_audit_trial_expired:
                 return Response(
                     status=http_status.HTTP_403_FORBIDDEN,

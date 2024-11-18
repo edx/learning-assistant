@@ -75,7 +75,7 @@ class LoggedInTestCase(TestCase):
 
 
 @ddt.ddt
-class TestCourseChatView(LoggedInTestCase):
+class CourseChatViewTests(LoggedInTestCase):
     """
     Test for the CourseChatView
     """
@@ -108,28 +108,19 @@ class TestCourseChatView(LoggedInTestCase):
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
+    @patch('learning_assistant.views.check_if_audit_trial_is_expired')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    def test_user_no_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
+    def test_user_audit_enrollment_not_staff_trial_expired(self, mock_mode, mock_enrollment, mock_role,
+                                                           mock_waffle, mock_expired):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = None
-
-        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
-        self.assertEqual(response.status_code, 403)
-
-    @patch('learning_assistant.views.learning_assistant_enabled')
-    @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
-    @patch('learning_assistant.views.CourseMode')
-    def test_user_audit_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
-        mock_waffle.return_value = True
-        mock_role.return_value = 'student'
-        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.AUDIT_MODES = ['audit']
         mock_enrollment.return_value = MagicMock(mode='audit')
+        mock_expired.return_value = True
 
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
