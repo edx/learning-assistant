@@ -69,7 +69,7 @@ django-crum==0.7.9
     #   edx-django-utils
 django-model-utils==5.0.0
     # via -r requirements/test.txt
-django-waffle==4.1.0
+django-waffle==4.2.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -124,7 +124,7 @@ markupsafe==3.0.2
     #   jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==10.2.0
+newrelic==10.3.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -154,7 +154,7 @@ pycparser==2.22
     #   cffi
 pydocstyle==6.3.0
     # via -r requirements/quality.in
-pyjwt[crypto]==2.9.0
+pyjwt[crypto]==2.10.0
     # via
     #   -r requirements/test.txt
     #   drf-jwt
