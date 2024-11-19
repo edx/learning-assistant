@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 **********
+* Add local setup to readme
 
 4.4.7 - 2024-11-25
 ******************
