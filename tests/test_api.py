@@ -17,7 +17,7 @@ from learning_assistant.api import (
     _extract_block_contents,
     _get_children_contents,
     _leaf_filter,
-    check_if_audit_trial_is_expired,
+    audit_trial_is_expired,
     get_block_content,
     get_message_history,
     learning_assistant_available,
@@ -486,7 +486,7 @@ class GetMessageHistoryTests(TestCase):
 @ddt.ddt
 class CheckIfAuditTrialIsExpiredTests(TestCase):
     """
-    Test suite for check_if_audit_trial_is_expired.
+    Test suite for audit_trial_is_expired.
     """
 
     def setUp(self):
@@ -500,18 +500,18 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
 
     def test_check_if_past_upgrade_deadline(self):
         upgrade_deadline = datetime.now() - timedelta(days=1)  # yesterday
-        self.assertEqual(check_if_audit_trial_is_expired(self.user, upgrade_deadline), True)
+        self.assertEqual(audit_trial_is_expired(self.user, upgrade_deadline), True)
 
-    def test_check_if_audit_trial_is_expired_audit_trial_expired(self):
+    def test_audit_trial_is_expired_audit_trial_expired(self):
         LearningAssistantAuditTrial.objects.create(
             user=self.user,
             start_date=datetime.now() - timedelta(days=AUDIT_TRIAL_MAX_DAYS + 1),  # 1 day more than trial deadline
         )
-        self.assertEqual(check_if_audit_trial_is_expired(self.user, self.upgrade_deadline), True)
+        self.assertEqual(audit_trial_is_expired(self.user, self.upgrade_deadline), True)
 
-    def test_check_if_audit_trial_is_expired_audit_trial_unexpired(self):
+    def test_audit_trial_is_expired_audit_trial_unexpired(self):
         LearningAssistantAuditTrial.objects.create(
             user=self.user,
             start_date=datetime.now() - timedelta(days=AUDIT_TRIAL_MAX_DAYS - 0.99),  # 0.99 days less than deadline
         )
-        self.assertEqual(check_if_audit_trial_is_expired(self.user, self.upgrade_deadline), False)
+        self.assertEqual(audit_trial_is_expired(self.user, self.upgrade_deadline), False)

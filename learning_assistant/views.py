@@ -21,7 +21,7 @@ except ImportError:
     pass
 
 from learning_assistant.api import (
-    check_if_audit_trial_is_expired,
+    audit_trial_is_expired,
     get_course_id,
     get_message_history,
     learning_assistant_enabled,
@@ -80,12 +80,11 @@ class CourseChatView(APIView):
             and enrollment_mode in CourseMode.AUDIT_MODES
             and not user_role_is_staff(user_role)
         ):
-            # TODO: Add logic to make sure upgrade deadline has not passed.
             course_mode = CourseMode.objects.get(course=courserun_key)
             upgrade_deadline = course_mode.expiration_datetime()
 
             # If user has an audit enrollment record, get or create their trial
-            user_audit_trial_expired = check_if_audit_trial_is_expired(request.user, upgrade_deadline)
+            user_audit_trial_expired = audit_trial_is_expired(request.user, upgrade_deadline)
             if user_audit_trial_expired:
                 return Response(
                     status=http_status.HTTP_403_FORBIDDEN,

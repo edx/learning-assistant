@@ -231,7 +231,7 @@ def get_message_history(courserun_key, user, message_count):
     return message_history
 
 
-def check_if_audit_trial_is_expired(user, upgrade_deadline):
+def audit_trial_is_expired(user, upgrade_deadline):
     """
     Given a user (User), get or create the corresponding LearningAssistantAuditTrial trial object.
     """
@@ -249,6 +249,4 @@ def check_if_audit_trial_is_expired(user, upgrade_deadline):
 
     # If the user's trial is past its expiry date, return "True" for expired. Else, return False
     DAYS_SINCE_TRIAL_START_DATE = datetime.now() - audit_trial.start_date
-    if DAYS_SINCE_TRIAL_START_DATE >= timedelta(days=AUDIT_TRIAL_MAX_DAYS):
-        return True
-    return False
+    return DAYS_SINCE_TRIAL_START_DATE >= timedelta(days=AUDIT_TRIAL_MAX_DAYS)

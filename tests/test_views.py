@@ -108,7 +108,7 @@ class CourseChatViewTests(LoggedInTestCase):
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
-    @patch('learning_assistant.views.check_if_audit_trial_is_expired')
+    @patch('learning_assistant.views.audit_trial_is_expired')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
