@@ -135,8 +135,7 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    def test_audit_trial_expired(self, mock_mode, mock_enrollment, mock_role,
-                                                           mock_waffle, mock_trial_expired):
+    def test_audit_trial_expired(self, mock_mode, mock_enrollment, mock_role, mock_waffle, mock_trial_expired):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']

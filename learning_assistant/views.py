@@ -125,7 +125,6 @@ class CourseChatView(APIView):
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
         enrollment_mode = enrollment_object.mode if enrollment_object else None
 
-        print("\nenrollment_mode:", enrollment_mode)
         # If the user is in a verified course mode or is staff, return the next message
         if (
             # Here we include CREDIT_MODE and NO_ID_PROFESSIONAL_MODE, as CourseMode.VERIFIED_MODES on its own
@@ -133,13 +132,11 @@ class CourseChatView(APIView):
             enrollment_mode in CourseMode.VERIFIED_MODES + CourseMode.CREDIT_MODE + CourseMode.NO_ID_PROFESSIONAL_MODE
             or user_role_is_staff(user_role)
         ):
-            print("\n\nVERIFIED\n")
             return self._get_next_message(request, courserun_key, course_run_id)
 
         # If user has an audit enrollment record, get or create their trial. If the trial is not expired, return the
         # next message. Otherwise, return 403
         elif enrollment_mode in CourseMode.UPSELL_TO_VERIFIED_MODES:  # AUDIT, HONOR
-            print("\n\nAUDIT\n")
             course_mode = CourseMode.objects.get(course=courserun_key)
             upgrade_deadline = course_mode.expiration_datetime()
 
@@ -155,7 +152,6 @@ class CourseChatView(APIView):
         # If user has a course mode that is not verified & not meant to access to the learning assistant, return 403
         # This covers the other course modes: UNPAID_EXECUTIVE_EDUCATION & UNPAID_BOOTCAMP
         else:
-            print("\n\nHUH????\n")
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,
                 data={'detail': 'Must be staff or have valid enrollment.'}
