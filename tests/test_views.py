@@ -108,25 +108,6 @@ class CourseChatViewTests(LoggedInTestCase):
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
-    @patch('learning_assistant.views.audit_trial_is_expired')
-    @patch('learning_assistant.views.learning_assistant_enabled')
-    @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
-    @patch('learning_assistant.views.CourseMode')
-    def test_user_audit_enrollment_not_staff_trial_expired(self, mock_mode, mock_enrollment, mock_role,
-                                                           mock_waffle, mock_expired):
-        mock_waffle.return_value = True
-        mock_role.return_value = 'student'
-        mock_mode.VERIFIED_MODES = ['verified']
-        mock_mode.AUDIT_MODES = ['audit']
-        mock_mode.objects.get.return_value = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
-        mock_enrollment.return_value = MagicMock(mode='audit')
-        mock_expired.return_value = True
-
-        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
-        self.assertEqual(response.status_code, 403)
-
     @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
@@ -148,6 +129,46 @@ class CourseChatViewTests(LoggedInTestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 400)
+
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_audit_trial_expired(self, mock_mode, mock_enrollment, mock_role,
+                                                           mock_waffle, mock_trial_expired):
+        mock_waffle.return_value = True
+        mock_role.return_value = 'student'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODE = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_mode.objects.get.return_value = MagicMock()
+        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
+        mock_enrollment.return_value = MagicMock(mode='audit')
+        mock_trial_expired.return_value = True
+
+        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
+        self.assertEqual(response.status_code, 403)
+        mock_trial_expired.assert_called_once()
+
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_invalid_enrollment_mode(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
+        mock_waffle.return_value = True
+        mock_role.return_value = 'student'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODE = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_mode.objects.get.return_value = MagicMock()
+        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
+        mock_enrollment.return_value = MagicMock(mode='unpaid_executive_education')
+
+        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
+        self.assertEqual(response.status_code, 403)
 
     @ddt.data(False, True)
     @patch('learning_assistant.views.render_prompt_template')
@@ -174,6 +195,8 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODE = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
         mock_enrollment.return_value = MagicMock(mode='verified')
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'Rendered template mock'

@@ -1,6 +1,12 @@
 """
 Constants for the learning_assistant app.
 """
+
+try:
+    from common.djangoapps.course_modes.models import CourseMode
+except ImportError:
+    pass
+
 # Pulled from edx-platform. Will correctly capture both old- and new-style
 # course ID strings.
 INTERNAL_COURSE_KEY_PATTERN = r'([^/+]+(/|\+)[^/+]+(/|\+)[^/?]+)'
