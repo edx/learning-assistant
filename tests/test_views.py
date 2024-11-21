@@ -1,9 +1,9 @@
 """
 Tests for the learning assistant views.
 """
-import datetime
 import json
 import sys
+from datetime import date, datetime, timedelta
 from importlib import import_module
 from unittest.mock import MagicMock, call, patch
 
@@ -75,7 +75,7 @@ class LoggedInTestCase(TestCase):
 
 
 @ddt.ddt
-class TestCourseChatView(LoggedInTestCase):
+class CourseChatViewTests(LoggedInTestCase):
     """
     Test for the CourseChatView
     """
@@ -108,32 +108,6 @@ class TestCourseChatView(LoggedInTestCase):
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
-    @patch('learning_assistant.views.learning_assistant_enabled')
-    @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
-    @patch('learning_assistant.views.CourseMode')
-    def test_user_no_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
-        mock_waffle.return_value = True
-        mock_role.return_value = 'student'
-        mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = None
-
-        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
-        self.assertEqual(response.status_code, 403)
-
-    @patch('learning_assistant.views.learning_assistant_enabled')
-    @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
-    @patch('learning_assistant.views.CourseMode')
-    def test_user_audit_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
-        mock_waffle.return_value = True
-        mock_role.return_value = 'student'
-        mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = MagicMock(mode='audit')
-
-        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
-        self.assertEqual(response.status_code, 403)
-
     @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
@@ -156,7 +130,56 @@ class TestCourseChatView(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    @ddt.data(False, True)
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_audit_trial_expired(self, mock_mode, mock_enrollment,
+                                 mock_role, mock_waffle, mock_trial_expired):
+        mock_waffle.return_value = True
+        mock_role.return_value = 'student'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODE = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_mode.objects.get.return_value = MagicMock()
+        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
+        mock_enrollment.return_value = MagicMock(mode='audit')
+
+        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
+        self.assertEqual(response.status_code, 403)
+        mock_trial_expired.assert_called_once()
+
+        mock_waffle.reset_mock()
+        mock_role.reset_mock()
+        mock_mode.reset_mock()
+        mock_enrollment.reset_mock()
+        mock_trial_expired.reset_mock()
+
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_invalid_enrollment_mode(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
+        mock_waffle.return_value = True
+        mock_role.return_value = 'student'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODE = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_mode.objects.get.return_value = MagicMock()
+        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
+        mock_enrollment.return_value = MagicMock(mode='unpaid_executive_education')
+
+        response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
+        self.assertEqual(response.status_code, 403)
+
+    # Test that unexpired audit trials + vierfied track learners get the default chat response
+    @ddt.data((False, 'verified'),
+              (True, 'audit'))
+    @ddt.unpack
+    @patch('learning_assistant.views.audit_trial_is_expired')
     @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.get_chat_response')
     @patch('learning_assistant.views.learning_assistant_enabled')
@@ -169,6 +192,7 @@ class TestCourseChatView(LoggedInTestCase):
     def test_chat_response_default(
         self,
         enabled_flag,
+        enrollment_mode,
         mock_chat_history_enabled,
         mock_save_chat_message,
         mock_mode,
@@ -177,13 +201,18 @@ class TestCourseChatView(LoggedInTestCase):
         mock_waffle,
         mock_chat_response,
         mock_render,
+        mock_trial_expired,
     ):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = MagicMock(mode='verified')
+        mock_mode.CREDIT_MODE = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_enrollment.return_value = MagicMock(mode=enrollment_mode)
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'Rendered template mock'
+        mock_trial_expired.return_value = False
         test_unit_id = 'test-unit-id'
 
         mock_chat_history_enabled.return_value = enabled_flag
@@ -349,7 +378,7 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
             user=self.user,
             role='staff',
             content='Older message',
-            created=datetime.date(2024, 10, 1)
+            created=date(2024, 10, 1)
         )
 
         LearningAssistantMessage.objects.create(
@@ -357,7 +386,7 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
             user=self.user,
             role='staff',
             content='Newer message',
-            created=datetime.date(2024, 10, 3)
+            created=date(2024, 10, 3)
         )
 
         db_messages = LearningAssistantMessage.objects.all().order_by('created')

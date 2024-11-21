@@ -2,6 +2,7 @@
 Library for the learning_assistant app.
 """
 import logging
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -10,9 +11,13 @@ from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
 
-from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
+from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, AUDIT_TRIAL_MAX_DAYS, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantCourseEnabledData
-from learning_assistant.models import LearningAssistantCourseEnabled, LearningAssistantMessage
+from learning_assistant.models import (
+    LearningAssistantAuditTrial,
+    LearningAssistantCourseEnabled,
+    LearningAssistantMessage,
+)
 from learning_assistant.platform_imports import (
     block_get_children,
     block_leaf_filter,
@@ -224,3 +229,24 @@ def get_message_history(courserun_key, user, message_count):
     message_history = list(LearningAssistantMessage.objects.filter(
         course_id=courserun_key, user=user).order_by('-created')[:message_count])[::-1]
     return message_history
+
+
+def audit_trial_is_expired(user, upgrade_deadline):
+    """
+    Given a user (User), get or create the corresponding LearningAssistantAuditTrial trial object.
+    """
+    # If the upgrade deadline has passed, return "True" for expired
+    DAYS_SINCE_UPGRADE_DEADLINE = datetime.now() - upgrade_deadline
+    if DAYS_SINCE_UPGRADE_DEADLINE >= timedelta(days=0):
+        return True
+
+    audit_trial, _ = LearningAssistantAuditTrial.objects.get_or_create(
+        user=user,
+        defaults={
+            "start_date": datetime.now(),
+        },
+    )
+
+    # If the user's trial is past its expiry date, return "True" for expired. Else, return False
+    DAYS_SINCE_TRIAL_START_DATE = datetime.now() - audit_trial.start_date
+    return DAYS_SINCE_TRIAL_START_DATE >= timedelta(days=AUDIT_TRIAL_MAX_DAYS)

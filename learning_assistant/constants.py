@@ -14,3 +14,5 @@ CATEGORY_TYPE_MAP = {
     "html": "TEXT",
     "video": "VIDEO",
 }
+
+AUDIT_TRIAL_MAX_DAYS = 14
