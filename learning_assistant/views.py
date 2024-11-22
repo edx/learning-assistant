@@ -247,6 +247,10 @@ class LearningAssistantMessageHistoryView(APIView):
                 data={'detail': 'Learning assistant not enabled for course.'}
             )
 
+        # If chat history is disabled, we return no messages as response.
+        if not chat_history_enabled(courserun_key):
+            return Response(status=http_status.HTTP_200_OK, data=[])
+
         # If user does not have an enrollment record, or is not staff, they should not have access
         user_role = get_user_role(request.user, courserun_key)
         enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)

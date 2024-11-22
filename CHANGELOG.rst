@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.4.6 - 2024-11-22
+******************
+* Gates the chat history endpoint behind a waffle flag
+
 4.4.5 - 2024-11-12
 ******************
 * Updated Learning Assistant History payload to return in ascending order

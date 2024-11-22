@@ -321,12 +321,21 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
 
         self.assertEqual(response.status_code, 403)
 
+    @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    def test_user_no_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
-        mock_waffle.return_value = True
+    def test_user_no_enrollment_not_staff(
+        self,
+        mock_mode,
+        mock_enrollment,
+        mock_role,
+        mock_assistant_waffle,
+        mock_history_waffle
+    ):
+        mock_assistant_waffle.return_value = True
+        mock_history_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.return_value = None
@@ -338,12 +347,21 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 403)
 
+    @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
     @patch('learning_assistant.views.CourseMode')
-    def test_user_audit_enrollment_not_staff(self, mock_mode, mock_enrollment, mock_role, mock_waffle):
-        mock_waffle.return_value = True
+    def test_user_audit_enrollment_not_staff(
+        self,
+        mock_mode,
+        mock_enrollment,
+        mock_role,
+        mock_assistant_waffle,
+        mock_history_waffle
+    ):
+        mock_assistant_waffle.return_value = True
+        mock_history_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.return_value = MagicMock(mode='audit')
@@ -355,6 +373,7 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 403)
 
+    @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
@@ -366,9 +385,11 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
         mock_mode,
         mock_enrollment,
         mock_role,
-        mock_waffle
+        mock_assistant_waffle,
+        mock_history_waffle,
     ):
-        mock_waffle.return_value = True
+        mock_assistant_waffle.return_value = True
+        mock_history_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.return_value = MagicMock(mode='verified')
@@ -407,3 +428,45 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
             self.assertEqual(message['role'], db_messages[i].role)
             self.assertEqual(message['content'], db_messages[i].content)
             self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
+
+    @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_course_id')
+    def test_learning_message_history_view_get_disabled(
+        self,
+        mock_get_course_id,
+        mock_assistant_waffle,
+        mock_history_waffle,
+    ):
+        mock_assistant_waffle.return_value = True
+        mock_history_waffle.return_value = False
+
+        LearningAssistantMessage.objects.create(
+            course_id=self.course_id,
+            user=self.user,
+            role='staff',
+            content='Older message',
+            created=date(2024, 10, 1)
+        )
+
+        LearningAssistantMessage.objects.create(
+            course_id=self.course_id,
+            user=self.user,
+            role='staff',
+            content='Newer message',
+            created=date(2024, 10, 3)
+        )
+
+        db_messages = LearningAssistantMessage.objects.all().order_by('created')
+        db_messages_count = len(db_messages)
+
+        mock_get_course_id.return_value = self.course_id
+        response = self.client.get(
+            reverse('message-history', kwargs={'course_run_id': self.course_id})+f'?message_count={db_messages_count}',
+            content_type='application/json'
+        )
+        data = response.data
+
+        # Ensure returning an empty list
+        self.assertEqual(len(data), 0)
+        self.assertEqual(data, [])
