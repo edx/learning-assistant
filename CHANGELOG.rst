@@ -14,9 +14,14 @@ Change Log
 Unreleased
 **********
 
+4.4.7 - 2024-11-25
+******************
+* Fixes the Course Chat View CourseMode concatenation issue
+
 4.4.6 - 2024-11-22
 ******************
 * Gates the chat history endpoint behind a waffle flag
+* Add LearningAssistantAuditTrial model
 
 4.4.5 - 2024-11-12
 ******************

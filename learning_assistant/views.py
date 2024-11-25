@@ -129,7 +129,8 @@ class CourseChatView(APIView):
         if (
             # Here we include CREDIT_MODE and NO_ID_PROFESSIONAL_MODE, as CourseMode.VERIFIED_MODES on its own
             # doesn't match what we count as "verified modes" in the frontend component.
-            enrollment_mode in CourseMode.VERIFIED_MODES + CourseMode.CREDIT_MODE + CourseMode.NO_ID_PROFESSIONAL_MODE
+            enrollment_mode in CourseMode.VERIFIED_MODES + CourseMode.CREDIT_MODES
+            + [CourseMode.NO_ID_PROFESSIONAL_MODE]
             or user_role_is_staff(user_role)
         ):
             return self._get_next_message(request, courserun_key, course_run_id)

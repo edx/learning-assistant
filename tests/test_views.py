@@ -140,8 +140,8 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_mode.CREDIT_MODE = ['credit']
-        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
         mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
         mock_mode.objects.get.return_value = MagicMock()
         mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
@@ -165,8 +165,8 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_mode.CREDIT_MODE = ['credit']
-        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
         mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
         mock_mode.objects.get.return_value = MagicMock()
         mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
@@ -206,8 +206,8 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_waffle.return_value = True
         mock_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_mode.CREDIT_MODE = ['credit']
-        mock_mode.NO_ID_PROFESSIONAL_MODE = ['no-id']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
         mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
         mock_enrollment.return_value = MagicMock(mode=enrollment_mode)
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
