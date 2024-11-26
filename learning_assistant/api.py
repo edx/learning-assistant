@@ -1,6 +1,7 @@
 """
 Library for the learning_assistant app.
 """
+import datetime
 import logging
 from datetime import datetime, timedelta
 
@@ -11,8 +12,13 @@ from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
 
-from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, AUDIT_TRIAL_MAX_DAYS, CATEGORY_TYPE_MAP
-from learning_assistant.data import LearningAssistantCourseEnabledData
+try:
+    from common.djangoapps.course_modes.models import CourseMode
+except ImportError:
+    CourseMode = None
+
+from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
+from learning_assistant.data import LearningAssistantAuditTrialData, LearningAssistantCourseEnabledData
 from learning_assistant.models import (
     LearningAssistantAuditTrial,
     LearningAssistantCourseEnabled,
@@ -231,15 +237,71 @@ def get_message_history(courserun_key, user, message_count):
     return message_history
 
 
-def audit_trial_is_expired(user, upgrade_deadline):
+def get_audit_trial_expiration_date(start_date):
     """
-    Given a user (User), get or create the corresponding LearningAssistantAuditTrial trial object.
-    """
-    # If the upgrade deadline has passed, return "True" for expired
-    DAYS_SINCE_UPGRADE_DEADLINE = datetime.now() - upgrade_deadline
-    if DAYS_SINCE_UPGRADE_DEADLINE >= timedelta(days=0):
-        return True
+    Given a start date of an audit trial, calculate the expiration date of the audit trial.
 
+    Arguments:
+    * start_date (datetime): the start date of the audit trial
+
+    Returns:
+    * expiration_date (datetime): the expiration date of the audit trial
+    """
+    default_trial_length_days = 14
+
+    trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
+
+    if trial_length_days is None:
+        trial_length_days = default_trial_length_days
+
+    # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
+    # pylint: disable=consider-using-max-builtin
+    if trial_length_days < 0:
+        trial_length_days = 0
+
+    expiration_datetime = start_date + timedelta(days=trial_length_days)
+    return expiration_datetime
+
+
+def get_audit_trial(user):
+    """
+    Given a user, return the associated audit trial data.
+
+    Arguments:
+    * user (User): the user
+
+    Returns:
+    * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
+        * user_id (int): the user's id
+        * start_date (datetime): the start date of the audit trial
+        * expiration_date (datetime): the expiration date of the audit trial
+    * None: if no audit trial exists for the user
+    """
+    try:
+        audit_trial = LearningAssistantAuditTrial.objects.get(user=user)
+    except LearningAssistantAuditTrial.DoesNotExist:
+        return None
+
+    return LearningAssistantAuditTrialData(
+        user_id=user.id,
+        start_date=audit_trial.start_date,
+        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date),
+    )
+
+
+def get_or_create_audit_trial(user):
+    """
+    Given a user, return the associated audit trial data, creating a new audit trial for the user if one does not exist.
+
+    Arguments:
+    * user (User): the user
+
+    Returns:
+    * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
+        * user_id (int): the user's id
+        * start_date (datetime): the start date of the audit trial
+        * expiration_date (datetime): the expiration date of the audit trial
+    """
     audit_trial, _ = LearningAssistantAuditTrial.objects.get_or_create(
         user=user,
         defaults={
@@ -247,6 +309,26 @@ def audit_trial_is_expired(user, upgrade_deadline):
         },
     )
 
-    # If the user's trial is past its expiry date, return "True" for expired. Else, return False
-    DAYS_SINCE_TRIAL_START_DATE = datetime.now() - audit_trial.start_date
-    return DAYS_SINCE_TRIAL_START_DATE >= timedelta(days=AUDIT_TRIAL_MAX_DAYS)
+    return LearningAssistantAuditTrialData(
+        user_id=user.id,
+        start_date=audit_trial.start_date,
+        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date),
+    )
+
+
+def audit_trial_is_expired(audit_trial_data, courserun_key):
+    """
+    Given a user (User), get or create the corresponding LearningAssistantAuditTrial trial object.
+    """
+    course_mode = CourseMode.objects.get(course=courserun_key)
+
+    upgrade_deadline = course_mode.expiration_datetime()
+
+    # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
+    # CourseMode, so if it's None, then do not return True.
+    days_until_upgrade_deadline = datetime.now() - upgrade_deadline if upgrade_deadline else None
+    if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0):
+        return True
+
+    # If the user's trial is past its expiry date, return True for expired. Else, return False.
+    return audit_trial_data is None or audit_trial_data.expiration_date <= datetime.now()

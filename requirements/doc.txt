@@ -46,7 +46,6 @@ cryptography==43.0.3
     # via
     #   -r requirements/test.txt
     #   pyjwt
-    #   secretstorage
 ddt==1.7.2
     # via -r requirements/test.txt
 django==4.2.16
@@ -105,6 +104,8 @@ edx-opaque-keys==2.11.0
     #   edx-drf-extensions
 edx-rest-api-client==6.0.0
     # via -r requirements/test.txt
+freezegun==1.5.1
+    # via -r requirements/test.txt
 idna==3.10
     # via
     #   -r requirements/test.txt
@@ -125,10 +126,6 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
-jeepney==0.8.0
-    # via
-    #   keyring
-    #   secretstorage
 jinja2==3.1.4
     # via
     #   -r requirements/test.txt
@@ -209,6 +206,10 @@ pytest-cov==6.0.0
     # via -r requirements/test.txt
 pytest-django==4.9.0
     # via -r requirements/test.txt
+python-dateutil==2.9.0.post0
+    # via
+    #   -r requirements/test.txt
+    #   freezegun
 python-slugify==8.0.4
     # via
     #   -r requirements/test.txt
@@ -239,12 +240,14 @@ rfc3986==2.0.0
     # via twine
 rich==13.9.4
     # via twine
-secretstorage==3.3.3
-    # via keyring
 semantic-version==2.10.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
+six==1.16.0
+    # via
+    #   -r requirements/test.txt
+    #   python-dateutil
 snowballstemmer==2.2.0
     # via sphinx
 sphinx==8.1.3
