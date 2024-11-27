@@ -26,13 +26,36 @@ One Time Setup
 --------------
 .. code-block::
 
-  # Clone the repository
+  # Clone the repository (in the ../src relative to devstack repo)
   git clone git@github.com:openedx/learning-assistant.git
   cd learning-assistant
 
   # Set up a virtualenv with the same name as the repo and activate it
   # Here's how you might do that if you have virtualenvwrapper setup.
   mkvirtualenv -p python3.8 learning-assistant
+
+In your ``requirements/edx/private.txt`` requirements file in edx-platform, add:
+
+.. code-block::
+
+  -e /edx/src/learning-assistant
+
+In your ``lms/envs/private.py`` settings file in edx-platform (create file if necessary), add the below settings. The value of the API key shouldn't matter, because it's not being used at this point, but the setting needs to be there.
+
+.. code-block::
+
+  CHAT_COMPLETION_API = '' # copy url from edx-internal
+  CHAT_COMPLETION_API_KEY = '' # add value though value itself does not matter
+
+  LEARNING_ASSISTANT_PROMPT_TEMPLATE = '' # copy value from edx-internal
+
+  LEARNING_ASSISTANT_AVAILABLE = True
+
+In devstack, run ``make lms-shell`` and run the following command: ``paver install_prereqs;exit``. This will install anything included in your ``private.txt`` requirements file.
+
+In django admin, add the following waffle flag ``learning_assistant.enable_course_content`` and make sure it is turned on for Everyone. The flag should be checked on for: Superusers, Staff, and Authenticated.
+
+This plugin depends on the lms and discovery - both should be running.
 
 Every time you develop something in this repo
 ---------------------------------------------
