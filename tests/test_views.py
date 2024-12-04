@@ -5,7 +5,9 @@ import json
 import sys
 from datetime import date, datetime, timedelta
 from importlib import import_module
+from itertools import product
 from unittest.mock import MagicMock, call, patch
+from urllib.parse import urlencode
 
 import ddt
 from django.conf import settings
@@ -14,9 +16,10 @@ from django.http import HttpRequest
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
-from learning_assistant.models import LearningAssistantMessage
+from learning_assistant.models import LearningAssistantAuditTrial, LearningAssistantMessage
 
 User = get_user_model()
 
@@ -96,13 +99,6 @@ class CourseChatViewTests(LoggedInTestCase):
         self.patcher.start()
 
     @patch('learning_assistant.views.learning_assistant_enabled')
-    def test_invalid_course_id(self, mock_learning_assistant_enabled):
-        mock_learning_assistant_enabled.return_value = True
-        response = self.client.get(reverse('enabled', kwargs={'course_run_id': self.course_id+'+invalid'}))
-
-        self.assertEqual(response.status_code, 400)
-
-    @patch('learning_assistant.views.learning_assistant_enabled')
     def test_course_waffle_inactive(self, mock_waffle):
         mock_waffle.return_value = False
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
@@ -111,9 +107,13 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.render_prompt_template')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
-    def test_invalid_messages(self, mock_role, mock_waffle, mock_render):
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_invalid_messages(self, mock_mode, mock_enrollment, mock_get_user_role, mock_waffle, mock_render):
         mock_waffle.return_value = True
-        mock_role.return_value = 'staff'
+        mock_get_user_role.return_value = 'staff'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
 
         mock_render.return_value = 'This is a template'
         test_unit_id = 'test-unit-id'
@@ -175,7 +175,7 @@ class CourseChatViewTests(LoggedInTestCase):
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
         self.assertEqual(response.status_code, 403)
 
-    # Test that unexpired audit trials + vierfied track learners get the default chat response
+    # Test that unexpired audit trials + verified track learners get the default chat response
     @ddt.data((False, 'verified'),
               (True, 'audit'))
     @ddt.unpack
@@ -184,7 +184,7 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.get_chat_response')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
     @patch('learning_assistant.views.save_chat_message')
     @patch('learning_assistant.views.chat_history_enabled')
@@ -197,19 +197,19 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_save_chat_message,
         mock_mode,
         mock_enrollment,
-        mock_role,
+        mock_get_user_role,
         mock_waffle,
         mock_chat_response,
         mock_render,
         mock_trial_expired,
     ):
         mock_waffle.return_value = True
-        mock_role.return_value = 'student'
+        mock_get_user_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
         mock_mode.CREDIT_MODES = ['credit']
         mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
         mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
-        mock_enrollment.return_value = MagicMock(mode=enrollment_mode)
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode=enrollment_mode)
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'Rendered template mock'
         mock_trial_expired.return_value = False
@@ -283,7 +283,6 @@ class LearningAssistantEnabledViewTests(LoggedInTestCase):
         self.assertEqual(response.status_code, 400)
 
 
-@ddt.ddt
 class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
     """
     Tests for the LearningAssistantMessageHistoryView
@@ -292,13 +291,6 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
     def setUp(self):
         super().setUp()
         self.course_id = 'course-v1:edx+test+23'
-
-    @patch('learning_assistant.views.learning_assistant_enabled')
-    def test_invalid_course_id(self, mock_learning_assistant_enabled):
-        mock_learning_assistant_enabled.return_value = True
-        response = self.client.get(reverse('enabled', kwargs={'course_run_id': self.course_id+'+invalid'}))
-
-        self.assertEqual(response.status_code, 400)
 
     @patch('learning_assistant.views.learning_assistant_enabled')
     def test_course_waffle_inactive(self, mock_waffle):
@@ -324,21 +316,21 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
     def test_user_no_enrollment_not_staff(
         self,
         mock_mode,
         mock_enrollment,
-        mock_role,
+        mock_get_user_role,
         mock_assistant_waffle,
         mock_history_waffle
     ):
         mock_assistant_waffle.return_value = True
         mock_history_waffle.return_value = True
-        mock_role.return_value = 'student'
+        mock_get_user_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = None
+        mock_enrollment.get_enrollment = MagicMock(return_value=None)
 
         message_count = 5
         response = self.client.get(
@@ -350,21 +342,21 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
     def test_user_audit_enrollment_not_staff(
         self,
         mock_mode,
         mock_enrollment,
-        mock_role,
+        mock_get_user_role,
         mock_assistant_waffle,
         mock_history_waffle
     ):
         mock_assistant_waffle.return_value = True
         mock_history_waffle.return_value = True
-        mock_role.return_value = 'student'
+        mock_get_user_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = MagicMock(mode='audit')
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode='audit')
 
         message_count = 5
         response = self.client.get(
@@ -376,7 +368,7 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
     @patch('learning_assistant.views.get_user_role')
-    @patch('learning_assistant.views.CourseEnrollment.get_enrollment')
+    @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
     @patch('learning_assistant.views.get_course_id')
     def test_learning_message_history_view_get(
@@ -384,15 +376,15 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
         mock_get_course_id,
         mock_mode,
         mock_enrollment,
-        mock_role,
+        mock_get_user_role,
         mock_assistant_waffle,
         mock_history_waffle,
     ):
         mock_assistant_waffle.return_value = True
         mock_history_waffle.return_value = True
-        mock_role.return_value = 'student'
+        mock_get_user_role.return_value = 'student'
         mock_mode.VERIFIED_MODES = ['verified']
-        mock_enrollment.return_value = MagicMock(mode='verified')
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
 
         LearningAssistantMessage.objects.create(
             course_id=self.course_id,
@@ -470,3 +462,351 @@ class LearningAssistantMessageHistoryViewTests(LoggedInTestCase):
         # Ensure returning an empty list
         self.assertEqual(len(data), 0)
         self.assertEqual(data, [])
+
+
+@ddt.ddt
+class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
+    """
+    Tests for the LearningAssistantChatSummaryView
+    """
+    sys.modules['lms.djangoapps.courseware.access'] = MagicMock()
+    sys.modules['lms.djangoapps.courseware.toggles'] = MagicMock()
+    sys.modules['common.djangoapps.course_modes.models'] = MagicMock()
+    sys.modules['common.djangoapps.student.models'] = MagicMock()
+
+    def setUp(self):
+        super().setUp()
+        self.course_id = 'course-v1:edx+test+23'
+
+    @patch('learning_assistant.views.CourseKey')
+    def test_invalid_course_id(self, mock_course_key):
+        mock_course_key.from_string = MagicMock(side_effect=InvalidKeyError('foo', 'bar'))
+
+        response = self.client.get(reverse('chat-summary', kwargs={'course_run_id': self.course_id+'+invalid'}))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Course ID is not a valid course ID.')
+
+    @ddt.data(
+        *product(
+            [True, False],                                   # learning assistant enabled
+            [True, False],                                   # chat history enabled
+            ['staff', 'instructor'],                         # user role
+            ['verified', 'credit', 'no-id', 'audit', None],  # course mode
+            [True, False],                                   # trial available
+            [True, False],                                   # trial expired
+        )
+    )
+    @ddt.unpack
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_chat_summary_with_access_instructor(
+        self,
+        learning_assistant_enabled_mock_value,
+        chat_history_enabled_mock_value,
+        user_role_mock_value,
+        course_mode_mock_value,
+        trial_available,
+        audit_trial_is_expired_mock_value,
+        mock_mode,
+        mock_enrollment,
+        mock_get_user_role,
+        mock_learning_assistant_enabled,
+        mock_chat_history_enabled,
+        mock_audit_trial_is_expired,
+    ):
+        # Set up mocks.
+        mock_learning_assistant_enabled.return_value = learning_assistant_enabled_mock_value
+        mock_chat_history_enabled.return_value = chat_history_enabled_mock_value
+
+        mock_get_user_role.return_value = user_role_mock_value
+
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode=course_mode_mock_value)
+
+        # Set up message history data.
+        if chat_history_enabled_mock_value:
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_id,
+                user=self.user,
+                role='user',
+                content='Older message',
+                created=date(2024, 10, 1)
+            )
+
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_id,
+                user=self.user,
+                role='user',
+                content='Newer message',
+                created=date(2024, 10, 3)
+            )
+
+            db_messages = LearningAssistantMessage.objects.all().order_by('created')
+            db_messages_count = len(db_messages)
+
+        # Set up audit trial data.
+        mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
+
+        trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
+        if trial_available:
+            LearningAssistantAuditTrial.objects.create(
+                user=self.user,
+                start_date=trial_start_date,
+            )
+
+        url_kwargs = {'course_run_id': self.course_id}
+        url = reverse('chat-summary', kwargs=url_kwargs)
+
+        if chat_history_enabled_mock_value:
+            query_params = {'message_count': db_messages_count}
+            url = f"{url}?{urlencode(query_params)}"
+
+        response = self.client.get(url)
+
+        # Assert message history data is correct.
+        if chat_history_enabled_mock_value:
+            data = response.data['message_history']
+
+            # Ensure same number of entries.
+            self.assertEqual(len(data), db_messages_count)
+
+            # Ensure values are as expected.
+            for i, message in enumerate(data):
+                self.assertEqual(message['role'], db_messages[i].role)
+                self.assertEqual(message['content'], db_messages[i].content)
+                self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
+        else:
+            self.assertEqual(response.data['message_history'], [])
+
+        # Assert trial data is correct.
+        expected_trial_data = {}
+        if trial_available:
+            expected_trial_data['start_date'] = trial_start_date
+            expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
+
+        self.assertEqual(response.data['audit_trial'], expected_trial_data)
+
+    @ddt.data(
+        *product(
+            [True, False],                    # learning assistant enabled
+            [True, False],                    # chat history enabled
+            ['student'],                      # user role
+            ['verified', 'credit', 'no-id'],  # course mode
+            [True, False],                    # trial available
+            [True, False],                    # trial expired
+        )
+    )
+    @ddt.unpack
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_chat_summary_with_full_access_student(
+        self,
+        learning_assistant_enabled_mock_value,
+        chat_history_enabled_mock_value,
+        user_role_mock_value,
+        course_mode_mock_value,
+        trial_available,
+        audit_trial_is_expired_mock_value,
+        mock_mode,
+        mock_enrollment,
+        mock_get_user_role,
+        mock_learning_assistant_enabled,
+        mock_chat_history_enabled,
+        mock_audit_trial_is_expired,
+    ):
+        # Set up mocks.
+        mock_learning_assistant_enabled.return_value = learning_assistant_enabled_mock_value
+        mock_chat_history_enabled.return_value = chat_history_enabled_mock_value
+
+        mock_get_user_role.return_value = user_role_mock_value
+
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode=course_mode_mock_value)
+
+        # Set up message history data.
+        if chat_history_enabled_mock_value:
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_id,
+                user=self.user,
+                role='user',
+                content='Older message',
+                created=date(2024, 10, 1)
+            )
+
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_id,
+                user=self.user,
+                role='user',
+                content='Newer message',
+                created=date(2024, 10, 3)
+            )
+
+            db_messages = LearningAssistantMessage.objects.all().order_by('created')
+            db_messages_count = len(db_messages)
+
+        # Set up audit trial data.
+        mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
+
+        trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
+        if trial_available:
+            LearningAssistantAuditTrial.objects.create(
+                user=self.user,
+                start_date=trial_start_date,
+            )
+
+        url_kwargs = {'course_run_id': self.course_id}
+        url = reverse('chat-summary', kwargs=url_kwargs)
+
+        if chat_history_enabled_mock_value:
+            query_params = {'message_count': db_messages_count}
+            url = f"{url}?{urlencode(query_params)}"
+
+        response = self.client.get(url)
+
+        # Assert message history data is correct.
+        if chat_history_enabled_mock_value:
+            data = response.data['message_history']
+
+            # Ensure same number of entries.
+            self.assertEqual(len(data), db_messages_count)
+
+            # Ensure values are as expected.
+            for i, message in enumerate(data):
+                self.assertEqual(message['role'], db_messages[i].role)
+                self.assertEqual(message['content'], db_messages[i].content)
+                self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
+        else:
+            self.assertEqual(response.data['message_history'], [])
+
+        # Assert trial data is correct.
+        expected_trial_data = {}
+        if trial_available:
+            expected_trial_data['start_date'] = trial_start_date
+            expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
+
+        self.assertEqual(response.data['audit_trial'], expected_trial_data)
+
+    @ddt.data(
+        *product(
+            [True, False],  # learning assistant enabled
+            [True, False],  # chat history enabled
+            ['student'],    # user role
+            ['audit'],      # course mode
+            [True, False],  # trial available
+            [True, False],  # trial expired
+        )
+    )
+    @ddt.unpack
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_chat_summary_with_trial_access_student(
+        self,
+        learning_assistant_enabled_mock_value,
+        chat_history_enabled_mock_value,
+        user_role_mock_value,
+        course_mode_mock_value,
+        trial_available,
+        audit_trial_is_expired_mock_value,
+        mock_mode,
+        mock_enrollment,
+        mock_get_user_role,
+        mock_learning_assistant_enabled,
+        mock_chat_history_enabled,
+        mock_audit_trial_is_expired,
+    ):
+        # Set up mocks.
+        mock_learning_assistant_enabled.return_value = learning_assistant_enabled_mock_value
+        mock_chat_history_enabled.return_value = chat_history_enabled_mock_value
+
+        mock_get_user_role.return_value = user_role_mock_value
+
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode=course_mode_mock_value)
+
+        # Set up message history data.
+        if chat_history_enabled_mock_value:
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_id,
+                user=self.user,
+                role='user',
+                content='Older message',
+                created=date(2024, 10, 1)
+            )
+
+            LearningAssistantMessage.objects.create(
+                course_id=self.course_id,
+                user=self.user,
+                role='user',
+                content='Newer message',
+                created=date(2024, 10, 3)
+            )
+
+            db_messages = LearningAssistantMessage.objects.all().order_by('created')
+            db_messages_count = len(db_messages)
+
+        # Set up audit trial data.
+        mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
+
+        trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
+        if trial_available:
+            LearningAssistantAuditTrial.objects.create(
+                user=self.user,
+                start_date=trial_start_date,
+            )
+
+        url_kwargs = {'course_run_id': self.course_id}
+        url = reverse('chat-summary', kwargs=url_kwargs)
+
+        if chat_history_enabled_mock_value:
+            query_params = {'message_count': db_messages_count}
+            url = f"{url}?{urlencode(query_params)}"
+
+        response = self.client.get(url)
+
+        # Assert message history data is correct.
+        if chat_history_enabled_mock_value and trial_available and not audit_trial_is_expired_mock_value:
+            data = response.data['message_history']
+
+            # Ensure same number of entries.
+            self.assertEqual(len(data), db_messages_count)
+
+            # Ensure values are as expected.
+            for i, message in enumerate(data):
+                self.assertEqual(message['role'], db_messages[i].role)
+                self.assertEqual(message['content'], db_messages[i].content)
+                self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
+        else:
+            self.assertEqual(response.data['message_history'], [])
+
+        # Assert trial data is correct.
+        expected_trial_data = {}
+        if trial_available:
+            expected_trial_data['start_date'] = trial_start_date
+            expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
+
+        self.assertEqual(response.data['audit_trial'], expected_trial_data)

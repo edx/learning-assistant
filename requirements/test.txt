@@ -85,6 +85,8 @@ edx-opaque-keys==2.11.0
     #   edx-drf-extensions
 edx-rest-api-client==6.0.0
     # via -r requirements/base.txt
+freezegun==1.5.1
+    # via -r requirements/test.in
 idna==3.10
     # via
     #   -r requirements/base.txt
@@ -141,6 +143,8 @@ pytest-cov==6.0.0
     # via -r requirements/test.in
 pytest-django==4.9.0
     # via -r requirements/test.in
+python-dateutil==2.9.0.post0
+    # via freezegun
 python-slugify==8.0.4
     # via code-annotations
 pyyaml==6.0.2
@@ -159,6 +163,8 @@ semantic-version==2.10.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
+six==1.16.0
+    # via python-dateutil
 sqlparse==0.5.2
     # via
     #   -r requirements/base.txt

@@ -13,7 +13,12 @@ Change Log
 
 Unreleased
 **********
+
+4.5.0 - 2024-12-04
+******************
 * Add local setup to readme
+* Add a BFFE chat summary endpoint for Learning Assistant, including information about whether the Learning Assistant is
+  enabled, Learning Assistant message history, and Learning Assistant audit trial data.
 
 4.4.7 - 2024-11-25
 ******************

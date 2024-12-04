@@ -140,6 +140,8 @@ filelock==3.16.1
     #   -r requirements/ci.txt
     #   tox
     #   virtualenv
+freezegun==1.5.1
+    # via -r requirements/quality.txt
 idna==3.10
     # via
     #   -r requirements/quality.txt
@@ -274,6 +276,10 @@ pytest-cov==6.0.0
     # via -r requirements/quality.txt
 pytest-django==4.9.0
     # via -r requirements/quality.txt
+python-dateutil==2.9.0.post0
+    # via
+    #   -r requirements/quality.txt
+    #   freezegun
 python-slugify==8.0.4
     # via
     #   -r requirements/quality.txt
@@ -300,6 +306,7 @@ six==1.16.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
+    #   python-dateutil
 snowballstemmer==2.2.0
     # via
     #   -r requirements/quality.txt
