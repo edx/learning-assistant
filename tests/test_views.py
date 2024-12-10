@@ -495,12 +495,14 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             ['verified', 'credit', 'no-id', 'audit', None],  # course mode
             [True, False],                                   # trial available
             [True, False],                                   # trial expired
+            [7, 14],                                         # trial length
         )
     )
     @ddt.unpack
     @patch('learning_assistant.views.audit_trial_is_expired')
     @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_audit_trial_length_days')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
@@ -512,9 +514,11 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         course_mode_mock_value,
         trial_available,
         audit_trial_is_expired_mock_value,
+        audit_trial_length_days_mock_value,
         mock_mode,
         mock_enrollment,
         mock_get_user_role,
+        mock_get_audit_trial_length_days,
         mock_learning_assistant_enabled,
         mock_chat_history_enabled,
         mock_audit_trial_is_expired,
@@ -555,6 +559,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
 
         # Set up audit trial data.
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
+        mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
         trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
         if trial_available:
@@ -588,7 +593,9 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             self.assertEqual(response.data['message_history'], [])
 
         # Assert trial data is correct.
-        expected_trial_data = {}
+        expected_trial_data = {
+            'trial_length': audit_trial_length_days_mock_value,
+        }
         if trial_available:
             expected_trial_data['start_date'] = trial_start_date
             expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
@@ -603,12 +610,14 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             ['verified', 'credit', 'no-id'],  # course mode
             [True, False],                    # trial available
             [True, False],                    # trial expired
+            [7, 14],                          # trial length
         )
     )
     @ddt.unpack
     @patch('learning_assistant.views.audit_trial_is_expired')
     @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_audit_trial_length_days')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
@@ -620,9 +629,11 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         course_mode_mock_value,
         trial_available,
         audit_trial_is_expired_mock_value,
+        audit_trial_length_days_mock_value,
         mock_mode,
         mock_enrollment,
         mock_get_user_role,
+        mock_get_audit_trial_length_days,
         mock_learning_assistant_enabled,
         mock_chat_history_enabled,
         mock_audit_trial_is_expired,
@@ -663,6 +674,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
 
         # Set up audit trial data.
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
+        mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
         trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
         if trial_available:
@@ -696,7 +708,9 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             self.assertEqual(response.data['message_history'], [])
 
         # Assert trial data is correct.
-        expected_trial_data = {}
+        expected_trial_data = {
+            'trial_length': audit_trial_length_days_mock_value,
+        }
         if trial_available:
             expected_trial_data['start_date'] = trial_start_date
             expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
@@ -711,12 +725,14 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             ['audit'],      # course mode
             [True, False],  # trial available
             [True, False],  # trial expired
+            [7, 14],        # trial length
         )
     )
     @ddt.unpack
     @patch('learning_assistant.views.audit_trial_is_expired')
     @patch('learning_assistant.views.chat_history_enabled')
     @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_audit_trial_length_days')
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
@@ -728,9 +744,11 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         course_mode_mock_value,
         trial_available,
         audit_trial_is_expired_mock_value,
+        audit_trial_length_days_mock_value,
         mock_mode,
         mock_enrollment,
         mock_get_user_role,
+        mock_get_audit_trial_length_days,
         mock_learning_assistant_enabled,
         mock_chat_history_enabled,
         mock_audit_trial_is_expired,
@@ -771,6 +789,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
 
         # Set up audit trial data.
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
+        mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
         trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
         if trial_available:
@@ -804,7 +823,9 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             self.assertEqual(response.data['message_history'], [])
 
         # Assert trial data is correct.
-        expected_trial_data = {}
+        expected_trial_data = {
+            'trial_length': audit_trial_length_days_mock_value,
+        }
         if trial_available:
             expected_trial_data['start_date'] = trial_start_date
             expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)

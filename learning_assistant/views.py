@@ -35,7 +35,7 @@ from learning_assistant.api import (
 from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.toggles import chat_history_enabled
-from learning_assistant.utils import get_chat_response, user_role_is_staff
+from learning_assistant.utils import get_audit_trial_length_days, get_chat_response, user_role_is_staff
 
 log = logging.getLogger(__name__)
 
@@ -335,7 +335,7 @@ class LearningAssistantChatSummaryView(APIView):
                     "timestamp": "2024-12-02T15:04:40.084584Z"
                 }
             ],
-            "trial": {
+            "audit_trial": {
                 "start_date": "2024-12-02T14:59:16.148236Z",
                 "expiration_date": "2024-12-16T14:59:16.148236Z"
             }
@@ -402,7 +402,9 @@ class LearningAssistantChatSummaryView(APIView):
         # Get audit trial.
         trial = get_audit_trial(user)
 
-        trial_data = {}
+        trial_data = {
+            'trial_length': get_audit_trial_length_days(),
+        }
         if trial:
             trial_data['start_date'] = trial.start_date
             trial_data['expiration_date'] = trial.expiration_date
