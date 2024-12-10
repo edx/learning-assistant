@@ -64,3 +64,29 @@ CHAT_COMPLETION_API = 'https://test.edx.org/'
 CHAT_COMPLETION_API_KEY = 'endpoint_key'
 CHAT_COMPLETION_API_CONNECT_TIMEOUT = 0.5
 CHAT_COMPLETION_API_READ_TIMEOUT = 10
+
+DISCOVERY_BASE_URL = 'http://edx.devstack.discovery:18381'
+DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL = 'http://edx.devstack.lms:18000/oauth2'
+DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_KEY = 'discovery-backend-service-key'
+DISCOVERY_BACKEND_SERVICE_EDX_OAUTH2_SECRET = 'discovery-backend-service-secret'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+LEARNING_ASSISTANT_PROMPT_TEMPLATE = (
+    "This is a prompt. {% if unit_content %}"
+    "The following text is useful."
+    "\""
+    "{{ unit_content }}"
+    "\""
+    "{% endif %}"
+    "{{ skill_names }}"
+    "{{ title }}"
+)
+
+LEARNING_ASSISTANT_AVAILABLE = True
+
+LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS = 14

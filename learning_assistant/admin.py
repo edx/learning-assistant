@@ -3,13 +3,11 @@ Django Admin pages.
 """
 from django.contrib import admin
 
-from learning_assistant.models import CoursePrompt
+from learning_assistant.models import LearningAssistantCourseEnabled
 
 
-@admin.register(CoursePrompt)
-class CoursePromptAdmin(admin.ModelAdmin):
+@admin.register(LearningAssistantCourseEnabled)
+class LearningAssistantCourseEnabledAdmin(admin.ModelAdmin):
     """
-    Admin panel for course prompts.
+    Admin panel for the LearningAssistantCourseEnabled model.
     """
-
-    list_display = ('id', 'course_id')

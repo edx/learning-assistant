@@ -1,6 +1,7 @@
 [run]
 branch = True
 data_file = .coverage
+relative_files = True
 source=learning_assistant
 omit =
     test_settings
@@ -8,3 +9,4 @@ omit =
     *admin.py
     *static*
     *templates*
+    learning_assistant/plugins.py
