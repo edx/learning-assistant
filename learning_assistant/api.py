@@ -34,6 +34,7 @@ from learning_assistant.platform_imports import (
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
+from learning_assistant.utils import get_audit_trial_length_days
 
 log = logging.getLogger(__name__)
 User = get_user_model()
@@ -247,17 +248,7 @@ def get_audit_trial_expiration_date(start_date):
     Returns:
     * expiration_date (datetime): the expiration date of the audit trial
     """
-    default_trial_length_days = 14
-
-    trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
-
-    if trial_length_days is None:
-        trial_length_days = default_trial_length_days
-
-    # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
-    # pylint: disable=consider-using-max-builtin
-    if trial_length_days < 0:
-        trial_length_days = 0
+    trial_length_days = get_audit_trial_length_days()
 
     expiration_datetime = start_date + timedelta(days=trial_length_days)
     return expiration_datetime

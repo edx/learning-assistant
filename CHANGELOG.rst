@@ -14,6 +14,12 @@ Change Log
 Unreleased
 **********
 
+4.6.0 - 2025-12-10
+******************
+* Add an audit_trial_length_days attribute to the response returned by the ChatSummaryView, representing the
+  number of days in an audit trial as currently configured. It does not necessarily represent the number of days in the
+  learner's current trial.
+
 4.5.0 - 2024-12-04
 ******************
 * Add local setup to readme

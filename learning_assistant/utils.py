@@ -112,3 +112,28 @@ def user_role_is_staff(role):
     * bool: whether the user's role is that of a staff member
     """
     return role in ('staff', 'instructor')
+
+
+def get_audit_trial_length_days():
+    """
+    Return the length of an audit trial in days.
+
+    Arguments:
+    * None
+
+    Returns:
+    * int: the length of an audit trial in days
+    """
+    default_trial_length_days = 14
+
+    trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
+
+    if trial_length_days is None:
+        trial_length_days = default_trial_length_days
+
+    # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
+    # pylint: disable=consider-using-max-builtin
+    if trial_length_days < 0:
+        trial_length_days = 0
+
+    return trial_length_days
