@@ -492,22 +492,24 @@ class GetAuditTrialExpirationDateTests(TestCase):
     Test suite for get_audit_trial_expiration_date.
     """
     @ddt.data(
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 15, 0, 0, 0), None),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 2, 1, 0, 0, 0), None),
+        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 2, 0, 0, 0), 1),
+        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 19, 0, 0, 0), 1),
+        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 8, 0, 0, 0), 7),
+        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 25, 0, 0, 0), 7),
         (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 15, 0, 0, 0), 14),
         (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 2, 1, 0, 0, 0), 14),
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 1, 0, 0, 0), -1),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 18, 0, 0, 0), -1),
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 1, 0, 0, 0), 0),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 18, 0, 0, 0), 0),
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 4, 0, 0, 0), 3),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 21, 0, 0, 0), 3),
     )
     @ddt.unpack
-    def test_expiration_date(self, start_date, expected_expiration_date, trial_length_days):
-        with override_settings(LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS=trial_length_days):
-            expiration_date = get_audit_trial_expiration_date(start_date)
-            self.assertEqual(expected_expiration_date, expiration_date)
+    @patch('learning_assistant.api.get_audit_trial_length_days')
+    def test_expiration_date(
+        self, start_date,
+        expected_expiration_date,
+        trial_length_days,
+        mock_get_audit_trial_length_days
+    ):
+        mock_get_audit_trial_length_days.return_value = trial_length_days
+        expiration_date = get_audit_trial_expiration_date(start_date)
+        self.assertEqual(expected_expiration_date, expiration_date)
 
 
 class GetAuditTrialTests(TestCase):

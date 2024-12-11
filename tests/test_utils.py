@@ -10,7 +10,12 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from requests.exceptions import ConnectTimeout
 
-from learning_assistant.utils import get_chat_response, get_reduced_message_list, user_role_is_staff
+from learning_assistant.utils import (
+    get_audit_trial_length_days,
+    get_chat_response,
+    get_reduced_message_list,
+    user_role_is_staff,
+)
 
 
 @ddt.ddt
@@ -145,3 +150,27 @@ class UserRoleIsStaffTests(TestCase):
     @ddt.unpack
     def test_user_role_is_staff(self, role, expected_value):
         self.assertEqual(user_role_is_staff(role), expected_value)
+
+
+@ddt.ddt
+class GetAuditTrialLengthDaysTests(TestCase):
+    """
+    Tests for the get_audit_trial_length_days helper function.
+    """
+    @ddt.data(
+        (None, 14),
+        (0, 0),
+        (-7, 0),
+        (7, 7),
+        (14, 14),
+        (28, 28),
+    )
+    @ddt.unpack
+    def test_get_audit_trial_length_days_with_value(self, setting_value, expected_value):
+        with patch.object(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', setting_value):
+            self.assertEqual(get_audit_trial_length_days(), expected_value)
+
+    @override_settings()
+    def test_get_audit_trial_length_days_no_setting(self):
+        del settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS
+        self.assertEqual(get_audit_trial_length_days(), 14)
