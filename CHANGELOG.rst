@@ -14,6 +14,11 @@ Change Log
 Unreleased
 **********
 
+4.6.1 - 2025-12-17
+******************
+* Added an admin table for the LearningAssistantAuditTrial model. This table includes an expiration_date valued that is
+  calculated based on the start_date.
+
 4.6.0 - 2025-12-10
 ******************
 * Add an audit_trial_length_days attribute to the response returned by the ChatSummaryView, representing the
