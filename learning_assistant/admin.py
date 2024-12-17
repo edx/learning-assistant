@@ -14,6 +14,8 @@ class LearningAssistantCourseEnabledAdmin(admin.ModelAdmin):
     """
     Admin panel for the LearningAssistantCourseEnabled model.
     """
+
+
 @admin.register(LearningAssistantAuditTrial)
 class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
     """
@@ -22,8 +24,12 @@ class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
     NOTE: When viewed in admin, these datetimes are in UTC.
     Please take this into account when reading/modifying entries.
     """
+
     @admin.display(description="Expiration Date")
-    def expiration_date(obj):
+    def expiration_date(self, obj):
+        """
+        Generate the expiration date for the LearningAssistantAuditTrial based on the start_date.
+        """
         return obj.start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
 
     list_display = ('user', 'start_date', expiration_date)
@@ -31,5 +37,9 @@ class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
     search_fields = ('user__username',)
 
     class Meta:
+        """
+        Meta for the LearningAssistantAuditTrial admin panel.
+        """
+
         model = LearningAssistantAuditTrial
         fields = ('user', 'start_date',)
