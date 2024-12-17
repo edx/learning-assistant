@@ -16,6 +16,11 @@ try:
     from common.djangoapps.course_modes.models import CourseMode
 except ImportError:
     CourseMode = None
+# todo: do we need try / catch for this?
+try:
+    from common.djangoapps.course_modes.models import CourseEnrollment
+except ImportError:
+    CourseEnrollment = None
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantAuditTrialData, LearningAssistantCourseEnabledData
@@ -311,9 +316,9 @@ def audit_trial_is_expired(audit_trial_data, courserun_key):
     """
     Given a user (User), get or create the corresponding LearningAssistantAuditTrial trial object.
     """
-    course_mode = CourseMode.objects.get(course=courserun_key)
+    course_enrollment = CourseEnrollment.objects.get(user=audit_trial_data.user, course=courserun_key)
 
-    upgrade_deadline = course_mode.expiration_datetime()
+    upgrade_deadline = course_enrollment.upgrade_deadline()
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
     # CourseMode, so if it's None, then do not return True.
