@@ -2,7 +2,7 @@
 Test cases for the learning-assistant api module.
 """
 import itertools
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 import ddt
@@ -491,6 +491,7 @@ class GetAuditTrialExpirationDateTests(TestCase):
     """
     Test suite for get_audit_trial_expiration_date.
     """
+
     @ddt.data(
         (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 2, 0, 0, 0), 1),
         (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 19, 0, 0, 0), 1),
@@ -516,6 +517,7 @@ class GetAuditTrialTests(TestCase):
     """
     Test suite for get_audit_trial.
     """
+
     @freeze_time('2024-01-01')
     def setUp(self):
         super().setUp()
@@ -548,6 +550,7 @@ class GetOrCreateAuditTrialTests(TestCase):
     """
     Test suite for get_or_create_audit_trial.
     """
+
     def setUp(self):
         super().setUp()
         self.user = User(username='tester', email='tester@test.com')
@@ -596,65 +599,60 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         self.user = User(username='tester', email='tester@test.com')
         self.user.save()
 
-        self.upgrade_deadline = datetime.now() + timedelta(days=1)  # 1 day from now
+    @freeze_time('2024-01-01 00:00:01 UTC')
+    def test_upgrade_deadline_expired(self):
+        today = datetime.now(tz=timezone.utc)
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = today - timedelta(days=1)  # yesterday
 
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_upgrade_deadline_expired(self, mock_course_mode):
-
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)  # yesterday
-        mock_course_mode.objects.get.return_value = mock_mode
-
-        start_date = datetime.now()
+        start_date = today
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.course_key), True)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_upgrade_deadline_none(self, mock_course_mode):
+    @freeze_time('2024-01-01 00:00:01 UTC')
+    def test_upgrade_deadline_none(self):
+        today = datetime.now(tz=timezone.utc)
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = None
 
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = None
-        mock_course_mode.objects.get.return_value = mock_mode
-
-        # Verify that the audit trial data is considered when determing whether an audit trial is expired and not the
+        # Verify that the audit trial data is considered when determining whether an audit trial is expired and not the
         # upgrade deadline.
-        start_date = datetime.now()
+        start_date = today
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.course_key), False)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), False)
 
-        start_date = datetime.now() - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1)
+        start_date = today - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1)
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.course_key), True)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
     @ddt.data(
         # exactly the trial deadline
-        datetime(year=2024, month=1, day=1) - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
+        datetime(year=2024, month=1, day=1, tzinfo=timezone.utc) -
+        timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         # 1 day more than trial deadline
-        datetime(year=2024, month=1, day=1) - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1),
+        datetime(year=2024, month=1, day=1, tzinfo=timezone.utc) -
+        timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1),
     )
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_audit_trial_expired(self, start_date, mock_course_mode):
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() + timedelta(days=1)  # tomorrow
-        mock_course_mode.objects.get.return_value = mock_mode
+    @freeze_time('2024-01-01 00:00:01 UTC')
+    def test_audit_trial_expired(self, start_date):
+        today = datetime.now(tz=timezone.utc)
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = today + timedelta(days=1)  # tomorrow
 
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
@@ -662,20 +660,19 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
             expiration_date=get_audit_trial_expiration_date(start_date),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.upgrade_deadline), True)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_audit_trial_unexpired(self, mock_course_mode):
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() + timedelta(days=1)  # tomorrow
-        mock_course_mode.objects.get.return_value = mock_mode
+    @freeze_time('2024-01-01 00:00:01 UTC')
+    def test_audit_trial_unexpired(self):
+        today = datetime.now(tz=timezone.utc)
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = today + timedelta(days=1)  # tomorrow
 
-        start_date = datetime.now() - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS - 1)
+        start_date = today - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS - 1)
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
             expiration_date=get_audit_trial_expiration_date(start_date),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.upgrade_deadline), False)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), False)
