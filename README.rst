@@ -53,6 +53,12 @@ In your ``lms/envs/private.py`` settings file in edx-platform (create file if ne
 
 In devstack, run ``make lms-shell`` and run the following command: ``paver install_prereqs;exit``. This will install anything included in your ``private.txt`` requirements file.
 
+In your ``env.development`` config file in frontend-app-learning, add the below setting.
+
+.. code-block::
+
+  ENABLE_XPERT_AUDIT='true'
+
 In django admin, add the following waffle flag ``learning_assistant.enable_course_content`` and make sure it is turned on for Everyone. The flag should be checked on for: Superusers, Staff, and Authenticated.
 
 This plugin depends on the lms and discovery - both should be running.
