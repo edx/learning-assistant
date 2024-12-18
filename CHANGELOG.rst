@@ -14,6 +14,11 @@ Change Log
 Unreleased
 **********
 
+4.6.2 - 2025-12-18
+******************
+* Fixed the params for expiration_date in the admin table for audit trial.
+* Add ENABLE_XPERT_AUDIT instructions.
+
 4.6.1 - 2025-12-17
 ******************
 * Added an admin table for the LearningAssistantAuditTrial model. This table includes an expiration_date valued that is
