@@ -26,11 +26,12 @@ class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
     """
 
     @admin.display(description="Expiration Date")
-    def expiration_date(self, obj):
+    def expiration_date(self):
         """
         Generate the expiration date for the LearningAssistantAuditTrial based on the start_date.
         """
-        return obj.start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
+        # pylint: disable-next=no-member
+        return self.start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
 
     list_display = ('user', 'start_date', expiration_date)
     raw_id_fields = ('user',)
