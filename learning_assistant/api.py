@@ -11,7 +11,6 @@ from django.core.cache import cache
 from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
-from pytz import utc
 
 try:
     from common.djangoapps.course_modes.models import CourseMode
@@ -323,12 +322,14 @@ def audit_trial_is_expired(enrollment, audit_trial_data):
     * audit_trial_is_expired (boolean): whether the audit trial is expired
     """
     upgrade_deadline = enrollment.upgrade_deadline
+    # todo: remove this log
+    log.error(upgrade_deadline)
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
     # CourseMode, so if it's None, then do not return True.
-    days_until_upgrade_deadline = datetime.now(utc) - upgrade_deadline if upgrade_deadline else None
+    days_until_upgrade_deadline = datetime.now(tz=None) - upgrade_deadline if upgrade_deadline else None
     if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0):
         return True
 
     # If the user's trial is past its expiry date, return True for expired. Else, return False.
-    return audit_trial_data is None or audit_trial_data.expiration_date <= datetime.now(utc)
+    return audit_trial_data is None or audit_trial_data.expiration_date <= datetime.now(tz=None)
