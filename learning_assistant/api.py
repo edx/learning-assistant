@@ -322,8 +322,6 @@ def audit_trial_is_expired(enrollment, audit_trial_data):
     * audit_trial_is_expired (boolean): whether the audit trial is expired
     """
     upgrade_deadline = enrollment.upgrade_deadline
-    # todo: remove this log
-    log.error(upgrade_deadline)
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
     # CourseMode, so if it's None, then do not return True.
