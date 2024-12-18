@@ -53,15 +53,22 @@ In your ``lms/envs/private.py`` settings file in edx-platform (create file if ne
 
 In devstack, run ``make lms-shell`` and run the following command: ``paver install_prereqs;exit``. This will install anything included in your ``private.txt`` requirements file.
 
+In django admin, add the following waffle flag ``learning_assistant.enable_course_content`` and make sure it is turned on for Everyone. The flag should be checked on for: Superusers, Staff, and Authenticated.
+
+This plugin depends on the lms and discovery - both should be running.
+
+Enabling Xpert for audit learners
+---------------------------------
+In addition to the "One Time Setup" instructions, the following instructions should be followed to enable Xpert for audit learners locally.
 In your ``env.development`` config file in frontend-app-learning, add the below setting.
 
 .. code-block::
 
   ENABLE_XPERT_AUDIT='true'
 
-In django admin, add the following waffle flag ``learning_assistant.enable_course_content`` and make sure it is turned on for Everyone. The flag should be checked on for: Superusers, Staff, and Authenticated.
+Ensure that you have a non-expired verified mode set up locally for your testing course. You can do this by checking if http://localhost:18000/admin/course_modes/coursemode/ has a course mode with a future expiration date.
 
-This plugin depends on the lms and discovery - both should be running.
+The Xpert for audit learner frontend code depends on the lms, discovery, and ecommerce services. Ensure that all three services are running without errors.
 
 Every time you develop something in this repo
 ---------------------------------------------

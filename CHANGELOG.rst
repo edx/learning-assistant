@@ -13,6 +13,7 @@ Change Log
 
 Unreleased
 **********
+* Updated setup docs
 
 4.6.2 - 2025-12-18
 ******************
