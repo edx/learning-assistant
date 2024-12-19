@@ -18,7 +18,6 @@ try:
 except ImportError:
     CourseMode = None
     CourseEnrollment = None
-# todo: do we need try / catch for this?
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantAuditTrialData, LearningAssistantCourseEnabledData
