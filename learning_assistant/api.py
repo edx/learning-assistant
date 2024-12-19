@@ -324,7 +324,7 @@ def audit_trial_is_expired(enrollment, audit_trial_data):
     upgrade_deadline = enrollment.upgrade_deadline
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
-    # CourseMode, so if it's None, then do not return True.
+    # CourseEnrollment, so if it's None, then do not return True.
     days_until_upgrade_deadline = datetime.now(tz=None) - upgrade_deadline if upgrade_deadline else None
     if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0):
         return True
