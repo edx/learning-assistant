@@ -12,13 +12,6 @@ from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
 
-try:
-    from common.djangoapps.course_modes.models import CourseMode
-    from common.djangoapps.student.models import CourseEnrollment
-except ImportError:
-    CourseMode = None
-    CourseEnrollment = None
-
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantAuditTrialData, LearningAssistantCourseEnabledData
 from learning_assistant.models import (
