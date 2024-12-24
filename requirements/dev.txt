@@ -8,7 +8,7 @@ asgiref==3.8.1
     # via
     #   -r requirements/quality.txt
     #   django
-astroid==3.3.6
+astroid==3.3.8
     # via
     #   -r requirements/quality.txt
     #   pylint
@@ -41,7 +41,7 @@ charset-normalizer==3.4.0
     # via
     #   -r requirements/quality.txt
     #   requests
-click==8.1.7
+click==8.1.8
     # via
     #   -r requirements/pip-tools.txt
     #   -r requirements/quality.txt
@@ -154,7 +154,7 @@ isort==5.13.2
     # via
     #   -r requirements/quality.txt
     #   pylint
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   -r requirements/quality.txt
     #   code-annotations
@@ -210,7 +210,7 @@ pluggy==1.5.0
     #   tox
 polib==1.2.0
     # via edx-i18n-tools
-psutil==6.1.0
+psutil==6.1.1
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
@@ -230,7 +230,7 @@ pyjwt[crypto]==2.10.1
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.3.2
+pylint==3.3.3
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -335,7 +335,7 @@ typing-extensions==4.12.2
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   -r requirements/quality.txt
     #   requests

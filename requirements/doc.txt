@@ -31,7 +31,7 @@ charset-normalizer==3.4.0
     # via
     #   -r requirements/test.txt
     #   requests
-click==8.1.7
+click==8.1.8
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -129,7 +129,7 @@ jeepney==0.8.0
     # via
     #   keyring
     #   secretstorage
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -171,7 +171,7 @@ pluggy==1.5.0
     # via
     #   -r requirements/test.txt
     #   pytest
-psutil==6.1.0
+psutil==6.1.1
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -291,7 +291,7 @@ typing-extensions==4.12.2
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   -r requirements/test.txt
     #   requests

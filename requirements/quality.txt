@@ -8,7 +8,7 @@ asgiref==3.8.1
     # via
     #   -r requirements/test.txt
     #   django
-astroid==3.3.6
+astroid==3.3.8
     # via
     #   pylint
     #   pylint-celery
@@ -27,7 +27,7 @@ charset-normalizer==3.4.0
     # via
     #   -r requirements/test.txt
     #   requests
-click==8.1.7
+click==8.1.8
     # via
     #   -r requirements/test.txt
     #   click-log
@@ -116,7 +116,7 @@ isort==5.13.2
     # via
     #   -r requirements/quality.in
     #   pylint
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -144,7 +144,7 @@ pluggy==1.5.0
     # via
     #   -r requirements/test.txt
     #   pytest
-psutil==6.1.0
+psutil==6.1.1
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -162,7 +162,7 @@ pyjwt[crypto]==2.10.1
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.3.2
+pylint==3.3.3
     # via
     #   edx-lint
     #   pylint-celery
@@ -245,7 +245,7 @@ typing-extensions==4.12.2
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   -r requirements/test.txt
     #   requests
