@@ -156,7 +156,7 @@ class CourseChatView(APIView):
         # next message. Otherwise, return 403
         elif enrollment_mode in CourseMode.UPSELL_TO_VERIFIED_MODES:  # AUDIT, HONOR
             audit_trial = get_or_create_audit_trial(request.user)
-            is_user_audit_trial_expired = audit_trial_is_expired(audit_trial, courserun_key)
+            is_user_audit_trial_expired = audit_trial_is_expired(enrollment_object, audit_trial)
             if is_user_audit_trial_expired:
                 return Response(
                     status=http_status.HTTP_403_FORBIDDEN,
@@ -383,7 +383,7 @@ class LearningAssistantChatSummaryView(APIView):
         has_trial_access = (
             enrollment_mode in valid_trial_access_modes
             and audit_trial
-            and not audit_trial_is_expired(audit_trial, courserun_key)
+            and not audit_trial_is_expired(enrollment_object, audit_trial)
         )
 
         if (
