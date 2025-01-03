@@ -14,9 +14,9 @@ cffi==1.17.1
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
-click==8.1.7
+click==8.1.8
     # via edx-django-utils
 cryptography==44.0.0
     # via pyjwt
@@ -62,7 +62,7 @@ edx-rest-api-client==6.0.0
     # via -r requirements/base.in
 idna==3.10
     # via requests
-jinja2==3.1.4
+jinja2==3.1.5
     # via -r requirements/base.in
 markupsafe==3.0.2
     # via jinja2
@@ -70,7 +70,7 @@ newrelic==10.4.0
     # via edx-django-utils
 pbr==6.1.0
     # via stevedore
-psutil==6.1.0
+psutil==6.1.1
     # via edx-django-utils
 pycparser==2.22
     # via cffi
@@ -97,5 +97,5 @@ stevedore==5.4.0
     #   edx-opaque-keys
 typing-extensions==4.12.2
     # via edx-opaque-keys
-urllib3==2.2.3
+urllib3==2.3.0
     # via requests
