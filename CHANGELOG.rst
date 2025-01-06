@@ -13,19 +13,23 @@ Change Log
 
 Unreleased
 **********
+
+4.6.3 - 2025-01-06
+******************
+* Uses CourseEnrollment instead of CourseMode to get the upgrade deadline required to calculate if a learner's audit trial is expired.
 * Updated setup docs
 
-4.6.2 - 2025-12-18
+4.6.2 - 2024-12-18
 ******************
 * Fixed the params for expiration_date in the admin table for audit trial.
 * Add ENABLE_XPERT_AUDIT instructions.
 
-4.6.1 - 2025-12-17
+4.6.1 - 2024-12-17
 ******************
 * Added an admin table for the LearningAssistantAuditTrial model. This table includes an expiration_date valued that is
   calculated based on the start_date.
 
-4.6.0 - 2025-12-10
+4.6.0 - 2024-12-10
 ******************
 * Add an audit_trial_length_days attribute to the response returned by the ChatSummaryView, representing the
   number of days in an audit trial as currently configured. It does not necessarily represent the number of days in the

@@ -3,7 +3,7 @@ Library for the learning_assistant app.
 """
 import datetime
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -11,11 +11,6 @@ from django.core.cache import cache
 from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
-
-try:
-    from common.djangoapps.course_modes.models import CourseMode
-except ImportError:
-    CourseMode = None
 
 from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantAuditTrialData, LearningAssistantCourseEnabledData
@@ -307,19 +302,25 @@ def get_or_create_audit_trial(user):
     )
 
 
-def audit_trial_is_expired(audit_trial_data, courserun_key):
+def audit_trial_is_expired(enrollment, audit_trial_data):
     """
-    Given a user (User), get or create the corresponding LearningAssistantAuditTrial trial object.
-    """
-    course_mode = CourseMode.objects.get(course=courserun_key)
+    Given an enrollment and audit_trial_data, return whether the audit trial is expired as a boolean.
 
-    upgrade_deadline = course_mode.expiration_datetime()
+    Arguments:
+    * enrollment (CourseEnrollment): the user course enrollment
+    * audit_trial_data (LearningAssistantAuditTrialData): the data related to the audit trial
+
+    Returns:
+    * audit_trial_is_expired (boolean): whether the audit trial is expired
+    """
+    upgrade_deadline = enrollment.upgrade_deadline
+    today = datetime.now(tz=timezone.utc)
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
-    # CourseMode, so if it's None, then do not return True.
-    days_until_upgrade_deadline = datetime.now() - upgrade_deadline if upgrade_deadline else None
+    # CourseEnrollment, so if it's None, then do not return True.
+    days_until_upgrade_deadline = today - upgrade_deadline if upgrade_deadline else None
     if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0):
         return True
 
     # If the user's trial is past its expiry date, return True for expired. Else, return False.
-    return audit_trial_data is None or audit_trial_data.expiration_date <= datetime.now()
+    return audit_trial_data is None or audit_trial_data.expiration_date <= today
