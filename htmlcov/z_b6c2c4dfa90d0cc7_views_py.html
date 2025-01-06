@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-01-03 13:54 +0000
+            created at 2025-01-06 18:28 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -240,7 +240,7 @@
     <p class="pln"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">        <span class="com"># next message. Otherwise, return 403</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">        <span class="key">elif</span> <span class="nam">enrollment_mode</span> <span class="key">in</span> <span class="nam">CourseMode</span><span class="op">.</span><span class="nam">UPSELL_TO_VERIFIED_MODES</span><span class="op">:</span>  <span class="com"># AUDIT, HONOR</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="nam">audit_trial</span> <span class="op">=</span> <span class="nam">get_or_create_audit_trial</span><span class="op">(</span><span class="nam">request</span><span class="op">.</span><span class="nam">user</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">            <span class="nam">is_user_audit_trial_expired</span> <span class="op">=</span> <span class="nam">audit_trial_is_expired</span><span class="op">(</span><span class="nam">audit_trial</span><span class="op">,</span> <span class="nam">courserun_key</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">            <span class="nam">is_user_audit_trial_expired</span> <span class="op">=</span> <span class="nam">audit_trial_is_expired</span><span class="op">(</span><span class="nam">enrollment_object</span><span class="op">,</span> <span class="nam">audit_trial</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">            <span class="key">if</span> <span class="nam">is_user_audit_trial_expired</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t">                <span class="key">return</span> <span class="nam">Response</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t162" href="#t162">162</a></span><span class="t">                    <span class="nam">status</span><span class="op">=</span><span class="nam">http_status</span><span class="op">.</span><span class="nam">HTTP_403_FORBIDDEN</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -467,7 +467,7 @@
     <p class="run"><span class="n"><a id="t383" href="#t383">383</a></span><span class="t">        <span class="nam">has_trial_access</span> <span class="op">=</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t384" href="#t384">384</a></span><span class="t">            <span class="nam">enrollment_mode</span> <span class="key">in</span> <span class="nam">valid_trial_access_modes</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t385" href="#t385">385</a></span><span class="t">            <span class="key">and</span> <span class="nam">audit_trial</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t">            <span class="key">and</span> <span class="key">not</span> <span class="nam">audit_trial_is_expired</span><span class="op">(</span><span class="nam">audit_trial</span><span class="op">,</span> <span class="nam">courserun_key</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t">            <span class="key">and</span> <span class="key">not</span> <span class="nam">audit_trial_is_expired</span><span class="op">(</span><span class="nam">enrollment_object</span><span class="op">,</span> <span class="nam">audit_trial</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t387" href="#t387">387</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t388" href="#t388">388</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t389" href="#t389">389</a></span><span class="t">        <span class="key">if</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -506,7 +506,7 @@
             <a class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-01-03 13:54 +0000
+            created at 2025-01-06 18:28 +0000
         </p>
     </div>
 </footer>

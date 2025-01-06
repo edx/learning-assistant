@@ -5,7 +5,7 @@
 | Name                                                                          |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | learning\_assistant/\_\_init\_\_.py                                           |        2 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/api.py                                                    |      113 |        2 |       14 |        1 |     98% |125->135, 213-214 |
+| learning\_assistant/api.py                                                    |      109 |        2 |       14 |        1 |     98% |120->130, 208-209 |
 | learning\_assistant/apps.py                                                   |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/constants.py                                              |        6 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/data.py                                                   |       12 |        0 |        0 |        0 |    100% |           |
@@ -33,7 +33,7 @@
 | learning\_assistant/urls.py                                                   |        5 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/utils.py                                                  |       62 |        0 |       10 |        0 |    100% |           |
 | learning\_assistant/views.py                                                  |      130 |        9 |       26 |        1 |     94% |20-23, 88, 128-129, 256-257 |
-|                                                                     **TOTAL** |  **556** |   **42** |   **60** |    **4** | **92%** |           |
+|                                                                     **TOTAL** |  **552** |   **42** |   **60** |    **4** | **92%** |           |
 
 
 ## Setup coverage badge
