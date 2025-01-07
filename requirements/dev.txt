@@ -222,7 +222,7 @@ pycparser==2.22
     #   cffi
 pydocstyle==6.3.0
     # via -r requirements/quality.txt
-pygments==2.18.0
+pygments==2.19.1
     # via diff-cover
 pyjwt[crypto]==2.10.1
     # via
@@ -335,12 +335,13 @@ typing-extensions==4.12.2
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
-urllib3==2.3.0
+urllib3==2.2.3
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/quality.txt
     #   requests
     #   responses
-virtualenv==20.28.0
+virtualenv==20.28.1
     # via
     #   -r requirements/ci.txt
     #   tox
