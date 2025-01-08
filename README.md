@@ -29,11 +29,11 @@
 | learning\_assistant/plugins\_api.py                                           |       16 |        0 |        2 |        0 |    100% |           |
 | learning\_assistant/serializers.py                                            |       14 |        1 |        2 |        1 |     88% |        36 |
 | learning\_assistant/text\_utils.py                                            |       32 |        2 |        4 |        1 |     86% |42->exit, 47-48 |
-| learning\_assistant/toggles.py                                                |       13 |        7 |        0 |        0 |     46% |33-37, 44, 51 |
+| learning\_assistant/toggles.py                                                |       13 |        2 |        0 |        0 |     85% |    34, 43 |
 | learning\_assistant/urls.py                                                   |        5 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/utils.py                                                  |       62 |        0 |       10 |        0 |    100% |           |
+| learning\_assistant/utils.py                                                  |       64 |        0 |       12 |        0 |    100% |           |
 | learning\_assistant/views.py                                                  |      130 |        9 |       26 |        1 |     94% |20-23, 88, 128-129, 256-257 |
-|                                                                     **TOTAL** |  **552** |   **42** |   **60** |    **4** | **92%** |           |
+|                                                                     **TOTAL** |  **554** |   **37** |   **62** |    **4** | **93%** |           |
 
 
 ## Setup coverage badge
