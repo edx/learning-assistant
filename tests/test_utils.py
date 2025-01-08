@@ -40,12 +40,6 @@ class GetChatResponseTests(TestCase):
         self.assertEqual(status_code, 404)
         self.assertEqual(message, 'Completion endpoint is not defined.')
 
-    @override_settings(CHAT_COMPLETION_API_KEY=None)
-    def test_no_endpoint_key_setting(self):
-        status_code, message = self.get_response()
-        self.assertEqual(status_code, 404)
-        self.assertEqual(message, 'Completion endpoint is not defined.')
-
     @responses.activate
     def test_200_response(self):
         message_response = {'role': 'assistant', 'content': 'See you later!'}
@@ -91,7 +85,7 @@ class GetChatResponseTests(TestCase):
         completion_endpoint = settings.CHAT_COMPLETION_API
         connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
         read_timeout = settings.CHAT_COMPLETION_API_READ_TIMEOUT
-        headers = {'Content-Type': 'application/json', 'x-api-key': settings.CHAT_COMPLETION_API_KEY}
+        headers = {'Content-Type': 'application/json'}
 
         response_body = {
             'message_list': [{'role': 'system', 'content': self.prompt_template}] + self.message_list,
@@ -100,6 +94,31 @@ class GetChatResponseTests(TestCase):
         self.get_response()
         mock_requests.post.assert_called_with(
             completion_endpoint,
+            headers=headers,
+            data=json.dumps(response_body),
+            timeout=(connect_timeout, read_timeout)
+        )
+
+    @patch('learning_assistant.utils.v2_endpoint_enabled')
+    @patch('learning_assistant.utils.requests')
+    def test_post_request_structure_v2_endpoint(self, mock_requests, mock_v2_enabled):
+        mock_requests.post = MagicMock()
+        mock_v2_enabled.return_value = True
+
+        completion_endpoint_v2 = settings.CHAT_COMPLETION_API_V2
+        connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
+        read_timeout = settings.CHAT_COMPLETION_API_READ_TIMEOUT
+        headers = {'Content-Type': 'application/json'}
+
+        response_body = {
+            'client_id': 'edx_olc_la',
+            'system_message': self.prompt_template,
+            'messages': self.message_list,
+        }
+
+        self.get_response()
+        mock_requests.post.assert_called_with(
+            completion_endpoint_v2,
             headers=headers,
             data=json.dumps(response_body),
             timeout=(connect_timeout, read_timeout)
@@ -126,18 +145,18 @@ class GetReducedMessageListTests(TestCase):
         """
         # pass in copy of list, as it is modified as part of the reduction
         reduced_message_list = get_reduced_message_list(self.prompt_template, self.message_list)
-        self.assertEqual(len(reduced_message_list), 2)
+        self.assertEqual(len(reduced_message_list), 1)
         self.assertEqual(
             reduced_message_list,
-            [{'role': 'system', 'content': self.prompt_template}] + self.message_list[-1:]
+            self.message_list[-1:]
         )
 
     def test_message_list(self):
         reduced_message_list = get_reduced_message_list(self.prompt_template, self.message_list)
-        self.assertEqual(len(reduced_message_list), 3)
+        self.assertEqual(len(reduced_message_list), 2)
         self.assertEqual(
             reduced_message_list,
-            [{'role': 'system', 'content': self.prompt_template}] + self.message_list
+            self.message_list
         )
 
 

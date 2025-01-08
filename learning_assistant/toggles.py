@@ -4,16 +4,6 @@ Toggles for learning-assistant app.
 
 WAFFLE_NAMESPACE = 'learning_assistant'
 
-# .. toggle_name: learning_assistant.enable_course_content
-# .. toggle_implementation: CourseWaffleFlag
-# .. toggle_default: False
-# .. toggle_description: Waffle flag to enable the course content integration with the learning assistant
-# .. toggle_use_cases: temporary
-# .. toggle_creation_date: 2024-01-08
-# .. toggle_target_removal_date: 2024-01-31
-# .. toggle_tickets: COSMO-80
-ENABLE_COURSE_CONTENT = 'enable_course_content'
-
 # .. toggle_name: learning_assistant.enable_chat_history
 # .. toggle_implementation: CourseWaffleFlag
 # .. toggle_default: False
@@ -24,8 +14,17 @@ ENABLE_COURSE_CONTENT = 'enable_course_content'
 # .. toggle_tickets: COSMO-436
 ENABLE_CHAT_HISTORY = 'enable_chat_history'
 
+# .. toggle_name: learning_assistant.enable_v2_endpoint
+# .. toggle_implementation: CourseWaffleFlag
+# .. toggle_default: False
+# .. toggle_description: Waffle flag to enable use of the internal Xpert platform v2 endpoint
+# .. toggle_use_cases: temporary
+# .. toggle_creation_date: 2025-01-06
+# .. toggle_target_removal_date: 2025-01-31
+ENABLE_V2_ENDPOINT = 'enable_v2_endpoint'
 
-def _is_learning_assistant_waffle_flag_enabled(flag_name, course_key):
+
+def _is_learning_assistant_waffle_flag_enabled(flag_name, course_key=None):
     """
     Import and return Waffle flag for enabling the summary hook.
     """
@@ -37,15 +36,15 @@ def _is_learning_assistant_waffle_flag_enabled(flag_name, course_key):
         return False
 
 
-def course_content_enabled(course_key):
-    """
-    Return whether the learning_assistant.enable_course_content WaffleFlag is on.
-    """
-    return _is_learning_assistant_waffle_flag_enabled(ENABLE_COURSE_CONTENT, course_key)
-
-
 def chat_history_enabled(course_key):
     """
     Return whether the learning_assistant.enable_chat_history WaffleFlag is on.
     """
     return _is_learning_assistant_waffle_flag_enabled(ENABLE_CHAT_HISTORY, course_key)
+
+
+def v2_endpoint_enabled():
+    """
+    Return whether the learning_assistant.enable_v2_endpoint WaffleFlag is on.
+    """
+    return _is_learning_assistant_waffle_flag_enabled(ENABLE_V2_ENDPOINT)
