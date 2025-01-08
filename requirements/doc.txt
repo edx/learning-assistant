@@ -179,7 +179,7 @@ pycparser==2.22
     # via
     #   -r requirements/test.txt
     #   cffi
-pygments==2.18.0
+pygments==2.19.1
     # via
     #   doc8
     #   readme-renderer
@@ -291,8 +291,9 @@ typing-extensions==4.12.2
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
-urllib3==2.3.0
+urllib3==2.2.3
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
     #   requests
     #   responses
