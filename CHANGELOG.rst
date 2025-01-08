@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.7.0 - 2025-01-07
+******************
+* Gate use of the Xpert platform v2 endpoint with a waffle flag.
+
 4.6.3 - 2025-01-06
 ******************
 * Uses CourseEnrollment instead of CourseMode to get the upgrade deadline required to calculate if a learner's audit trial is expired.

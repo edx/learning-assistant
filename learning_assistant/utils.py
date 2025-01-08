@@ -10,6 +10,8 @@ from django.conf import settings
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
+from learning_assistant.toggles import v2_endpoint_enabled
+
 log = logging.getLogger(__name__)
 
 
@@ -47,18 +49,25 @@ def get_reduced_message_list(prompt_template, message_list):
         # insert message at beginning of list, because we are traversing the message list from most recent to oldest
         new_message_list.insert(0, new_message)
 
-    system_message = {'role': 'system', 'content': prompt_template}
-
-    return [system_message] + new_message_list
+    return new_message_list
 
 
 def create_request_body(prompt_template, message_list):
     """
     Form request body to be passed to the chat endpoint.
     """
+    messages = get_reduced_message_list(prompt_template, message_list)
+
     response_body = {
-        'message_list': get_reduced_message_list(prompt_template, message_list),
+        'message_list': [{'role': 'system', 'content': prompt_template}] + messages,
     }
+
+    if v2_endpoint_enabled():
+        response_body = {
+            'client_id': getattr(settings, 'CHAT_COMPLETION_CLIENT_ID', 'edx_olc_la'),
+            'system_message': prompt_template,
+            'messages': messages,
+        }
 
     return response_body
 
@@ -67,10 +76,10 @@ def get_chat_response(prompt_template, message_list):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
-    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API', None)
-    completion_endpoint_key = getattr(settings, 'CHAT_COMPLETION_API_KEY', None)
-    if completion_endpoint and completion_endpoint_key:
-        headers = {'Content-Type': 'application/json', 'x-api-key': completion_endpoint_key}
+    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2', None) if v2_endpoint_enabled() \
+        else getattr(settings, 'CHAT_COMPLETION_API', None)
+    if completion_endpoint:
+        headers = {'Content-Type': 'application/json'}
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
