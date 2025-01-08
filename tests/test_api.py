@@ -2,7 +2,7 @@
 Test cases for the learning-assistant api module.
 """
 import itertools
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import ddt
@@ -593,15 +593,15 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
     Test suite for audit_trial_is_expired.
     """
 
+    @freeze_time('2024-01-01 00:00:01')
     def setUp(self):
         super().setUp()
         self.course_key = CourseKey.from_string('course-v1:edx+fake+1')
         self.user = User(username='tester', email='tester@test.com')
         self.user.save()
 
-    @freeze_time('2024-01-01 00:00:01 UTC')
     def test_upgrade_deadline_expired(self):
-        today = datetime.now(tz=timezone.utc)
+        today = datetime.now()
         mock_enrollment = MagicMock()
         mock_enrollment.upgrade_deadline = today - timedelta(days=1)  # yesterday
 
@@ -614,9 +614,8 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
-    @freeze_time('2024-01-01 00:00:01 UTC')
     def test_upgrade_deadline_none(self):
-        today = datetime.now(tz=timezone.utc)
+        today = datetime.now()
         mock_enrollment = MagicMock()
         mock_enrollment.upgrade_deadline = None
 
@@ -642,15 +641,12 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
 
     @ddt.data(
         # exactly the trial deadline
-        datetime(year=2024, month=1, day=1, tzinfo=timezone.utc) -
-        timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
+        datetime(year=2024, month=1, day=1) - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         # 1 day more than trial deadline
-        datetime(year=2024, month=1, day=1, tzinfo=timezone.utc) -
-        timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1),
+        datetime(year=2024, month=1, day=1) - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1),
     )
-    @freeze_time('2024-01-01 00:00:01 UTC')
     def test_audit_trial_expired(self, start_date):
-        today = datetime.now(tz=timezone.utc)
+        today = datetime.now()
         mock_enrollment = MagicMock()
         mock_enrollment.upgrade_deadline = today + timedelta(days=1)  # tomorrow
 
@@ -662,9 +658,8 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
-    @freeze_time('2024-01-01 00:00:01 UTC')
     def test_audit_trial_unexpired(self):
-        today = datetime.now(tz=timezone.utc)
+        today = datetime.now()
         mock_enrollment = MagicMock()
         mock_enrollment.upgrade_deadline = today + timedelta(days=1)  # tomorrow
 

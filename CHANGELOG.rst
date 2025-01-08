@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.7.1 - 2025-01-09
+******************
+* Use Django utils timezone instead of datetime to get now to prevent naive/aware comparisons.
+
 4.7.0 - 2025-01-07
 ******************
 * Gate use of the Xpert platform v2 endpoint with a waffle flag.
