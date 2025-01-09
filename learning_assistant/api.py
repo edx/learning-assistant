@@ -1,13 +1,13 @@
 """
 Library for the learning_assistant app.
 """
-import datetime
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.utils import timezone
 from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
@@ -291,7 +291,7 @@ def get_or_create_audit_trial(user):
     audit_trial, _ = LearningAssistantAuditTrial.objects.get_or_create(
         user=user,
         defaults={
-            "start_date": datetime.now(),
+            "start_date": timezone.now(),
         },
     )
 
@@ -314,7 +314,7 @@ def audit_trial_is_expired(enrollment, audit_trial_data):
     * audit_trial_is_expired (boolean): whether the audit trial is expired
     """
     upgrade_deadline = enrollment.upgrade_deadline
-    today = datetime.now(tz=timezone.utc)
+    today = timezone.now()
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
     # CourseEnrollment, so if it's None, then do not return True.
