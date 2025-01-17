@@ -49,7 +49,7 @@ cryptography==44.0.0
     #   secretstorage
 ddt==1.7.2
     # via -r requirements/test.txt
-django==4.2.17
+django==4.2.18
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -236,7 +236,7 @@ requests==2.32.3
     #   twine
 requests-toolbelt==1.0.0
     # via twine
-responses==0.25.3
+responses==0.25.6
     # via -r requirements/test.txt
 restructuredtext-lint==1.4.0
     # via doc8
