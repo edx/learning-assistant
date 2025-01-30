@@ -65,6 +65,11 @@ class CourseChatView(APIView):
         """
         Generate the next message to be returned by the learning assistant.
         """
+        message = {
+            'role': 'staff',
+            'content': 'potato!',
+        }
+        return Response(status=200, data=message)
         message_list = request.data
 
         # Check that the last message in the list corresponds to a user
@@ -98,7 +103,8 @@ class CourseChatView(APIView):
             }
         )
 
-        course_id = get_course_id(course_run_id)
+        # course_id = get_course_id(course_run_id)
+        course_id ='course-v1:edX+DemoX+Demo_Course'
         template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
         unit_id = request.query_params.get('unit_id')
 
@@ -148,7 +154,7 @@ class CourseChatView(APIView):
             # doesn't match what we count as "verified modes" in the frontend component.
             enrollment_mode in CourseMode.VERIFIED_MODES + CourseMode.CREDIT_MODES
             + [CourseMode.NO_ID_PROFESSIONAL_MODE]
-            or user_role_is_staff(user_role)
+            # or user_role_is_staff(user_role)
         ):
             return self._get_next_message(request, courserun_key, course_run_id)
 
@@ -163,7 +169,14 @@ class CourseChatView(APIView):
                     data={'detail': 'The audit trial for this user has expired.'}
                 )
             else:
-                return self._get_next_message(request, courserun_key, course_run_id)
+                response = self._get_next_message(request, courserun_key, course_run_id)
+
+                # Temp for testing
+                audit_trial_created = True
+                if audit_trial_created:
+                    # TODO: Determine if this is something we should send to gate the extra calls to chat summary
+                    response.data['audit_trial_created'] = True
+                return response
 
         # If user has a course mode that is not verified & not meant to access to the learning assistant, return 403
         # This covers the other course modes: UNPAID_EXECUTIVE_EDUCATION & UNPAID_BOOTCAMP

@@ -33,6 +33,7 @@ from learning_assistant.utils import get_audit_trial_length_days
 
 log = logging.getLogger(__name__)
 User = get_user_model()
+utc=pytz.UTC
 
 
 def _extract_block_contents(child, category):
@@ -288,7 +289,7 @@ def get_or_create_audit_trial(user):
         * start_date (datetime): the start date of the audit trial
         * expiration_date (datetime): the expiration date of the audit trial
     """
-    audit_trial, _ = LearningAssistantAuditTrial.objects.get_or_create(
+    audit_trial, created = LearningAssistantAuditTrial.objects.get_or_create(
         user=user,
         defaults={
             "start_date": timezone.now(),
@@ -299,7 +300,7 @@ def get_or_create_audit_trial(user):
         user_id=user.id,
         start_date=audit_trial.start_date,
         expiration_date=get_audit_trial_expiration_date(audit_trial.start_date),
-    )
+    ), created
 
 
 def audit_trial_is_expired(enrollment, audit_trial_data):
@@ -321,6 +322,9 @@ def audit_trial_is_expired(enrollment, audit_trial_data):
     days_until_upgrade_deadline = today - upgrade_deadline if upgrade_deadline else None
     if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0):
         return True
+
+    # Make now datettime timezone-aware
+    now = utc.localize(datetime.now())
 
     # If the user's trial is past its expiry date, return True for expired. Else, return False.
     return audit_trial_data is None or audit_trial_data.expiration_date <= today
