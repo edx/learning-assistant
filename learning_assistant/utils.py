@@ -7,6 +7,7 @@ import logging
 
 import requests
 from django.conf import settings
+from optimizely import optimizely
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
@@ -123,19 +124,43 @@ def user_role_is_staff(role):
     return role in ('staff', 'instructor')
 
 
-def get_audit_trial_length_days():
+def get_optimizely_variation(user_id):
+    """
+    Return whether or not a user is part of an optimizely variation.
+    """
+    if not getattr(settings, 'OPTIMIZELY_FULL_STACK_SDK_KEY', None):
+        enabled = False
+        variation_key = None
+    else:
+        optimizely_client = optimizely.Optimizely(sdk_key=getattr(settings, 'OPTIMIZELY_FULL_STACK_SDK_KEY', ''))
+        user = optimizely_client.create_user_context(str(user_id))
+        decision = user.decide(getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_EXPERIMENT_KEY', ''))
+        enabled = decision.enabled
+        variation_key = decision.variation_key
+
+    return {'enabled': enabled, 'variation_key': variation_key}
+
+
+def get_audit_trial_length_days(user_id):
     """
     Return the length of an audit trial in days.
 
     Arguments:
-    * None
+    * user_id
 
     Returns:
     * int: the length of an audit trial in days
     """
-    default_trial_length_days = 14
+    variation = get_optimizely_variation(user_id)
 
-    trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
+    if (
+        variation['enabled']
+        and variation['variation_key'] == getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY', '')
+    ):
+        trial_length_days = 28
+    else:
+        default_trial_length_days = 14
+        trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
 
     if trial_length_days is None:
         trial_length_days = default_trial_length_days

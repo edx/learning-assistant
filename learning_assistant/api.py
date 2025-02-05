@@ -233,7 +233,7 @@ def get_message_history(courserun_key, user, message_count):
     return message_history
 
 
-def get_audit_trial_expiration_date(start_date):
+def get_audit_trial_expiration_date(start_date, user_id):
     """
     Given a start date of an audit trial, calculate the expiration date of the audit trial.
 
@@ -243,7 +243,7 @@ def get_audit_trial_expiration_date(start_date):
     Returns:
     * expiration_date (datetime): the expiration date of the audit trial
     """
-    trial_length_days = get_audit_trial_length_days()
+    trial_length_days = get_audit_trial_length_days(user_id)
 
     expiration_datetime = start_date + timedelta(days=trial_length_days)
     return expiration_datetime
@@ -271,7 +271,7 @@ def get_audit_trial(user):
     return LearningAssistantAuditTrialData(
         user_id=user.id,
         start_date=audit_trial.start_date,
-        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date),
+        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date, user.id),
     )
 
 
@@ -298,7 +298,7 @@ def get_or_create_audit_trial(user):
     return LearningAssistantAuditTrialData(
         user_id=user.id,
         start_date=audit_trial.start_date,
-        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date),
+        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date, user.id),
     )
 
 

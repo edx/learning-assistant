@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.8.0 - 2025-02-05
+******************
+* If optimizely is available, use optimizely to determine length of trial period
+
 4.7.1 - 2025-01-09
 ******************
 * Use Django utils timezone instead of datetime to get now to prevent naive/aware comparisons.

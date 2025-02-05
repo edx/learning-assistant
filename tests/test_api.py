@@ -509,7 +509,7 @@ class GetAuditTrialExpirationDateTests(TestCase):
         mock_get_audit_trial_length_days
     ):
         mock_get_audit_trial_length_days.return_value = trial_length_days
-        expiration_date = get_audit_trial_expiration_date(start_date)
+        expiration_date = get_audit_trial_expiration_date(start_date, 1)
         self.assertEqual(expected_expiration_date, expiration_date)
 
 
@@ -653,7 +653,7 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date),
+            expiration_date=get_audit_trial_expiration_date(start_date, 1),
         )
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
@@ -667,7 +667,7 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date),
+            expiration_date=get_audit_trial_expiration_date(start_date, 1),
         )
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), False)
