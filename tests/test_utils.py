@@ -203,8 +203,8 @@ class GetAuditTrialLengthDaysTests(TestCase):
     @ddt.unpack
     @patch('learning_assistant.utils.get_optimizely_variation')
     def test_get_audit_trial_length_days_experiment(self, variation_key, expected_value, mock_get_optimizely_variation):
-        mock_get_optimizely_variation.return_value = {'enabled': True, 'variation_key': 'variation'}
-        with patch.object(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY', variation_key):
+        mock_get_optimizely_variation.return_value = {'enabled': True, 'variation_key': variation_key}
+        with patch.object(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', 'variation'):
             self.assertEqual(get_audit_trial_length_days(1), expected_value)
 
 

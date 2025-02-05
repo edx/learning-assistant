@@ -126,13 +126,22 @@ def user_role_is_staff(role):
 
 def get_optimizely_variation(user_id):
     """
-    Return whether or not a user is part of an optimizely variation.
+    Return whether or not optimizely experiment is enabled, and which variation a user belongs to.
+
+    Arguments:
+    * user_id
+
+    Returns:
+    * {
+        'enabled': whether or not experiment is enabled,
+        'variation_key': what variation a user is assigned to
+      }
     """
     if not getattr(settings, 'OPTIMIZELY_FULL_STACK_SDK_KEY', None):
         enabled = False
         variation_key = None
     else:
-        optimizely_client = optimizely.Optimizely(sdk_key=getattr(settings, 'OPTIMIZELY_FULL_STACK_SDK_KEY', ''))
+        optimizely_client = optimizely.Optimizely(sdk_key=settings.OPTIMIZELY_FULL_STACK_SDK_KEY)
         user = optimizely_client.create_user_context(str(user_id))
         decision = user.decide(getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_EXPERIMENT_KEY', ''))
         enabled = decision.enabled
@@ -155,7 +164,7 @@ def get_audit_trial_length_days(user_id):
 
     if (
         variation['enabled']
-        and variation['variation_key'] == getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY', '')
+        and variation['variation_key'] == getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', '')
     ):
         trial_length_days = 28
     else:
