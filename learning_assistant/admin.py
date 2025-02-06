@@ -3,10 +3,10 @@ Django Admin pages.
 """
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib import admin
 
 from learning_assistant.models import LearningAssistantAuditTrial, LearningAssistantCourseEnabled
-from learning_assistant.utils import get_audit_trial_length_days
 
 
 @admin.register(LearningAssistantCourseEnabled)
@@ -31,10 +31,7 @@ class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
         Generate the expiration date for the LearningAssistantAuditTrial based on the start_date.
         """
         # pylint: disable-next=no-member
-        trial_length = get_audit_trial_length_days(self.user.id)
-
-        # pylint: disable-next=no-member
-        return self.start_date + timedelta(days=trial_length)
+        return self.start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
 
     list_display = ('user', 'start_date', expiration_date)
     raw_id_fields = ('user',)

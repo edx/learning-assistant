@@ -188,12 +188,12 @@ class GetAuditTrialLengthDaysTests(TestCase):
     @ddt.unpack
     def test_get_audit_trial_length_days_with_value(self, setting_value, expected_value):
         with patch.object(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', setting_value):
-            self.assertEqual(get_audit_trial_length_days(1), expected_value)
+            self.assertEqual(get_audit_trial_length_days(1, 'verified'), expected_value)
 
     @override_settings()
     def test_get_audit_trial_length_days_no_setting(self):
         del settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS
-        self.assertEqual(get_audit_trial_length_days(1), 14)
+        self.assertEqual(get_audit_trial_length_days(1, 'verified'), 14)
 
     # mock optimizely function
     @ddt.data(
@@ -205,7 +205,7 @@ class GetAuditTrialLengthDaysTests(TestCase):
     def test_get_audit_trial_length_days_experiment(self, variation_key, expected_value, mock_get_optimizely_variation):
         mock_get_optimizely_variation.return_value = {'enabled': True, 'variation_key': variation_key}
         with patch.object(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', 'variation'):
-            self.assertEqual(get_audit_trial_length_days(1), expected_value)
+            self.assertEqual(get_audit_trial_length_days(1, 'verified'), expected_value)
 
 
 class GetOptimizelyVariationTests(TestCase):
@@ -215,7 +215,7 @@ class GetOptimizelyVariationTests(TestCase):
 
     def test_no_sdk_key(self):
         expected_value = {'enabled': False, 'variation_key': None}
-        self.assertEqual(get_optimizely_variation(1), expected_value)
+        self.assertEqual(get_optimizely_variation(1, 'verified'), expected_value)
 
     @patch('learning_assistant.utils.optimizely')
     def test_return_variation(self, mock_optimizely):
@@ -226,6 +226,6 @@ class GetOptimizelyVariationTests(TestCase):
         mock_optimizely_client = MagicMock(create_user_context=mock_create_user_context)
         mock_optimizely.Optimizely = MagicMock(return_value=mock_optimizely_client)
 
-        with patch.object(settings, 'OPTIMIZELY_FULL_STACK_SDK_KEY', 'sdk_key'):
+        with patch.object(settings, 'OPTIMIZELY_FULLSTACK_SDK_KEY', 'sdk_key'):
             expected_value = {'enabled': True, 'variation_key': 'variation'}
-            self.assertEqual(get_optimizely_variation(1), expected_value)
+            self.assertEqual(get_optimizely_variation(1, 'verified'), expected_value)

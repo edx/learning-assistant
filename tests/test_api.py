@@ -509,7 +509,7 @@ class GetAuditTrialExpirationDateTests(TestCase):
         mock_get_audit_trial_length_days
     ):
         mock_get_audit_trial_length_days.return_value = trial_length_days
-        expiration_date = get_audit_trial_expiration_date(start_date, 1)
+        expiration_date = get_audit_trial_expiration_date(start_date, 1, 'verified')
         self.assertEqual(expected_expiration_date, expiration_date)
 
 
@@ -537,13 +537,13 @@ class GetAuditTrialTests(TestCase):
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
         )
-        self.assertEqual(expected_return, get_audit_trial(self.user))
+        self.assertEqual(expected_return, get_audit_trial(self.user, 'verified'))
 
     def test_not_exists(self):
         other_user = User(username='other-tester', email='other-tester@test.com')
         other_user.save()
 
-        self.assertIsNone(get_audit_trial(self.user))
+        self.assertIsNone(get_audit_trial(self.user, 'verified'))
 
 
 class GetOrCreateAuditTrialTests(TestCase):
@@ -570,7 +570,7 @@ class GetOrCreateAuditTrialTests(TestCase):
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
         )
-        self.assertEqual(expected_return, get_or_create_audit_trial(self.user))
+        self.assertEqual(expected_return, get_or_create_audit_trial(self.user, 'verified'))
 
     @freeze_time('2024-01-01')
     def test_not_exists(self):
@@ -584,7 +584,7 @@ class GetOrCreateAuditTrialTests(TestCase):
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
         )
 
-        self.assertEqual(expected_return, get_or_create_audit_trial(self.user))
+        self.assertEqual(expected_return, get_or_create_audit_trial(self.user, 'verified'))
 
 
 @ddt.ddt
@@ -653,7 +653,7 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date, 1),
+            expiration_date=get_audit_trial_expiration_date(start_date, 1, 'verified'),
         )
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
@@ -667,7 +667,7 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date, 1),
+            expiration_date=get_audit_trial_expiration_date(start_date, 1, 'verified'),
         )
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), False)

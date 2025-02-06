@@ -124,12 +124,13 @@ def user_role_is_staff(role):
     return role in ('staff', 'instructor')
 
 
-def get_optimizely_variation(user_id):
+def get_optimizely_variation(user_id, enrollment_mode):
     """
     Return whether or not optimizely experiment is enabled, and which variation a user belongs to.
 
     Arguments:
     * user_id
+    * enrollment_mode
 
     Returns:
     * {
@@ -137,12 +138,12 @@ def get_optimizely_variation(user_id):
         'variation_key': what variation a user is assigned to
       }
     """
-    if not getattr(settings, 'OPTIMIZELY_FULL_STACK_SDK_KEY', None):
+    if not getattr(settings, 'OPTIMIZELY_FULLSTACK_SDK_KEY', None):
         enabled = False
         variation_key = None
     else:
-        optimizely_client = optimizely.Optimizely(sdk_key=settings.OPTIMIZELY_FULL_STACK_SDK_KEY)
-        user = optimizely_client.create_user_context(str(user_id))
+        optimizely_client = optimizely.Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
+        user = optimizely_client.create_user_context(str(user_id), {'enrollment_mode': enrollment_mode})
         decision = user.decide(getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_EXPERIMENT_KEY', ''))
         enabled = decision.enabled
         variation_key = decision.variation_key
@@ -150,17 +151,18 @@ def get_optimizely_variation(user_id):
     return {'enabled': enabled, 'variation_key': variation_key}
 
 
-def get_audit_trial_length_days(user_id):
+def get_audit_trial_length_days(user_id, enrollment_mode):
     """
     Return the length of an audit trial in days.
 
     Arguments:
     * user_id
+    * enrollment_mode
 
     Returns:
     * int: the length of an audit trial in days
     """
-    variation = get_optimizely_variation(user_id)
+    variation = get_optimizely_variation(user_id, enrollment_mode)
 
     if (
         variation['enabled']

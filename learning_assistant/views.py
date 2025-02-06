@@ -155,7 +155,7 @@ class CourseChatView(APIView):
         # If user has an audit enrollment record, get or create their trial. If the trial is not expired, return the
         # next message. Otherwise, return 403
         elif enrollment_mode in CourseMode.UPSELL_TO_VERIFIED_MODES:  # AUDIT, HONOR
-            audit_trial = get_or_create_audit_trial(request.user)
+            audit_trial = get_or_create_audit_trial(request.user, enrollment_mode)
             is_user_audit_trial_expired = audit_trial_is_expired(enrollment_object, audit_trial)
             if is_user_audit_trial_expired:
                 return Response(
@@ -374,7 +374,7 @@ class LearningAssistantChatSummaryView(APIView):
         valid_trial_access_modes = CourseMode.UPSELL_TO_VERIFIED_MODES
 
         # Get audit trial. Note that we do not want to create an audit trial when calling this endpoint.
-        audit_trial = get_audit_trial(request.user)
+        audit_trial = get_audit_trial(request.user, enrollment_mode)
 
         # If the learner doesn't meet criteria to use the Learning Assistant, or if the chat history is disabled, we
         # return no messages in the response.
@@ -401,7 +401,7 @@ class LearningAssistantChatSummaryView(APIView):
         data['message_history'] = message_history_data
 
         # Get audit trial.
-        trial = get_audit_trial(user)
+        trial = get_audit_trial(user, enrollment_mode)
 
         trial_data = {}
         if trial:
@@ -410,6 +410,6 @@ class LearningAssistantChatSummaryView(APIView):
 
         data['audit_trial'] = trial_data
 
-        data['audit_trial_length_days'] = get_audit_trial_length_days(user.id)
+        data['audit_trial_length_days'] = get_audit_trial_length_days(user.id, enrollment_mode)
 
         return Response(status=http_status.HTTP_200_OK, data=data)
