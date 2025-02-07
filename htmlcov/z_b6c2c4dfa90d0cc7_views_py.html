@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-01-24 14:48 +0000
+            created at 2025-02-07 15:53 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -239,7 +239,7 @@
     <p class="pln"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">        <span class="com"># If user has an audit enrollment record, get or create their trial. If the trial is not expired, return the</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">        <span class="com"># next message. Otherwise, return 403</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">        <span class="key">elif</span> <span class="nam">enrollment_mode</span> <span class="key">in</span> <span class="nam">CourseMode</span><span class="op">.</span><span class="nam">UPSELL_TO_VERIFIED_MODES</span><span class="op">:</span>  <span class="com"># AUDIT, HONOR</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="nam">audit_trial</span> <span class="op">=</span> <span class="nam">get_or_create_audit_trial</span><span class="op">(</span><span class="nam">request</span><span class="op">.</span><span class="nam">user</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="nam">audit_trial</span> <span class="op">=</span> <span class="nam">get_or_create_audit_trial</span><span class="op">(</span><span class="nam">request</span><span class="op">.</span><span class="nam">user</span><span class="op">,</span> <span class="nam">enrollment_mode</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">            <span class="nam">is_user_audit_trial_expired</span> <span class="op">=</span> <span class="nam">audit_trial_is_expired</span><span class="op">(</span><span class="nam">enrollment_object</span><span class="op">,</span> <span class="nam">audit_trial</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">            <span class="key">if</span> <span class="nam">is_user_audit_trial_expired</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t">                <span class="key">return</span> <span class="nam">Response</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -458,7 +458,7 @@
     <p class="run"><span class="n"><a id="t374" href="#t374">374</a></span><span class="t">        <span class="nam">valid_trial_access_modes</span> <span class="op">=</span> <span class="nam">CourseMode</span><span class="op">.</span><span class="nam">UPSELL_TO_VERIFIED_MODES</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t376" href="#t376">376</a></span><span class="t">        <span class="com"># Get audit trial. Note that we do not want to create an audit trial when calling this endpoint.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t">        <span class="nam">audit_trial</span> <span class="op">=</span> <span class="nam">get_audit_trial</span><span class="op">(</span><span class="nam">request</span><span class="op">.</span><span class="nam">user</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t">        <span class="nam">audit_trial</span> <span class="op">=</span> <span class="nam">get_audit_trial</span><span class="op">(</span><span class="nam">request</span><span class="op">.</span><span class="nam">user</span><span class="op">,</span> <span class="nam">enrollment_mode</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t379" href="#t379">379</a></span><span class="t">        <span class="com"># If the learner doesn't meet criteria to use the Learning Assistant, or if the chat history is disabled, we</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">        <span class="com"># return no messages in the response.</span>&nbsp;</span><span class="r"></span></p>
@@ -485,7 +485,7 @@
     <p class="run"><span class="n"><a id="t401" href="#t401">401</a></span><span class="t">        <span class="nam">data</span><span class="op">[</span><span class="str">'message_history'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">message_history_data</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t402" href="#t402">402</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t403" href="#t403">403</a></span><span class="t">        <span class="com"># Get audit trial.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t404" href="#t404">404</a></span><span class="t">        <span class="nam">trial</span> <span class="op">=</span> <span class="nam">get_audit_trial</span><span class="op">(</span><span class="nam">user</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t404" href="#t404">404</a></span><span class="t">        <span class="nam">trial</span> <span class="op">=</span> <span class="nam">get_audit_trial</span><span class="op">(</span><span class="nam">user</span><span class="op">,</span> <span class="nam">enrollment_mode</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t405" href="#t405">405</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t406" href="#t406">406</a></span><span class="t">        <span class="nam">trial_data</span> <span class="op">=</span> <span class="op">{</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t407" href="#t407">407</a></span><span class="t">        <span class="key">if</span> <span class="nam">trial</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -494,7 +494,7 @@
     <p class="pln"><span class="n"><a id="t410" href="#t410">410</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t411" href="#t411">411</a></span><span class="t">        <span class="nam">data</span><span class="op">[</span><span class="str">'audit_trial'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">trial_data</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t412" href="#t412">412</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t413" href="#t413">413</a></span><span class="t">        <span class="nam">data</span><span class="op">[</span><span class="str">'audit_trial_length_days'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">get_audit_trial_length_days</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t413" href="#t413">413</a></span><span class="t">        <span class="nam">data</span><span class="op">[</span><span class="str">'audit_trial_length_days'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">get_audit_trial_length_days</span><span class="op">(</span><span class="nam">user</span><span class="op">.</span><span class="nam">id</span><span class="op">,</span> <span class="nam">enrollment_mode</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t414" href="#t414">414</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t415" href="#t415">415</a></span><span class="t">        <span class="key">return</span> <span class="nam">Response</span><span class="op">(</span><span class="nam">status</span><span class="op">=</span><span class="nam">http_status</span><span class="op">.</span><span class="nam">HTTP_200_OK</span><span class="op">,</span> <span class="nam">data</span><span class="op">=</span><span class="nam">data</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
@@ -506,7 +506,7 @@
             <a class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-01-24 14:48 +0000
+            created at 2025-02-07 15:53 +0000
         </p>
     </div>
 </footer>
