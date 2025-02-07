@@ -164,6 +164,9 @@ def get_audit_trial_length_days(user_id, enrollment_mode):
     """
     variation = get_optimizely_variation(user_id, enrollment_mode)
 
+    # For the sake of the experiment on the backend, the only difference in behavior should be for the 28 day variation.
+    # This is because the control group will never see the audit experience, so the value being returned here does not
+    # matter, and the 14 day variation can use the default trial length of 14 days.
     if (
         variation['enabled']
         and variation['variation_key'] == getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', '')
