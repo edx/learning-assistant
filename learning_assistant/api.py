@@ -233,28 +233,31 @@ def get_message_history(courserun_key, user, message_count):
     return message_history
 
 
-def get_audit_trial_expiration_date(start_date):
+def get_audit_trial_expiration_date(start_date, user_id, enrollment_mode):
     """
     Given a start date of an audit trial, calculate the expiration date of the audit trial.
 
     Arguments:
     * start_date (datetime): the start date of the audit trial
+    * user_id (int): user id
+    * enrollment_mode (str): enrollment mode of the user
 
     Returns:
     * expiration_date (datetime): the expiration date of the audit trial
     """
-    trial_length_days = get_audit_trial_length_days()
+    trial_length_days = get_audit_trial_length_days(user_id, enrollment_mode)
 
     expiration_datetime = start_date + timedelta(days=trial_length_days)
     return expiration_datetime
 
 
-def get_audit_trial(user):
+def get_audit_trial(user, enrollment_mode):
     """
     Given a user, return the associated audit trial data.
 
     Arguments:
     * user (User): the user
+    * enrollment_mode (str): enrollment mode of the user
 
     Returns:
     * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
@@ -271,16 +274,17 @@ def get_audit_trial(user):
     return LearningAssistantAuditTrialData(
         user_id=user.id,
         start_date=audit_trial.start_date,
-        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date),
+        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date, user.id, enrollment_mode),
     )
 
 
-def get_or_create_audit_trial(user):
+def get_or_create_audit_trial(user, enrollment_mode):
     """
     Given a user, return the associated audit trial data, creating a new audit trial for the user if one does not exist.
 
     Arguments:
     * user (User): the user
+    * enrollment_mode (str): enrollment mode of the user
 
     Returns:
     * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
@@ -298,7 +302,7 @@ def get_or_create_audit_trial(user):
     return LearningAssistantAuditTrialData(
         user_id=user.id,
         start_date=audit_trial.start_date,
-        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date),
+        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date, user.id, enrollment_mode),
     )
 
 

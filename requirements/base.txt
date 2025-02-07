@@ -6,9 +6,12 @@
 #
 asgiref==3.8.1
     # via django
-attrs==24.3.0
-    # via -r requirements/base.in
-certifi==2024.12.14
+attrs==25.1.0
+    # via
+    #   -r requirements/base.in
+    #   jsonschema
+    #   referencing
+certifi==2025.1.31
     # via requests
 cffi==1.17.1
     # via
@@ -61,13 +64,21 @@ edx-opaque-keys==2.11.0
 edx-rest-api-client==6.0.0
     # via -r requirements/base.in
 idna==3.10
-    # via requests
+    # via
+    #   optimizely-sdk
+    #   requests
 jinja2==3.1.5
     # via -r requirements/base.in
+jsonschema==4.23.0
+    # via optimizely-sdk
+jsonschema-specifications==2024.10.1
+    # via jsonschema
 markupsafe==3.0.2
     # via jinja2
-newrelic==10.4.0
+newrelic==10.5.0
     # via edx-django-utils
+optimizely-sdk==5.1.0
+    # via -r requirements/base.in
 pbr==6.1.0
     # via stevedore
 psutil==6.1.1
@@ -79,14 +90,25 @@ pyjwt[crypto]==2.10.1
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pymongo==4.10.1
+pymongo==4.11
     # via edx-opaque-keys
 pynacl==1.5.0
     # via edx-django-utils
+pyrsistent==0.20.0
+    # via optimizely-sdk
+referencing==0.36.2
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
 requests==2.32.3
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
+    #   optimizely-sdk
+rpds-py==0.22.3
+    # via
+    #   jsonschema
+    #   referencing
 semantic-version==2.10.0
     # via edx-drf-extensions
 sqlparse==0.5.3
