@@ -17,6 +17,8 @@ attrs==25.1.0
     #   referencing
 babel==2.17.0
     # via sphinx
+backports-tarfile==1.2.0
+    # via jaraco-context
 build==1.2.2.post1
     # via -r requirements/doc.in
 certifi==2025.1.31
@@ -39,7 +41,7 @@ click==8.1.8
     #   edx-django-utils
 code-annotations==2.2.0
     # via -r requirements/test.txt
-coverage[toml]==7.6.10
+coverage[toml]==7.6.12
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -47,9 +49,10 @@ cryptography==44.0.0
     # via
     #   -r requirements/test.txt
     #   pyjwt
+    #   secretstorage
 ddt==1.7.2
     # via -r requirements/test.txt
-django==4.2.18
+django==4.2.19
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -116,6 +119,8 @@ idna==3.10
     #   requests
 imagesize==1.4.1
     # via sphinx
+importlib-metadata==8.6.1
+    # via keyring
 iniconfig==2.0.0
     # via
     #   -r requirements/test.txt
@@ -126,6 +131,10 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.5
     # via
     #   -r requirements/test.txt
@@ -153,7 +162,7 @@ more-itertools==10.6.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-newrelic==10.5.0
+newrelic==10.6.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -168,7 +177,7 @@ packaging==24.2
     #   pytest
     #   sphinx
     #   twine
-pbr==6.1.0
+pbr==6.1.1
     # via
     #   -r requirements/test.txt
     #   stevedore
@@ -196,7 +205,7 @@ pyjwt[crypto]==2.10.1
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pymongo==4.11
+pymongo==4.11.1
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
@@ -217,7 +226,7 @@ pytest==8.3.4
     #   pytest-django
 pytest-cov==6.0.0
     # via -r requirements/test.txt
-pytest-django==4.9.0
+pytest-django==4.10.0
     # via -r requirements/test.txt
 python-dateutil==2.9.0.post0
     # via
@@ -265,6 +274,8 @@ rpds-py==0.22.3
     #   -r requirements/test.txt
     #   jsonschema
     #   referencing
+secretstorage==3.3.3
+    # via keyring
 semantic-version==2.10.0
     # via
     #   -r requirements/test.txt
@@ -310,6 +321,7 @@ typing-extensions==4.12.2
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
+    #   referencing
 urllib3==2.2.3
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
@@ -317,3 +329,8 @@ urllib3==2.2.3
     #   requests
     #   responses
     #   twine
+zipp==3.21.0
+    # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
