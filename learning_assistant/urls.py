@@ -4,10 +4,7 @@ URLs for learning_assistant.
 from django.urls import re_path
 
 from learning_assistant.constants import COURSE_ID_PATTERN
-from learning_assistant.views import (
-    CourseChatView,
-    LearningAssistantChatSummaryView,
-)
+from learning_assistant.views import CourseChatView, LearningAssistantChatSummaryView
 
 app_name = 'learning_assistant'
 

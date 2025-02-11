@@ -76,6 +76,16 @@ class LoggedInTestCase(TestCase):
         self.user = User(username='tester', email='tester@test.com', is_staff=True)
         self.user.save()
         self.client.login_user(self.user)
+        self.patcher = patch(
+            'learning_assistant.views.get_cache_course_run_data',
+            return_value={'course': 'edx+test'}
+        )
+        self.patcher.start()
+        self.patcher2 = patch(
+            'learning_assistant.api.get_cache_course_run_data',
+            return_value={'course': 'edx+test'}
+        )
+        self.patcher2.start()
 
 
 @ddt.ddt
@@ -92,12 +102,6 @@ class CourseChatViewTests(LoggedInTestCase):
         super().setUp()
         self.course_id = 'course-v1:edx+test+23'
         self.course_run_key = CourseKey.from_string(self.course_id)
-
-        self.patcher = patch(
-            'learning_assistant.api.get_cache_course_run_data',
-            return_value={'course': 'edx+test'}
-        )
-        self.patcher.start()
 
     @patch('learning_assistant.views.learning_assistant_enabled')
     def test_course_waffle_inactive(self, mock_waffle):
