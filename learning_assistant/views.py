@@ -249,11 +249,28 @@ class LearningAssistantChatSummaryView(APIView):
                 data={'detail': 'Course ID is not a valid course ID.'}
             )
 
-        data = {}
+        data = {
+            'enabled': False,
+            'message_history': [],
+            'audit_trial': {},
+            'audit_trial_length_days': 0,
+        }
         user = request.user
 
+        course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
+        today = datetime.now()
+        start = course_data.get('start', None)
+        end = course_data.get('end', None)
+        valid_dates = (
+            (start <= today if start else True)
+            and (end >= today if end else True)
+        )
+
         # Get whether the Learning Assistant is enabled.
-        data['enabled'] = learning_assistant_enabled(courserun_key)
+        data['enabled'] = learning_assistant_enabled(courserun_key) and valid_dates
+
+        if not data['enabled']:
+            return Response(status=http_status.HTTP_200_OK, data=data)
 
         # Get message history.
         # If user does not have a verified enrollment record or is does not have an active audit trial, or is not staff,

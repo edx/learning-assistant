@@ -24,6 +24,26 @@ from learning_assistant.models import LearningAssistantAuditTrial, LearningAssis
 
 User = get_user_model()
 
+mocked_today = datetime(2024, 6, 15)
+
+mocked_course = {
+    'course': 'edx+test',
+    'start': None,
+    'end': None,
+}
+
+
+class MockedDatetime():
+    """
+    Mocks datetime implementation
+    """
+
+    def __init__(self, *args):
+        pass
+
+    def now(self):
+        return mocked_today
+
 
 class FakeClient(Client):
     """
@@ -76,16 +96,27 @@ class LoggedInTestCase(TestCase):
         self.user = User(username='tester', email='tester@test.com', is_staff=True)
         self.user.save()
         self.client.login_user(self.user)
-        self.patcher = patch(
+
+        self.mocked_datetime = patch(
+            'learning_assistant.views.datetime',
+            MockedDatetime()
+        )
+        self.mocked_datetime.start()
+        self.addCleanup(self.mocked_datetime.stop)
+
+        self.mocked_get_cache_course_run_data = patch(
             'learning_assistant.views.get_cache_course_run_data',
-            return_value={'course': 'edx+test'}
+            return_value=mocked_course
         )
-        self.patcher.start()
-        self.patcher2 = patch(
-            'learning_assistant.api.get_cache_course_run_data',
-            return_value={'course': 'edx+test'}
+        self.mocked_get_cache_course_run_data.start()
+        self.addCleanup(self.mocked_get_cache_course_run_data.stop)
+
+        self.mocked_get_course_id = patch(
+            'learning_assistant.views.get_course_id',
+            return_value=mocked_course['course']
         )
-        self.patcher2.start()
+        self.mocked_get_course_id.start()
+        self.addCleanup(self.mocked_get_course_id.stop)
 
 
 @ddt.ddt
@@ -134,6 +165,86 @@ class CourseChatViewTests(LoggedInTestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 400)
+
+    @ddt.data({
+        'start': datetime(2023, 1, 1),  # past date
+        'end': datetime(2023, 1, 30),   # past date
+        'expects_fail': True,
+    }, {
+        'start': datetime(2026, 1, 1),  # future date
+        'end': datetime(2026, 1, 30),   # future date
+        'expects_fail': True,
+    }, {
+        'start': datetime(2024, 6, 1),  # past date
+        'end': datetime(2024, 6, 30),   # future date
+        'expects_fail': False,
+    }, {
+        'start': datetime(2024, 6, 1),  # past date
+        'end': None,
+        'expects_fail': False,
+    }, {
+        'start': None,
+        'end': datetime(2024, 6, 30),   # future date
+        'expects_fail': False,
+    })
+    @patch('learning_assistant.views.get_cache_course_run_data')
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.render_prompt_template')
+    @patch('learning_assistant.views.get_chat_response')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    @patch('learning_assistant.views.chat_history_enabled')
+    @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
+    def test_dates_for_chat_response(
+        self,
+        dates,
+        mock_chat_history_enabled,
+        mock_mode,
+        mock_enrollment,
+        mock_get_user_role,
+        mock_waffle,
+        mock_chat_response,
+        mock_render,
+        mock_trial_expired,
+        mocked_get_cache_course_run_data,
+    ):
+        mocked_get_cache_course_run_data.return_value = {
+            'course': mocked_course['course'],
+            'start': dates['start'],
+            'end': dates['end'],
+        }
+        mock_waffle.return_value = True
+        mock_get_user_role.return_value = 'staff'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode='staff')
+        mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
+        mock_render.return_value = 'Rendered template mock'
+        mock_trial_expired.return_value = False
+        test_unit_id = 'test-unit-id'
+
+        mock_chat_history_enabled.return_value = True
+
+        test_data = [
+            {'role': 'user', 'content': 'What is 2+2?'},
+            {'role': 'assistant', 'content': 'It is 4'},
+            {'role': 'user', 'content': 'And what else?'},
+        ]
+
+        response = self.client.post(
+            reverse('chat', kwargs={'course_run_id': self.course_id})+f'?unit_id={test_unit_id}',
+            data=json.dumps(test_data),
+            content_type='application/json'
+        )
+
+        if dates['expects_fail']:
+            self.assertEqual(response.status_code, 403)
+        else:
+            self.assertEqual(response.status_code, 200)
 
     @patch('learning_assistant.views.audit_trial_is_expired')
     @patch('learning_assistant.views.learning_assistant_enabled')
@@ -369,8 +480,17 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
 
         response = self.client.get(url)
 
-        # Assert message history data is correct.
+        if not learning_assistant_enabled_mock_value:
+            self.assertEqual(response.data, {
+                'enabled': False,
+                'message_history': [],
+                'audit_trial': {},
+                'audit_trial_length_days': 0,
+            })
+            return
+
         if chat_history_enabled_mock_value:
+            # Assert message history data is correct.
             data = response.data['message_history']
 
             # Ensure same number of entries.
@@ -486,8 +606,17 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
 
         response = self.client.get(url)
 
-        # Assert message history data is correct.
+        if not learning_assistant_enabled_mock_value:
+            self.assertEqual(response.data, {
+                'enabled': False,
+                'message_history': [],
+                'audit_trial': {},
+                'audit_trial_length_days': 0,
+            })
+            return
+
         if chat_history_enabled_mock_value:
+            # Assert message history data is correct.
             data = response.data['message_history']
 
             # Ensure same number of entries.
@@ -603,6 +732,15 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
 
         response = self.client.get(url)
 
+        if not learning_assistant_enabled_mock_value:
+            self.assertEqual(response.data, {
+                'enabled': False,
+                'message_history': [],
+                'audit_trial': {},
+                'audit_trial_length_days': 0,
+            })
+            return
+
         # Assert message history data is correct.
         if chat_history_enabled_mock_value and trial_available and not audit_trial_is_expired_mock_value:
             data = response.data['message_history']
@@ -626,3 +764,63 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
 
         self.assertEqual(response.data['audit_trial'], expected_trial_data)
         self.assertEqual(response.data['audit_trial_length_days'], audit_trial_length_days_mock_value)
+
+    @ddt.data({
+        'start': datetime(2023, 1, 1),  # past date
+        'end': datetime(2023, 1, 30),   # past date
+        'expects_fail': True,
+    }, {
+        'start': datetime(2026, 1, 1),  # future date
+        'end': datetime(2026, 1, 30),   # future date
+        'expects_fail': True,
+    }, {
+        'start': datetime(2024, 6, 1),  # past date
+        'end': datetime(2024, 6, 30),   # future date
+        'expects_fail': False,
+    }, {
+        'start': datetime(2024, 6, 1),  # past date
+        'end': None,
+        'expects_fail': False,
+    }, {
+        'start': None,
+        'end': datetime(2024, 6, 30),   # future date
+        'expects_fail': False,
+    })
+    @patch('learning_assistant.views.get_cache_course_run_data')
+    @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    def test_chat_summary_with_date_gating(
+        self,
+        dates,
+        mock_mode,
+        mock_enrollment,
+        mock_get_user_role,
+        mock_learning_assistant_enabled,
+        mock_chat_history_enabled,
+        mocked_get_cache_course_run_data,
+    ):
+        mocked_get_cache_course_run_data.return_value = {
+            'course': mocked_course['course'],
+            'start': dates['start'],
+            'end': dates['end'],
+        }
+        mock_learning_assistant_enabled.return_value = True
+        mock_chat_history_enabled.return_value = True
+        mock_get_user_role.return_value = 'staff'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode='staff')
+
+        url_kwargs = {'course_run_id': self.course_id}
+        url = reverse('chat-summary', kwargs=url_kwargs)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['enabled'], not dates['expects_fail'])
