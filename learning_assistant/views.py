@@ -2,6 +2,7 @@
 V1 API Views.
 """
 import logging
+from datetime import datetime
 
 from django.conf import settings
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -33,6 +34,7 @@ from learning_assistant.api import (
     save_chat_message,
 )
 from learning_assistant.models import LearningAssistantMessage
+from learning_assistant.platform_imports import get_cache_course_run_data
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.toggles import chat_history_enabled
 from learning_assistant.utils import get_audit_trial_length_days, get_chat_response, user_role_is_staff
@@ -131,7 +133,20 @@ class CourseChatView(APIView):
                 data={'detail': 'Course ID is not a valid course ID.'}
             )
 
-        if not learning_assistant_enabled(courserun_key):
+        course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
+        today = datetime.now()
+        start = course_data.get('start', None)
+        end = course_data.get('end', None)
+
+        valid_dates = (
+            (start <= today if start else True)
+            and (end >= today if end else True)
+        )
+
+        if (
+            not valid_dates
+            or not learning_assistant_enabled(courserun_key)
+        ):
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,
                 data={'detail': 'Learning assistant not enabled for course.'}
@@ -264,8 +279,19 @@ class LearningAssistantChatSummaryView(APIView):
         # return no messages in the response.
         message_history_data = []
 
+        course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
+        today = datetime.now()
+        start = course_data.get('start', None)
+        end = course_data.get('end', None)
+
+        valid_dates = (
+            (start <= today if start else True)
+            and (end >= today if end else True)
+        )
+
         has_trial_access = (
-            enrollment_mode in valid_trial_access_modes
+            valid_dates
+            and enrollment_mode in valid_trial_access_modes
             and audit_trial
             and not audit_trial_is_expired(enrollment_object, audit_trial)
         )
