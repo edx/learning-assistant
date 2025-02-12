@@ -374,7 +374,7 @@ class LearningAssistantChatSummaryView(APIView):
         valid_trial_access_modes = CourseMode.UPSELL_TO_VERIFIED_MODES
 
         # Get audit trial. Note that we do not want to create an audit trial when calling this endpoint.
-        audit_trial = get_audit_trial(request.user, enrollment_mode)
+        audit_trial = get_audit_trial(request.user)
 
         # If the learner doesn't meet criteria to use the Learning Assistant, or if the chat history is disabled, we
         # return no messages in the response.
@@ -401,7 +401,7 @@ class LearningAssistantChatSummaryView(APIView):
         data['message_history'] = message_history_data
 
         # Get audit trial.
-        trial = get_audit_trial(user, enrollment_mode)
+        trial = get_audit_trial(user)
 
         trial_data = {}
         if trial:
