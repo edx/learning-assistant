@@ -1,6 +1,8 @@
 """
 Database models for learning_assistant.
 """
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from model_utils.models import TimeStampedModel
@@ -62,3 +64,7 @@ class LearningAssistantAuditTrial(TimeStampedModel):
     # Unique constraint since each user should only have one trial
     user = models.ForeignKey(USER_MODEL, db_index=True, on_delete=models.CASCADE, unique=True)
     start_date = models.DateTimeField()
+
+    # This field was added prior to the full release of the audit trial feature, so the default was selected
+    # to be a date that would be well after any existing audit trials.
+    expiration_date = models.DateTimeField(default=datetime(2025, 2, 1))

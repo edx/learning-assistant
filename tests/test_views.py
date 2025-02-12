@@ -16,6 +16,7 @@ from django.http import HttpRequest
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
+from freezegun import freeze_time
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
@@ -487,6 +488,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['detail'], 'Course ID is not a valid course ID.')
 
+    @freeze_time('2024-01-01')
     @ddt.data(
         *product(
             [True, False],                                   # learning assistant enabled
@@ -561,11 +563,13 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
         mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
-        trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
+        audit_trial_start_date = datetime.now()
+        audit_trial_expiration_date = audit_trial_start_date + timedelta(days=audit_trial_length_days_mock_value)
         if trial_available:
             LearningAssistantAuditTrial.objects.create(
                 user=self.user,
-                start_date=trial_start_date,
+                start_date=audit_trial_start_date,
+                expiration_date=audit_trial_expiration_date,
             )
 
         url_kwargs = {'course_run_id': self.course_id}
@@ -595,12 +599,13 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         # Assert trial data is correct.
         expected_trial_data = {}
         if trial_available:
-            expected_trial_data['start_date'] = trial_start_date
-            expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
+            expected_trial_data['start_date'] = audit_trial_start_date
+            expected_trial_data['expiration_date'] = audit_trial_expiration_date
 
         self.assertEqual(response.data['audit_trial'], expected_trial_data)
         self.assertEqual(response.data['audit_trial_length_days'], audit_trial_length_days_mock_value)
 
+    @freeze_time('2024-01-01')
     @ddt.data(
         *product(
             [True, False],                    # learning assistant enabled
@@ -675,11 +680,13 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
         mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
-        trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
+        audit_trial_start_date = datetime.now()
+        audit_trial_expiration_date = audit_trial_start_date + timedelta(days=audit_trial_length_days_mock_value)
         if trial_available:
             LearningAssistantAuditTrial.objects.create(
                 user=self.user,
-                start_date=trial_start_date,
+                start_date=audit_trial_start_date,
+                expiration_date=audit_trial_expiration_date,
             )
 
         url_kwargs = {'course_run_id': self.course_id}
@@ -709,12 +716,13 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         # Assert trial data is correct.
         expected_trial_data = {}
         if trial_available:
-            expected_trial_data['start_date'] = trial_start_date
-            expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
+            expected_trial_data['start_date'] = audit_trial_start_date
+            expected_trial_data['expiration_date'] = audit_trial_expiration_date
 
         self.assertEqual(response.data['audit_trial'], expected_trial_data)
         self.assertEqual(response.data['audit_trial_length_days'], audit_trial_length_days_mock_value)
 
+    @freeze_time('2024-01-01')
     @ddt.data(
         *product(
             [True, False],  # learning assistant enabled
@@ -789,11 +797,13 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
         mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
-        trial_start_date = datetime(2024, 1, 1, 0, 0, 0)
+        audit_trial_start_date = datetime.now()
+        audit_trial_expiration_date = audit_trial_start_date + timedelta(days=audit_trial_length_days_mock_value)
         if trial_available:
             LearningAssistantAuditTrial.objects.create(
                 user=self.user,
-                start_date=trial_start_date,
+                start_date=audit_trial_start_date,
+                expiration_date=audit_trial_expiration_date,
             )
 
         url_kwargs = {'course_run_id': self.course_id}
@@ -823,8 +833,8 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         # Assert trial data is correct.
         expected_trial_data = {}
         if trial_available:
-            expected_trial_data['start_date'] = trial_start_date
-            expected_trial_data['expiration_date'] = trial_start_date + timedelta(days=14)
+            expected_trial_data['start_date'] = audit_trial_start_date
+            expected_trial_data['expiration_date'] = audit_trial_expiration_date
 
         self.assertEqual(response.data['audit_trial'], expected_trial_data)
         self.assertEqual(response.data['audit_trial_length_days'], audit_trial_length_days_mock_value)
