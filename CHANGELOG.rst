@@ -14,6 +14,39 @@ Change Log
 Unreleased
 **********
 
+4.8.0 - 2025-02-05
+******************
+* If optimizely is available, use optimizely to determine length of trial period
+
+4.7.1 - 2025-01-09
+******************
+* Use Django utils timezone instead of datetime to get now to prevent naive/aware comparisons.
+
+4.7.0 - 2025-01-07
+******************
+* Gate use of the Xpert platform v2 endpoint with a waffle flag.
+
+4.6.3 - 2025-01-06
+******************
+* Uses CourseEnrollment instead of CourseMode to get the upgrade deadline required to calculate if a learner's audit trial is expired.
+* Updated setup docs
+
+4.6.2 - 2024-12-18
+******************
+* Fixed the params for expiration_date in the admin table for audit trial.
+* Add ENABLE_XPERT_AUDIT instructions.
+
+4.6.1 - 2024-12-17
+******************
+* Added an admin table for the LearningAssistantAuditTrial model. This table includes an expiration_date valued that is
+  calculated based on the start_date.
+
+4.6.0 - 2024-12-10
+******************
+* Add an audit_trial_length_days attribute to the response returned by the ChatSummaryView, representing the
+  number of days in an audit trial as currently configured. It does not necessarily represent the number of days in the
+  learner's current trial.
+
 4.5.0 - 2024-12-04
 ******************
 * Add local setup to readme

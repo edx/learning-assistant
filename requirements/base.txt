@@ -6,21 +6,24 @@
 #
 asgiref==3.8.1
     # via django
-attrs==24.2.0
-    # via -r requirements/base.in
-certifi==2024.8.30
+attrs==25.1.0
+    # via
+    #   -r requirements/base.in
+    #   jsonschema
+    #   referencing
+certifi==2025.1.31
     # via requests
 cffi==1.17.1
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
-click==8.1.7
+click==8.1.8
     # via edx-django-utils
-cryptography==43.0.3
+cryptography==44.0.0
     # via pyjwt
-django==4.2.16
+django==4.2.18
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
@@ -35,7 +38,7 @@ django-crum==0.7.9
     # via edx-django-utils
 django-model-utils==5.0.0
     # via -r requirements/base.in
-django-waffle==4.1.0
+django-waffle==4.2.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
@@ -48,7 +51,7 @@ dnspython==2.7.0
     # via pymongo
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==7.0.0
+edx-django-utils==7.1.0
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
@@ -61,41 +64,62 @@ edx-opaque-keys==2.11.0
 edx-rest-api-client==6.0.0
     # via -r requirements/base.in
 idna==3.10
-    # via requests
-jinja2==3.1.4
+    # via
+    #   optimizely-sdk
+    #   requests
+jinja2==3.1.5
     # via -r requirements/base.in
+jsonschema==4.23.0
+    # via optimizely-sdk
+jsonschema-specifications==2024.10.1
+    # via jsonschema
 markupsafe==3.0.2
     # via jinja2
-newrelic==10.2.0
+newrelic==10.5.0
     # via edx-django-utils
+optimizely-sdk==5.1.0
+    # via -r requirements/base.in
 pbr==6.1.0
     # via stevedore
-psutil==6.1.0
+psutil==6.1.1
     # via edx-django-utils
 pycparser==2.22
     # via cffi
-pyjwt[crypto]==2.9.0
+pyjwt[crypto]==2.10.1
     # via
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pymongo==4.10.1
+pymongo==4.11
     # via edx-opaque-keys
 pynacl==1.5.0
     # via edx-django-utils
+pyrsistent==0.20.0
+    # via optimizely-sdk
+referencing==0.36.2
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
 requests==2.32.3
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
+    #   optimizely-sdk
+rpds-py==0.22.3
+    # via
+    #   jsonschema
+    #   referencing
 semantic-version==2.10.0
     # via edx-drf-extensions
-sqlparse==0.5.2
+sqlparse==0.5.3
     # via django
-stevedore==5.3.0
+stevedore==5.4.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
 typing-extensions==4.12.2
     # via edx-opaque-keys
 urllib3==2.2.3
-    # via requests
+    # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   requests

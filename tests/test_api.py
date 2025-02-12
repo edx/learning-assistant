@@ -491,29 +491,33 @@ class GetAuditTrialExpirationDateTests(TestCase):
     """
     Test suite for get_audit_trial_expiration_date.
     """
+
     @ddt.data(
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 15, 0, 0, 0), None),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 2, 1, 0, 0, 0), None),
+        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 2, 0, 0, 0), 1),
+        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 19, 0, 0, 0), 1),
+        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 8, 0, 0, 0), 7),
+        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 25, 0, 0, 0), 7),
         (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 15, 0, 0, 0), 14),
         (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 2, 1, 0, 0, 0), 14),
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 1, 0, 0, 0), -1),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 18, 0, 0, 0), -1),
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 1, 0, 0, 0), 0),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 18, 0, 0, 0), 0),
-        (datetime(2024, 1, 1, 0, 0, 0), datetime(2024, 1, 4, 0, 0, 0), 3),
-        (datetime(2024, 1, 18, 0, 0, 0), datetime(2024, 1, 21, 0, 0, 0), 3),
     )
     @ddt.unpack
-    def test_expiration_date(self, start_date, expected_expiration_date, trial_length_days):
-        with override_settings(LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS=trial_length_days):
-            expiration_date = get_audit_trial_expiration_date(start_date)
-            self.assertEqual(expected_expiration_date, expiration_date)
+    @patch('learning_assistant.api.get_audit_trial_length_days')
+    def test_expiration_date(
+        self, start_date,
+        expected_expiration_date,
+        trial_length_days,
+        mock_get_audit_trial_length_days
+    ):
+        mock_get_audit_trial_length_days.return_value = trial_length_days
+        expiration_date = get_audit_trial_expiration_date(start_date, 1, 'verified')
+        self.assertEqual(expected_expiration_date, expiration_date)
 
 
 class GetAuditTrialTests(TestCase):
     """
     Test suite for get_audit_trial.
     """
+
     @freeze_time('2024-01-01')
     def setUp(self):
         super().setUp()
@@ -533,19 +537,20 @@ class GetAuditTrialTests(TestCase):
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
         )
-        self.assertEqual(expected_return, get_audit_trial(self.user))
+        self.assertEqual(expected_return, get_audit_trial(self.user, 'verified'))
 
     def test_not_exists(self):
         other_user = User(username='other-tester', email='other-tester@test.com')
         other_user.save()
 
-        self.assertIsNone(get_audit_trial(self.user))
+        self.assertIsNone(get_audit_trial(self.user, 'verified'))
 
 
 class GetOrCreateAuditTrialTests(TestCase):
     """
     Test suite for get_or_create_audit_trial.
     """
+
     def setUp(self):
         super().setUp()
         self.user = User(username='tester', email='tester@test.com')
@@ -565,7 +570,7 @@ class GetOrCreateAuditTrialTests(TestCase):
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
         )
-        self.assertEqual(expected_return, get_or_create_audit_trial(self.user))
+        self.assertEqual(expected_return, get_or_create_audit_trial(self.user, 'verified'))
 
     @freeze_time('2024-01-01')
     def test_not_exists(self):
@@ -579,7 +584,7 @@ class GetOrCreateAuditTrialTests(TestCase):
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
         )
 
-        self.assertEqual(expected_return, get_or_create_audit_trial(self.user))
+        self.assertEqual(expected_return, get_or_create_audit_trial(self.user, 'verified'))
 
 
 @ddt.ddt
@@ -588,58 +593,51 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
     Test suite for audit_trial_is_expired.
     """
 
+    @freeze_time('2024-01-01 00:00:01')
     def setUp(self):
         super().setUp()
         self.course_key = CourseKey.from_string('course-v1:edx+fake+1')
         self.user = User(username='tester', email='tester@test.com')
         self.user.save()
 
-        self.upgrade_deadline = datetime.now() + timedelta(days=1)  # 1 day from now
+    def test_upgrade_deadline_expired(self):
+        today = datetime.now()
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = today - timedelta(days=1)  # yesterday
 
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_upgrade_deadline_expired(self, mock_course_mode):
-
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)  # yesterday
-        mock_course_mode.objects.get.return_value = mock_mode
-
-        start_date = datetime.now()
+        start_date = today
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.course_key), True)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_upgrade_deadline_none(self, mock_course_mode):
+    def test_upgrade_deadline_none(self):
+        today = datetime.now()
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = None
 
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = None
-        mock_course_mode.objects.get.return_value = mock_mode
-
-        # Verify that the audit trial data is considered when determing whether an audit trial is expired and not the
+        # Verify that the audit trial data is considered when determining whether an audit trial is expired and not the
         # upgrade deadline.
-        start_date = datetime.now()
+        start_date = today
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.course_key), False)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), False)
 
-        start_date = datetime.now() - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1)
+        start_date = today - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1)
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
             expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.course_key), True)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
     @ddt.data(
         # exactly the trial deadline
@@ -647,33 +645,29 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         # 1 day more than trial deadline
         datetime(year=2024, month=1, day=1) - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS + 1),
     )
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_audit_trial_expired(self, start_date, mock_course_mode):
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() + timedelta(days=1)  # tomorrow
-        mock_course_mode.objects.get.return_value = mock_mode
+    def test_audit_trial_expired(self, start_date):
+        today = datetime.now()
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = today + timedelta(days=1)  # tomorrow
 
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date),
+            expiration_date=get_audit_trial_expiration_date(start_date, 1, 'verified'),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.upgrade_deadline), True)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
 
-    @freeze_time('2024-01-01')
-    @patch('learning_assistant.api.CourseMode')
-    def test_audit_trial_unexpired(self, mock_course_mode):
-        mock_mode = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() + timedelta(days=1)  # tomorrow
-        mock_course_mode.objects.get.return_value = mock_mode
+    def test_audit_trial_unexpired(self):
+        today = datetime.now()
+        mock_enrollment = MagicMock()
+        mock_enrollment.upgrade_deadline = today + timedelta(days=1)  # tomorrow
 
-        start_date = datetime.now() - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS - 1)
+        start_date = today - timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS - 1)
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date),
+            expiration_date=get_audit_trial_expiration_date(start_date, 1, 'verified'),
         )
 
-        self.assertEqual(audit_trial_is_expired(audit_trial_data, self.upgrade_deadline), False)
+        self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), False)

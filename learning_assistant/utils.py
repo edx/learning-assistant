@@ -7,8 +7,11 @@ import logging
 
 import requests
 from django.conf import settings
+from optimizely import optimizely
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
+
+from learning_assistant.toggles import v2_endpoint_enabled
 
 log = logging.getLogger(__name__)
 
@@ -47,18 +50,25 @@ def get_reduced_message_list(prompt_template, message_list):
         # insert message at beginning of list, because we are traversing the message list from most recent to oldest
         new_message_list.insert(0, new_message)
 
-    system_message = {'role': 'system', 'content': prompt_template}
-
-    return [system_message] + new_message_list
+    return new_message_list
 
 
 def create_request_body(prompt_template, message_list):
     """
     Form request body to be passed to the chat endpoint.
     """
+    messages = get_reduced_message_list(prompt_template, message_list)
+
     response_body = {
-        'message_list': get_reduced_message_list(prompt_template, message_list),
+        'message_list': [{'role': 'system', 'content': prompt_template}] + messages,
     }
+
+    if v2_endpoint_enabled():
+        response_body = {
+            'client_id': getattr(settings, 'CHAT_COMPLETION_CLIENT_ID', 'edx_olc_la'),
+            'system_message': prompt_template,
+            'messages': messages,
+        }
 
     return response_body
 
@@ -67,10 +77,10 @@ def get_chat_response(prompt_template, message_list):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
-    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API', None)
-    completion_endpoint_key = getattr(settings, 'CHAT_COMPLETION_API_KEY', None)
-    if completion_endpoint and completion_endpoint_key:
-        headers = {'Content-Type': 'application/json', 'x-api-key': completion_endpoint_key}
+    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2', None) if v2_endpoint_enabled() \
+        else getattr(settings, 'CHAT_COMPLETION_API', None)
+    if completion_endpoint:
+        headers = {'Content-Type': 'application/json'}
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
@@ -112,3 +122,66 @@ def user_role_is_staff(role):
     * bool: whether the user's role is that of a staff member
     """
     return role in ('staff', 'instructor')
+
+
+def get_optimizely_variation(user_id, enrollment_mode):
+    """
+    Return whether or not optimizely experiment is enabled, and which variation a user belongs to.
+
+    Arguments:
+    * user_id
+    * enrollment_mode
+
+    Returns:
+    * {
+        'enabled': whether or not experiment is enabled,
+        'variation_key': what variation a user is assigned to
+      }
+    """
+    if not getattr(settings, 'OPTIMIZELY_FULLSTACK_SDK_KEY', None):
+        enabled = False
+        variation_key = None
+    else:
+        optimizely_client = optimizely.Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
+        user = optimizely_client.create_user_context(str(user_id), {'enrollment_mode': enrollment_mode})
+        decision = user.decide(getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_EXPERIMENT_KEY', ''))
+        enabled = decision.enabled
+        variation_key = decision.variation_key
+
+    return {'enabled': enabled, 'variation_key': variation_key}
+
+
+def get_audit_trial_length_days(user_id, enrollment_mode):
+    """
+    Return the length of an audit trial in days.
+
+    Arguments:
+    * user_id
+    * enrollment_mode
+
+    Returns:
+    * int: the length of an audit trial in days
+    """
+    variation = get_optimizely_variation(user_id, enrollment_mode)
+
+    # For the sake of the experiment on the backend, the only difference in behavior should be for the 28 day variation.
+    # This is because the control group will never see the audit experience, so the value being returned here does not
+    # matter, and the 14 day variation can use the default trial length of 14 days.
+    if (
+        variation['enabled']
+        and variation['variation_key'] == getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', '')
+    ):
+        trial_length_days = 28
+    else:
+        default_trial_length_days = 14
+        trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
+
+    if trial_length_days is None:
+        trial_length_days = default_trial_length_days
+
+    # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
+    # pylint: disable=consider-using-max-builtin
+    if trial_length_days < 0:
+        trial_length_days = 0
+
+    return trial_length_days

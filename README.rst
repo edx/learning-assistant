@@ -57,6 +57,19 @@ In django admin, add the following waffle flag ``learning_assistant.enable_cours
 
 This plugin depends on the lms and discovery - both should be running.
 
+Enabling Xpert for audit learners
+---------------------------------
+In addition to the "One Time Setup" instructions, the following instructions should be followed to enable Xpert for audit learners locally.
+In your ``env.development`` config file in frontend-app-learning, add the below setting.
+
+.. code-block::
+
+  ENABLE_XPERT_AUDIT='true'
+
+Ensure that you have a non-expired verified mode set up locally for your testing course. You can do this by checking if http://localhost:18000/admin/course_modes/coursemode/ has a course mode with a future expiration date.
+
+The Xpert for audit learner frontend code depends on the lms, discovery, and ecommerce services. Ensure that all three services are running without errors.
+
 Every time you develop something in this repo
 ---------------------------------------------
 .. code-block::
