@@ -140,7 +140,7 @@ class CourseChatView(APIView):
 
         valid_dates = (
             (start <= today if start else True)
-            and (end >= today if end else True)
+            and (end > today if end else True)
         )
 
         if (
@@ -263,7 +263,7 @@ class LearningAssistantChatSummaryView(APIView):
         end = course_data.get('end', None)
         valid_dates = (
             (start <= today if start else True)
-            and (end >= today if end else True)
+            and (end > today if end else True)
         )
 
         # Get whether the Learning Assistant is enabled.
@@ -296,16 +296,6 @@ class LearningAssistantChatSummaryView(APIView):
         # return no messages in the response.
         message_history_data = []
 
-        course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
-        today = datetime.now()
-        start = course_data.get('start', None)
-        end = course_data.get('end', None)
-
-        valid_dates = (
-            (start <= today if start else True)
-            and (end >= today if end else True)
-        )
-
         has_trial_access = (
             valid_dates
             and enrollment_mode in valid_trial_access_modes
@@ -315,7 +305,7 @@ class LearningAssistantChatSummaryView(APIView):
 
         if (
             (
-                (enrollment_mode in valid_full_access_modes)
+                enrollment_mode in valid_full_access_modes
                 or has_trial_access
                 or user_role_is_staff(user_role)
             )

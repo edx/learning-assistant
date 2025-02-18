@@ -24,25 +24,11 @@ from learning_assistant.models import LearningAssistantAuditTrial, LearningAssis
 
 User = get_user_model()
 
-mocked_today = datetime(2024, 6, 15)
-
 mocked_course = {
     'course': 'edx+test',
     'start': None,
     'end': None,
 }
-
-
-class MockedDatetime():
-    """
-    Mocks datetime implementation
-    """
-
-    def __init__(self, *args):
-        pass
-
-    def now(self):
-        return mocked_today
 
 
 class FakeClient(Client):
@@ -97,13 +83,6 @@ class LoggedInTestCase(TestCase):
         self.user.save()
         self.client.login_user(self.user)
 
-        self.mocked_datetime = patch(
-            'learning_assistant.views.datetime',
-            MockedDatetime()
-        )
-        self.mocked_datetime.start()
-        self.addCleanup(self.mocked_datetime.stop)
-
         self.mocked_get_cache_course_run_data = patch(
             'learning_assistant.views.get_cache_course_run_data',
             return_value=mocked_course
@@ -120,6 +99,7 @@ class LoggedInTestCase(TestCase):
 
 
 @ddt.ddt
+@freeze_time('2024-06-15')
 class CourseChatViewTests(LoggedInTestCase):
     """
     Test for the CourseChatView
@@ -243,6 +223,7 @@ class CourseChatViewTests(LoggedInTestCase):
 
         if dates['expects_fail']:
             self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.data, {'detail': 'Learning assistant not enabled for course.'})
         else:
             self.assertEqual(response.status_code, 200)
 
@@ -365,6 +346,7 @@ class CourseChatViewTests(LoggedInTestCase):
 
 
 @ddt.ddt
+@freeze_time('2024-06-15')
 class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
     """
     Tests for the LearningAssistantChatSummaryView
