@@ -37,7 +37,12 @@ from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.platform_imports import get_cache_course_run_data
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.toggles import chat_history_enabled
-from learning_assistant.utils import get_audit_trial_length_days, get_chat_response, user_role_is_staff
+from learning_assistant.utils import (
+    get_audit_trial_length_days,
+    get_chat_response,
+    parse_lms_datetime,
+    user_role_is_staff,
+)
 
 log = logging.getLogger(__name__)
 
@@ -135,12 +140,13 @@ class CourseChatView(APIView):
 
         course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
         today = datetime.now()
-        start = course_data.get('start', None)
-        end = course_data.get('end', None)
+
+        course_start = parse_lms_datetime(course_data.get('start', None))
+        course_end = parse_lms_datetime(course_data.get('end', None))
 
         valid_dates = (
-            (start <= today if start else True)
-            and (end >= today if end else True)
+            (course_start <= today if course_start else True)
+            and (course_end >= today if course_end else True)
         )
 
         if (
@@ -259,11 +265,11 @@ class LearningAssistantChatSummaryView(APIView):
 
         course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
         today = datetime.now()
-        start = course_data.get('start', None)
-        end = course_data.get('end', None)
+        course_start = parse_lms_datetime(course_data.get('start', None))
+        course_end = parse_lms_datetime(course_data.get('end', None))
         valid_dates = (
-            (start <= today if start else True)
-            and (end >= today if end else True)
+            (course_start <= today if course_start else True)
+            and (course_end >= today if course_end else True)
         )
 
         # Get whether the Learning Assistant is enabled.

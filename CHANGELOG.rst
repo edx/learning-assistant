@@ -14,6 +14,11 @@ Change Log
 Unreleased
 **********
 
+4.10.2 - 2025-02-19
+*******************
+* Fixes an error when parsing dates for the chat views.
+* Small update in the documentation regarding Paver deprecation.
+
 4.10.1 - 2025-02-19
 *******************
 * Fixes a linting error on the changelog that prevented the previous release.
