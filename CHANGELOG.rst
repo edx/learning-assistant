@@ -14,6 +14,11 @@ Change Log
 Unreleased
 **********
 
+4.10.0 - 2025-02-19
+******************
+* Upgraded Python requirements.
+* Updated Chat Trial Audit gating consistency.
+
 4.9.0 - 2025-02-12
 ******************
 * Add an expiration_date field on the LearningAssistantAuditTrial model to store expiration date of a trial.
