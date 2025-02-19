@@ -147,24 +147,24 @@ class CourseChatViewTests(LoggedInTestCase):
         self.assertEqual(response.status_code, 400)
 
     @ddt.data({
-        'start': datetime(2023, 1, 1),  # past date
-        'end': datetime(2023, 1, 30),   # past date
+        'start': '2023-01-01T01:00:00Z',  # past date
+        'end': '2023-01-30T01:00:00Z',    # past date
         'expects_fail': True,
     }, {
-        'start': datetime(2026, 1, 1),  # future date
-        'end': datetime(2026, 1, 30),   # future date
+        'start': '2026-01-01T01:00:00Z',  # future date
+        'end': '2026-01-30T01:00:00Z',    # future date
         'expects_fail': True,
     }, {
-        'start': datetime(2024, 6, 1),  # past date
-        'end': datetime(2024, 6, 30),   # future date
+        'start': '2024-06-01T01:00:00Z',  # past date
+        'end': '2024-06-01T30:00:00Z',    # future date
         'expects_fail': False,
     }, {
-        'start': datetime(2024, 6, 1),  # past date
+        'start': '2024-06-01T01:00:00Z',  # past date
         'end': None,
         'expects_fail': False,
     }, {
         'start': None,
-        'end': datetime(2024, 6, 30),   # future date
+        'end': '2024-06-01T30:00:00Z',    # future date
         'expects_fail': False,
     })
     @patch('learning_assistant.views.get_cache_course_run_data')
@@ -748,24 +748,24 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         self.assertEqual(response.data['audit_trial_length_days'], audit_trial_length_days_mock_value)
 
     @ddt.data({
-        'start': datetime(2023, 1, 1),  # past date
-        'end': datetime(2023, 1, 30),   # past date
+        'start': '2023-01-01T01:00:00Z',  # past date
+        'end': '2023-01-30T01:00:00Z',    # past date
         'expects_fail': True,
     }, {
-        'start': datetime(2026, 1, 1),  # future date
-        'end': datetime(2026, 1, 30),   # future date
+        'start': '2026-01-01T01:00:00Z',  # future date
+        'end': '2026-01-30T01:00:00Z',    # future date
         'expects_fail': True,
     }, {
-        'start': datetime(2024, 6, 1),  # past date
-        'end': datetime(2024, 6, 30),   # future date
+        'start': '2024-06-01T01:00:00Z',  # past date
+        'end': '2024-06-01T30:00:00Z',    # future date
         'expects_fail': False,
     }, {
-        'start': datetime(2024, 6, 1),  # past date
+        'start': '2024-06-01T01:00:00Z',  # past date
         'end': None,
         'expects_fail': False,
     }, {
         'start': None,
-        'end': datetime(2024, 6, 30),   # future date
+        'end': '2024-06-01T30:00:00Z',    # future date
         'expects_fail': False,
     })
     @patch('learning_assistant.views.get_cache_course_run_data')

@@ -51,7 +51,7 @@ In your ``lms/envs/private.py`` settings file in edx-platform (create file if ne
 
   LEARNING_ASSISTANT_AVAILABLE = True
 
-In devstack, run ``make lms-shell`` and run the following command: ``paver install_prereqs;exit``. This will install anything included in your ``private.txt`` requirements file.
+In devstack, run ``make lms-shell`` and run the following command: ``make requirements;exit``. This will install anything included in your ``private.txt`` requirements file.
 
 In django admin, add the following waffle flag ``learning_assistant.enable_course_content`` and make sure it is turned on for Everyone. The flag should be checked on for: Superusers, Staff, and Authenticated.
 

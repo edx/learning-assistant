@@ -4,6 +4,7 @@ Utils file for learning-assistant.
 import copy
 import json
 import logging
+from datetime import datetime
 
 import requests
 from django.conf import settings
@@ -11,6 +12,7 @@ from optimizely import optimizely
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
+from learning_assistant.constants import LMS_DATETIME_FORMAT
 from learning_assistant.toggles import v2_endpoint_enabled
 
 log = logging.getLogger(__name__)
@@ -185,3 +187,21 @@ def get_audit_trial_length_days(user_id, enrollment_mode):
         trial_length_days = 0
 
     return trial_length_days
+
+
+def parse_lms_datetime(datetime_string):
+    """
+    Parse an LMS datetime into a timezone-aware, Python datetime object.
+
+    Arguments:
+        datetime_string: A string to be parsed.
+    """
+    if datetime_string is None:
+        return None
+
+    try:
+        parsed_datetime = datetime.strptime(datetime_string, LMS_DATETIME_FORMAT)
+    except ValueError:
+        return None
+
+    return parsed_datetime
