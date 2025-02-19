@@ -7,7 +7,7 @@
 | learning\_assistant/\_\_init\_\_.py                                                   |        2 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/api.py                                                            |      111 |        5 |       14 |        1 |     95% |120->130, 196-198, 208-209 |
 | learning\_assistant/apps.py                                                           |        4 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/constants.py                                                      |        6 |        0 |        0 |        0 |    100% |           |
+| learning\_assistant/constants.py                                                      |        7 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/data.py                                                           |       12 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/management/\_\_init\_\_.py                                        |        0 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/management/commands/\_\_init\_\_.py                               |        0 |        0 |        0 |        0 |    100% |           |
@@ -32,9 +32,9 @@
 | learning\_assistant/text\_utils.py                                                    |       32 |        2 |        4 |        1 |     86% |42->exit, 47-48 |
 | learning\_assistant/toggles.py                                                        |       13 |        2 |        0 |        0 |     85% |    34, 43 |
 | learning\_assistant/urls.py                                                           |        5 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/utils.py                                                          |       78 |        0 |       16 |        0 |    100% |           |
-| learning\_assistant/views.py                                                          |      112 |        7 |       22 |        1 |     94% |21-24, 90, 130-131 |
-|                                                                             **TOTAL** |  **559** |   **38** |   **62** |    **4** | **93%** |           |
+| learning\_assistant/utils.py                                                          |       88 |        0 |       18 |        0 |    100% |           |
+| learning\_assistant/views.py                                                          |      112 |        7 |       22 |        1 |     94% |21-24, 95, 135-136 |
+|                                                                             **TOTAL** |  **570** |   **38** |   **64** |    **4** | **93%** |           |
 
 
 ## Setup coverage badge
