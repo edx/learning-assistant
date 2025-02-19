@@ -14,8 +14,12 @@ Change Log
 Unreleased
 **********
 
+4.10.1 - 2025-02-19
+*******************
+* Fixes a linting error on the changelog that prevented the previous release.
+
 4.10.0 - 2025-02-19
-******************
+*******************
 * Upgraded Python requirements.
 * Updated Chat Trial Audit gating consistency.
 
