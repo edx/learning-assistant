@@ -2,6 +2,7 @@
 V1 API Views.
 """
 import logging
+from datetime import datetime
 
 from django.conf import settings
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -33,6 +34,7 @@ from learning_assistant.api import (
     save_chat_message,
 )
 from learning_assistant.models import LearningAssistantMessage
+from learning_assistant.platform_imports import get_cache_course_run_data
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.toggles import chat_history_enabled
 from learning_assistant.utils import get_audit_trial_length_days, get_chat_response, user_role_is_staff
@@ -131,7 +133,20 @@ class CourseChatView(APIView):
                 data={'detail': 'Course ID is not a valid course ID.'}
             )
 
-        if not learning_assistant_enabled(courserun_key):
+        course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
+        today = datetime.now()
+        start = course_data.get('start', None)
+        end = course_data.get('end', None)
+
+        valid_dates = (
+            (start <= today if start else True)
+            and (end >= today if end else True)
+        )
+
+        if (
+            not valid_dates
+            or not learning_assistant_enabled(courserun_key)
+        ):
             return Response(
                 status=http_status.HTTP_403_FORBIDDEN,
                 data={'detail': 'Learning assistant not enabled for course.'}
@@ -172,122 +187,6 @@ class CourseChatView(APIView):
                 status=http_status.HTTP_403_FORBIDDEN,
                 data={'detail': 'Must be staff or have valid enrollment.'}
             )
-
-
-class LearningAssistantEnabledView(APIView):
-    """
-    View to retrieve whether the Learning Assistant is enabled for a course.
-
-    This endpoint returns a boolean representing whether the Learning Assistant feature is enabled in a course
-    represented by the course_run_id, which is provided in the URL.
-
-    Accepts: [GET]
-
-    Path: /learning_assistant/v1/course_id/{course_run_id}/enabled
-
-    Parameters:
-        * course_run_id: the ID of the course
-
-    Responses:
-        * 200: OK
-        * 400: Malformed Request - Course ID is not a valid course ID.
-    """
-
-    authentication_classes = (SessionAuthentication, JwtAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request, course_run_id):
-        """
-        Given a course run ID, retrieve whether the Learning Assistant is enabled for the corresponding course.
-
-        The response will be in the following format.
-
-            {'enabled': <bool>}
-        """
-        try:
-            courserun_key = CourseKey.from_string(course_run_id)
-        except InvalidKeyError:
-            return Response(
-                status=http_status.HTTP_400_BAD_REQUEST,
-                data={'detail': 'Course ID is not a valid course ID.'}
-            )
-
-        data = {
-            'enabled': learning_assistant_enabled(courserun_key),
-        }
-
-        return Response(status=http_status.HTTP_200_OK, data=data)
-
-
-class LearningAssistantMessageHistoryView(APIView):
-    """
-    View to retrieve the message history for user in a course.
-
-    This endpoint returns the message history stored in the LearningAssistantMessage table in a course
-    represented by the course_run_id, which is provided in the URL.
-
-    Accepts: [GET]
-
-    Path: /learning_assistant/v1/course_id/{course_run_id}/history
-
-    Parameters:
-        * course_run_id: the ID of the course
-
-    Responses:
-        * 200: OK
-        * 400: Malformed Request - Course ID is not a valid course ID.
-        * 403: Forbidden - Learning assistant not enabled for course or learner does not have a valid enrollment or is
-                           not staff.
-    """
-
-    authentication_classes = (SessionAuthentication, JwtAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request, course_run_id):
-        """
-        Given a course run ID, retrieve the message history for the corresponding user.
-
-        The response will be in the following format.
-
-            [{'role': 'assistant', 'content': 'something'}]
-        """
-        try:
-            courserun_key = CourseKey.from_string(course_run_id)
-        except InvalidKeyError:
-            return Response(
-                status=http_status.HTTP_400_BAD_REQUEST,
-                data={'detail': 'Course ID is not a valid course ID.'}
-            )
-
-        if not learning_assistant_enabled(courserun_key):
-            return Response(
-                status=http_status.HTTP_403_FORBIDDEN,
-                data={'detail': 'Learning assistant not enabled for course.'}
-            )
-
-        # If chat history is disabled, we return no messages as response.
-        if not chat_history_enabled(courserun_key):
-            return Response(status=http_status.HTTP_200_OK, data=[])
-
-        # If user does not have an enrollment record, or is not staff, they should not have access
-        user_role = get_user_role(request.user, courserun_key)
-        enrollment_object = CourseEnrollment.get_enrollment(request.user, courserun_key)
-        enrollment_mode = enrollment_object.mode if enrollment_object else None
-        if (
-            (enrollment_mode not in CourseMode.VERIFIED_MODES)
-            and not user_role_is_staff(user_role)
-        ):
-            return Response(
-                status=http_status.HTTP_403_FORBIDDEN,
-                data={'detail': 'Must be staff or have valid enrollment.'}
-            )
-
-        user = request.user
-
-        message_count = int(request.GET.get('message_count', 50))
-        message_history = get_message_history(courserun_key, user, message_count)
-        data = MessageSerializer(message_history, many=True).data
-        return Response(status=http_status.HTTP_200_OK, data=data)
 
 
 class LearningAssistantChatSummaryView(APIView):
@@ -350,11 +249,28 @@ class LearningAssistantChatSummaryView(APIView):
                 data={'detail': 'Course ID is not a valid course ID.'}
             )
 
-        data = {}
+        data = {
+            'enabled': False,
+            'message_history': [],
+            'audit_trial': {},
+            'audit_trial_length_days': 0,
+        }
         user = request.user
 
+        course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
+        today = datetime.now()
+        start = course_data.get('start', None)
+        end = course_data.get('end', None)
+        valid_dates = (
+            (start <= today if start else True)
+            and (end >= today if end else True)
+        )
+
         # Get whether the Learning Assistant is enabled.
-        data['enabled'] = learning_assistant_enabled(courserun_key)
+        data['enabled'] = learning_assistant_enabled(courserun_key) and valid_dates
+
+        if not data['enabled']:
+            return Response(status=http_status.HTTP_200_OK, data=data)
 
         # Get message history.
         # If user does not have a verified enrollment record or is does not have an active audit trial, or is not staff,
@@ -381,14 +297,15 @@ class LearningAssistantChatSummaryView(APIView):
         message_history_data = []
 
         has_trial_access = (
-            enrollment_mode in valid_trial_access_modes
+            valid_dates
+            and enrollment_mode in valid_trial_access_modes
             and audit_trial
             and not audit_trial_is_expired(enrollment_object, audit_trial)
         )
 
         if (
             (
-                (enrollment_mode in valid_full_access_modes)
+                enrollment_mode in valid_full_access_modes
                 or has_trial_access
                 or user_role_is_staff(user_role)
             )
