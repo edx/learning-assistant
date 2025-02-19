@@ -140,7 +140,7 @@ class CourseChatView(APIView):
 
         valid_dates = (
             (start <= today if start else True)
-            and (end > today if end else True)
+            and (end >= today if end else True)
         )
 
         if (
@@ -263,7 +263,7 @@ class LearningAssistantChatSummaryView(APIView):
         end = course_data.get('end', None)
         valid_dates = (
             (start <= today if start else True)
-            and (end > today if end else True)
+            and (end >= today if end else True)
         )
 
         # Get whether the Learning Assistant is enabled.
