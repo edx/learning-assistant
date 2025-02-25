@@ -105,7 +105,7 @@ requests==2.32.3
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   optimizely-sdk
-rpds-py==0.22.3
+rpds-py==0.23.1
     # via
     #   jsonschema
     #   referencing
@@ -113,7 +113,7 @@ semantic-version==2.10.0
     # via edx-drf-extensions
 sqlparse==0.5.3
     # via django
-stevedore==5.4.0
+stevedore==5.4.1
     # via
     #   edx-django-utils
     #   edx-opaque-keys

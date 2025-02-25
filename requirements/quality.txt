@@ -238,7 +238,7 @@ requests==2.32.3
     #   responses
 responses==0.25.6
     # via -r requirements/test.txt
-rpds-py==0.22.3
+rpds-py==0.23.1
     # via
     #   -r requirements/test.txt
     #   jsonschema
@@ -258,7 +258,7 @@ sqlparse==0.5.3
     # via
     #   -r requirements/test.txt
     #   django
-stevedore==5.4.0
+stevedore==5.4.1
     # via
     #   -r requirements/test.txt
     #   code-annotations
