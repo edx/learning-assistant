@@ -11,6 +11,8 @@ class LearningAssistantCourseEnabledAdmin(admin.ModelAdmin):
     """
     Admin panel for the LearningAssistantCourseEnabled model.
     """
+    list_display = ('course_id', 'enabled')
+    search_fields = ('course_id',)
 
 
 @admin.register(LearningAssistantAuditTrial)
