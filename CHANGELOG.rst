@@ -14,6 +14,11 @@ Change Log
 Unreleased
 **********
 
+4.10.3 - 2025-03-04
+*******************
+* Adds Django admin form for LearningAssistantMessage model.
+* Improves Django admin form for LearningAssistantCourseEnabled model by improving display.
+
 4.10.2 - 2025-02-19
 *******************
 * Fixes an error when parsing dates for the chat views.
