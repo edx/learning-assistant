@@ -29,7 +29,7 @@ from learning_assistant.platform_imports import (
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
-from learning_assistant.utils import get_audit_trial_length_days
+from learning_assistant.utils import estimated_message_tokens, get_audit_trial_length_days
 
 log = logging.getLogger(__name__)
 User = get_user_model()
@@ -133,6 +133,17 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
 
     template = Environment(loader=BaseLoader).from_string(template_string)
     data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
+
+    print("data length:", str(len(data)))
+    print("tokens used:", str(estimated_message_tokens(data)))
+
+    prompt_template_system_tokens = estimated_message_tokens(data)
+    max_tokens = getattr(settings, 'CHAT_COMPLETION_MAX_TOKENS', 16385)
+    remaining_tokens = max_tokens - prompt_template_system_tokens
+    print("remaining_tokens:", str(remaining_tokens))
+
+    token_limit = getattr(settings, 'LEARNING_ASSISTANT_AVAILABLE', False)
+    data = data[0:15000]
     return data
 
 
