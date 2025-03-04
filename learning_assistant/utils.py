@@ -27,6 +27,7 @@ def estimated_message_tokens(message):
 
     return int((len(message) - message.count(' ')) / chars_per_token) + json_padding
 
+
 def get_reduced_message_list(prompt_template, message_list):
     """
     If messages are larger than allotted token amount, return a smaller list of messages.
