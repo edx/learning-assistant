@@ -3,7 +3,11 @@ Django Admin pages.
 """
 from django.contrib import admin
 
-from learning_assistant.models import LearningAssistantAuditTrial, LearningAssistantCourseEnabled
+from learning_assistant.models import (
+    LearningAssistantAuditTrial,
+    LearningAssistantCourseEnabled,
+    LearningAssistantMessage,
+)
 
 
 @admin.register(LearningAssistantCourseEnabled)
@@ -11,6 +15,9 @@ class LearningAssistantCourseEnabledAdmin(admin.ModelAdmin):
     """
     Admin panel for the LearningAssistantCourseEnabled model.
     """
+
+    list_display = ('course_id', 'enabled')
+    search_fields = ('course_id',)
 
 
 @admin.register(LearningAssistantAuditTrial)
@@ -33,3 +40,14 @@ class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
 
         model = LearningAssistantAuditTrial
         fields = ('user', 'start_date', 'expiration_date')
+
+
+@admin.register(LearningAssistantMessage)
+class LearningAssistantMessageAdmin(admin.ModelAdmin):
+    """
+    Admin panel for the LearningAssistantMessage model.
+    """
+
+    exclude = ('content',)
+    list_display = ('user', 'course_id', 'role',)
+    search_fields = ('user__username',)
