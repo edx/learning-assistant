@@ -21,7 +21,7 @@ charset-normalizer==3.4.1
     # via requests
 click==8.1.8
     # via edx-django-utils
-cryptography==44.0.1
+cryptography==44.0.2
     # via pyjwt
 django==4.2.19
     # via
@@ -51,7 +51,7 @@ dnspython==2.7.0
     # via pymongo
 drf-jwt==1.19.2
     # via edx-drf-extensions
-edx-django-utils==7.1.0
+edx-django-utils==7.2.0
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
@@ -77,7 +77,7 @@ markupsafe==3.0.2
     # via jinja2
 newrelic==10.6.0
     # via edx-django-utils
-optimizely-sdk==5.1.0
+optimizely-sdk==5.2.0
     # via -r requirements/base.in
 pbr==6.1.1
     # via stevedore
@@ -90,7 +90,7 @@ pyjwt[crypto]==2.10.1
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pymongo==4.11.1
+pymongo==4.11.2
     # via edx-opaque-keys
 pynacl==1.5.0
     # via edx-django-utils

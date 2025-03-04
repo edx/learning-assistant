@@ -47,7 +47,7 @@ coverage[toml]==7.6.12
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==44.0.1
+cryptography==44.0.2
     # via
     #   -r requirements/test.txt
     #   pyjwt
@@ -90,7 +90,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
-edx-django-utils==7.1.0
+edx-django-utils==7.2.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
@@ -116,7 +116,7 @@ iniconfig==2.0.0
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==6.0.0
+isort==6.0.1
     # via
     #   -r requirements/quality.in
     #   pylint
@@ -142,7 +142,7 @@ newrelic==10.6.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-optimizely-sdk==5.1.0
+optimizely-sdk==5.2.0
     # via -r requirements/test.txt
 packaging==24.2
     # via
@@ -190,7 +190,7 @@ pylint-plugin-utils==0.8.2
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==4.11.1
+pymongo==4.11.2
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
@@ -202,7 +202,7 @@ pyrsistent==0.20.0
     # via
     #   -r requirements/test.txt
     #   optimizely-sdk
-pytest==8.3.4
+pytest==8.3.5
     # via
     #   -r requirements/test.txt
     #   pytest-cov
