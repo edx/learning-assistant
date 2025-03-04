@@ -29,7 +29,7 @@ from learning_assistant.platform_imports import (
     traverse_block_pre_order,
 )
 from learning_assistant.text_utils import html_to_text
-from learning_assistant.utils import estimated_message_tokens, get_audit_trial_length_days
+from learning_assistant.utils import get_audit_trial_length_days
 
 log = logging.getLogger(__name__)
 User = get_user_model()
@@ -134,8 +134,6 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     template = Environment(loader=BaseLoader).from_string(template_string)
     data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
 
-    print("LENGTH BEFORE:", len(data))
-    print("TOKENS BEFORE:", estimated_message_tokens(data))
     # The maximum of 15000 chars for the prompt template is based on average lengths
     # of chat messages in production. This limit allows there to be a chat history of
     # several 1000+ character long messages, with some room from buffer. This limit
@@ -143,10 +141,6 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     # cause an error due to using too many tokens.
     PROMPT_LENGTH_MAX = getattr(settings, 'CHAT_COMPLETION_PROMPT_TEMPLATE_MAX_CHAR_LENGTH', 15000)
     data = data[0:PROMPT_LENGTH_MAX]
-
-    print("LENGTH AFTER:", len(data))
-    print("TOKENS AFTER:", estimated_message_tokens(data))
-    print("DATA:\n\n", data)
     return data
 
 
