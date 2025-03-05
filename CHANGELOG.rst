@@ -14,6 +14,13 @@ Change Log
 Unreleased
 **********
 
+4.10.4 - 2025-03-05
+*******************
+* Adds logic to trim down unit content to a maximum length of characters, specified with a Django setting
+  to fix edge cases where the unit content is so large it leaves no room for any chat history.
+  This typically occurs with units that contain videos with very long transcripts.
+* Adds user to raw_id_fields for LearningAssistantMessageAdmin form to improve performance.
+
 4.10.3 - 2025-03-04
 *******************
 * Adds Django admin form for LearningAssistantMessage model.

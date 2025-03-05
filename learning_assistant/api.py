@@ -127,6 +127,15 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
                 {'course_run_id': course_run_id, 'unit_usage_key': unit_usage_key}
             )
 
+    # The maximum of 15,000 chars for the unit content is based on average lengths
+    # of chat messages in production, the length of the static text in the system prompt template,
+    # and an estimate of the reasonable upper limit of the length of a course's title and a course's skills.
+    # This limit allows there to be a chat history of several 1,000+ character long messages, with some room for
+    # buffer. This limit also prevents an error from occurring wherein unusually long prompt templates cause an
+    # error due to using too many tokens.
+    UNIT_CONTENT_MAX_CHAR_LENGTH = getattr(settings, 'CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH', 11750)
+    unit_content = unit_content[0:UNIT_CONTENT_MAX_CHAR_LENGTH]
+
     course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
     skill_names = course_data['skill_names']
     title = course_data['title']
@@ -134,13 +143,6 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     template = Environment(loader=BaseLoader).from_string(template_string)
     data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
 
-    # The maximum of 15000 chars for the prompt template is based on average lengths
-    # of chat messages in production. This limit allows there to be a chat history of
-    # several 1000+ character long messages, with some room from buffer. This limit
-    # also prevents an error from occurring wherein unusually long prompt templates
-    # cause an error due to using too many tokens.
-    PROMPT_LENGTH_MAX = getattr(settings, 'CHAT_COMPLETION_PROMPT_TEMPLATE_MAX_CHAR_LENGTH', 15000)
-    data = data[0:PROMPT_LENGTH_MAX]
     return data
 
 

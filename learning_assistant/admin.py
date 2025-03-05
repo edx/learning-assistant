@@ -50,4 +50,5 @@ class LearningAssistantMessageAdmin(admin.ModelAdmin):
 
     exclude = ('content',)
     list_display = ('user', 'course_id', 'role',)
+    raw_id_fields = ('user',)
     search_fields = ('user__username',)

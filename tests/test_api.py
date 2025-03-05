@@ -2,6 +2,8 @@
 Test cases for the learning-assistant api module.
 """
 import itertools
+import random
+import string
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
@@ -244,6 +246,42 @@ class GetBlockContentAPITests(TestCase):
         )
 
         self.assertNotIn('The following text is useful.', prompt_text)
+
+    @patch('learning_assistant.api.get_cache_course_data')
+    @patch('learning_assistant.api.get_block_content')
+    def test_render_prompt_template_trim_unit_content(self, mock_get_content, mock_cache):
+        # Generate a random string of a specified length. This is to simulate unit content.
+        characters = string.ascii_letters + " "  # Includes a space as a possible character to simulate words.
+        unit_content_max_length = settings.CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH
+        unit_content_length = unit_content_max_length + 100
+        random_unit_content = ''.join(random.choices(characters, k=unit_content_length))
+
+        mock_get_content.return_value = (len(random_unit_content), random_unit_content)
+        skills_content = ['skills']
+        title = 'title'
+        mock_cache.return_value = {'skill_names': skills_content, 'title': title}
+
+        # mock arguments that are passed through to `get_block_content` function. the value of these
+        # args does not matter for this test right now, as the `get_block_content` function is entirely mocked.
+        request = MagicMock()
+        user_id = 1
+        course_run_id = self.course_run_id
+        unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
+        course_id = 'edx+test'
+        template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
+
+        prompt_text = render_prompt_template(
+            request, user_id, course_run_id, unit_usage_key, course_id, template_string
+        )
+
+        # Assert that the trimmed unit content is in the prompt and that the entire unit content is not in the prompt,
+        # because the original unit content exceeds the character limit.
+        self.assertNotIn(random_unit_content, prompt_text)
+        self.assertNotIn(random_unit_content[0:unit_content_length+1], prompt_text)
+        self.assertIn(random_unit_content[0:unit_content_max_length], prompt_text)
+
+        self.assertIn(str(skills_content), prompt_text)
+        self.assertIn(title, prompt_text)
 
 
 @ddt.ddt
