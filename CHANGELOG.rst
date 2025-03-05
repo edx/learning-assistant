@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.10.4 - 2025-03-05
+*******************
+* Add user to raw_id_fields for LearningAssistantMessageAdmin form to improve performance.
+
 4.10.3 - 2025-03-04
 *******************
 * Adds Django admin form for LearningAssistantMessage model.
