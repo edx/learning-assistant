@@ -18,7 +18,7 @@ from learning_assistant.toggles import v2_endpoint_enabled
 log = logging.getLogger(__name__)
 
 
-def _estimated_message_tokens(message):
+def estimated_message_tokens(message):
     """
     Estimates how many tokens are in a given message.
     """
@@ -32,7 +32,7 @@ def get_reduced_message_list(prompt_template, message_list):
     """
     If messages are larger than allotted token amount, return a smaller list of messages.
     """
-    total_system_tokens = _estimated_message_tokens(prompt_template)
+    total_system_tokens = estimated_message_tokens(prompt_template)
 
     max_tokens = getattr(settings, 'CHAT_COMPLETION_MAX_TOKENS', 16385)
     response_tokens = getattr(settings, 'CHAT_COMPLETION_RESPONSE_TOKENS', 1000)
@@ -45,7 +45,7 @@ def get_reduced_message_list(prompt_template, message_list):
 
     while total_message_tokens < remaining_tokens and len(message_list_copy) != 0:
         new_message = message_list_copy.pop()
-        total_message_tokens += _estimated_message_tokens(new_message['content'])
+        total_message_tokens += estimated_message_tokens(new_message['content'])
         if total_message_tokens >= remaining_tokens:
             break
 
