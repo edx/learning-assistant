@@ -5,7 +5,7 @@
 | Name                                                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |-------------------------------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | learning\_assistant/\_\_init\_\_.py                                                   |        2 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/api.py                                                            |      113 |        5 |       14 |        1 |     95% |120->130, 204-206, 216-217 |
+| learning\_assistant/api.py                                                            |      113 |        5 |       14 |        1 |     95% |120->136, 206-208, 218-219 |
 | learning\_assistant/apps.py                                                           |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/constants.py                                                      |        7 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/data.py                                                           |       12 |        0 |        0 |        0 |    100% |           |
