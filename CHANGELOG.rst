@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.10.5 - 2025-03-06
+*******************
+* Fixes a bug where audit trial length was defaulting to 14 days due to missing language preference for Optimizely
+
 4.10.4 - 2025-03-05
 *******************
 * Adds logic to trim down unit content to a maximum length of characters, specified with a Django setting
