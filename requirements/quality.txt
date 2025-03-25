@@ -43,7 +43,7 @@ code-annotations==2.2.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.7.0
+coverage[toml]==7.7.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -99,7 +99,7 @@ edx-drf-extensions==10.5.0
     # via -r requirements/test.txt
 edx-lint==5.6.0
     # via -r requirements/quality.in
-edx-opaque-keys==2.11.0
+edx-opaque-keys==2.12.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
@@ -112,7 +112,7 @@ idna==3.10
     #   -r requirements/test.txt
     #   optimizely-sdk
     #   requests
-iniconfig==2.0.0
+iniconfig==2.1.0
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -152,7 +152,7 @@ pbr==6.1.1
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.3.6
+platformdirs==4.3.7
     # via pylint
 pluggy==1.5.0
     # via
@@ -176,7 +176,7 @@ pyjwt[crypto]==2.10.1
     #   drf-jwt
     #   edx-drf-extensions
     #   edx-rest-api-client
-pylint==3.3.5
+pylint==3.3.6
     # via
     #   edx-lint
     #   pylint-celery
