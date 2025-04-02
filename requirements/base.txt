@@ -42,7 +42,7 @@ django-waffle==4.2.0
     # via
     #   edx-django-utils
     #   edx-drf-extensions
-djangorestframework==3.15.2
+djangorestframework==3.16.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
@@ -57,7 +57,7 @@ edx-django-utils==7.2.0
     #   edx-rest-api-client
 edx-drf-extensions==10.5.0
     # via -r requirements/base.in
-edx-opaque-keys==2.11.0
+edx-opaque-keys==2.12.0
     # via
     #   -r requirements/base.in
     #   edx-drf-extensions
@@ -75,7 +75,7 @@ jsonschema-specifications==2024.10.1
     # via jsonschema
 markupsafe==3.0.2
     # via jinja2
-newrelic==10.7.0
+newrelic==10.8.1
     # via edx-django-utils
 optimizely-sdk==5.2.0
     # via -r requirements/base.in
@@ -105,7 +105,7 @@ requests==2.32.3
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   optimizely-sdk
-rpds-py==0.23.1
+rpds-py==0.24.0
     # via
     #   jsonschema
     #   referencing
@@ -117,7 +117,7 @@ stevedore==5.4.1
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-typing-extensions==4.12.2
+typing-extensions==4.13.0
     # via
     #   edx-opaque-keys
     #   referencing
