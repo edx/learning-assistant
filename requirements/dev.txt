@@ -57,7 +57,7 @@ click-log==0.4.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
-code-annotations==2.2.0
+code-annotations==2.3.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -121,12 +121,12 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-django-utils==7.2.0
+edx-django-utils==7.4.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
     #   edx-rest-api-client
-edx-drf-extensions==10.5.0
+edx-drf-extensions==10.6.0
     # via -r requirements/quality.txt
 edx-i18n-tools==1.7.0
     # via -r requirements/dev.in
@@ -136,7 +136,7 @@ edx-opaque-keys==2.12.0
     # via
     #   -r requirements/quality.txt
     #   edx-drf-extensions
-edx-rest-api-client==6.1.0
+edx-rest-api-client==6.2.0
     # via -r requirements/quality.txt
 filelock==3.18.0
     # via
@@ -171,11 +171,11 @@ jsonschema-specifications==2024.10.1
     # via
     #   -r requirements/quality.txt
     #   jsonschema
-lxml[html-clean,html_clean]==5.3.1
+lxml[html-clean,html_clean]==5.3.2
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
-lxml-html-clean==0.4.1
+lxml-html-clean==0.4.2
     # via lxml
 markupsafe==3.0.2
     # via
@@ -185,7 +185,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/quality.txt
     #   pylint
-newrelic==10.8.1
+newrelic==10.9.0
     # via
     #   -r requirements/quality.txt
     #   edx-django-utils
@@ -264,7 +264,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/quality.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.11.3
+pymongo==4.12.0
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
@@ -290,9 +290,9 @@ pytest==8.3.5
     #   -r requirements/quality.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==6.1.0
+pytest-cov==6.1.1
     # via -r requirements/quality.txt
-pytest-django==4.10.0
+pytest-django==4.11.1
     # via -r requirements/quality.txt
 python-dateutil==2.9.0.post0
     # via
@@ -360,7 +360,7 @@ tomlkit==0.13.2
     #   pylint
 tox==4.25.0
     # via -r requirements/ci.txt
-typing-extensions==4.13.0
+typing-extensions==4.13.2
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
