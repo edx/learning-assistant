@@ -158,7 +158,7 @@ markupsafe==3.0.2
     #   jinja2
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.6.0
+more-itertools==10.7.0
     # via
     #   jaraco-classes
     #   jaraco-functools
@@ -170,7 +170,7 @@ nh3==0.2.21
     # via readme-renderer
 optimizely-sdk==5.2.0
     # via -r requirements/test.txt
-packaging==24.2
+packaging==25.0
     # via
     #   -r requirements/test.txt
     #   build

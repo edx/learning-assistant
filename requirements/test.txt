@@ -119,7 +119,7 @@ newrelic==10.9.0
     #   edx-django-utils
 optimizely-sdk==5.2.0
     # via -r requirements/base.txt
-packaging==24.2
+packaging==25.0
     # via pytest
 pbr==6.1.1
     # via
