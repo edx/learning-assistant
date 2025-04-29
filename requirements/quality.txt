@@ -17,7 +17,7 @@ attrs==25.3.0
     #   -r requirements/test.txt
     #   jsonschema
     #   referencing
-certifi==2025.1.31
+certifi==2025.4.26
     # via
     #   -r requirements/test.txt
     #   requests
@@ -53,7 +53,7 @@ cryptography==44.0.2
     #   pyjwt
 ddt==1.7.2
     # via -r requirements/test.txt
-dill==0.3.9
+dill==0.4.0
     # via pylint
 django==4.2.20
     # via
@@ -99,7 +99,7 @@ edx-drf-extensions==10.6.0
     # via -r requirements/test.txt
 edx-lint==5.6.0
     # via -r requirements/quality.in
-edx-opaque-keys==2.12.0
+edx-opaque-keys==3.0.0
     # via
     #   -r requirements/test.txt
     #   edx-drf-extensions
@@ -128,7 +128,7 @@ jsonschema==4.23.0
     # via
     #   -r requirements/test.txt
     #   optimizely-sdk
-jsonschema-specifications==2024.10.1
+jsonschema-specifications==2025.4.1
     # via
     #   -r requirements/test.txt
     #   jsonschema
@@ -138,13 +138,13 @@ markupsafe==3.0.2
     #   jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==10.9.0
+newrelic==10.10.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
 optimizely-sdk==5.2.0
     # via -r requirements/test.txt
-packaging==24.2
+packaging==25.0
     # via
     #   -r requirements/test.txt
     #   pytest
