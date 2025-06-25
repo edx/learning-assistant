@@ -45,7 +45,7 @@ class GetChatResponseTests(TestCase):
         self.assertEqual(message, 'Completion endpoint is not defined.')
 
     @responses.activate
-    def test_200_response(self):
+    def test_200_response_single_object(self):
         message_response = {'role': 'assistant', 'content': 'See you later!'}
         responses.add(
             responses.POST,
@@ -56,6 +56,25 @@ class GetChatResponseTests(TestCase):
 
         status_code, message = self.get_response()
         self.assertEqual(status_code, 200)
+        # Single objects should be converted to a list
+        self.assertEqual(message, [message_response])
+
+    @responses.activate
+    def test_200_response_list_object(self):
+        message_response = [
+            {'role': 'assistant', 'content': 'Hello!'},
+            {'role': 'assistant', 'content': 'See you later!'}
+        ]
+        responses.add(
+            responses.POST,
+            settings.CHAT_COMPLETION_API,
+            status=200,
+            body=json.dumps(message_response),
+        )
+
+        status_code, message = self.get_response()
+        self.assertEqual(status_code, 200)
+        # Lists should remain as lists
         self.assertEqual(message, message_response)
 
     @responses.activate
@@ -70,7 +89,8 @@ class GetChatResponseTests(TestCase):
 
         status_code, message = self.get_response()
         self.assertEqual(status_code, 500)
-        self.assertEqual(message, message_response)
+        # Error messages should also be converted to a list
+        self.assertEqual(message, [message_response])
 
     @ddt.data(
         ConnectionError,
