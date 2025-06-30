@@ -5,7 +5,7 @@ from openedx.core.djangoapps.course_apps.plugins import CourseApp
 
 from learning_assistant import plugins_api
 
-
+# help test
 class LearningAssistantCourseApp(CourseApp):
     """
     A CourseApp plugin representing the Learning Assistant feature.
@@ -35,6 +35,7 @@ class LearningAssistantCourseApp(CourseApp):
         Returns:
             bool: Availability status of app.
         """
+        print("PLEASE")
         return plugins_api.is_available()
 
     @classmethod

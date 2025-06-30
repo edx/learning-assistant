@@ -263,14 +263,15 @@ class LearningAssistantChatSummaryView(APIView):
         }
         user = request.user
 
-        course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
-        today = datetime.now()
-        course_start = parse_lms_datetime(course_data.get('start', None))
-        course_end = parse_lms_datetime(course_data.get('end', None))
-        valid_dates = (
-            (course_start <= today if course_start else True)
-            and (course_end >= today if course_end else True)
-        )
+        # course_data = get_cache_course_run_data(course_run_id, ['start', 'end'])
+        # today = datetime.now()
+        # course_start = parse_lms_datetime(course_data.get('start', None))
+        # course_end = parse_lms_datetime(course_data.get('end', None))
+        # valid_dates = (
+        #     (course_start <= today if course_start else True)
+        #     and (course_end >= today if course_end else True)
+        # )
+        valid_dates = True
 
         # Get whether the Learning Assistant is enabled.
         data['enabled'] = learning_assistant_enabled(courserun_key) and valid_dates

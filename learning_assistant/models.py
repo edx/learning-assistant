@@ -10,7 +10,7 @@ from opaque_keys.edx.django.models import CourseKeyField
 
 USER_MODEL = get_user_model()
 
-
+# help
 class LearningAssistantCourseEnabled(TimeStampedModel):
     """
     This model stores whether the Learning Assistant is enabled for a particular course ID.

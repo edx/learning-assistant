@@ -150,6 +150,8 @@ def learning_assistant_available():
     """
     Return whether or not the learning assistant is available via django setting or course waffle flag.
     """
+    print("HEYHEYHEY")
+    return True
     return getattr(settings, 'LEARNING_ASSISTANT_AVAILABLE', False)
 
 
