@@ -13,6 +13,9 @@ Change Log
 
 Unreleased
 **********
+4.10.6 - 2025-07-01
+*******************
+* XPert chat API responses are uniformly returned as a list, which improves compatibility between the v1 and v2 endpoints.
 
 4.10.5 - 2025-03-06
 *******************
