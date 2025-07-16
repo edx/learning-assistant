@@ -96,11 +96,7 @@ def get_chat_response(prompt_template, message_list):
                 data=json.dumps(body),
                 timeout=(connect_timeout, read_timeout)
             )
-            response_json = response.json()
-            if isinstance(response_json, list):
-                chat = response_json
-            else:
-                chat = [response_json]
+            chat = response.json()
             response_status = response.status_code
         except (ConnectTimeout, ConnectionError) as e:
             error_message = str(e)

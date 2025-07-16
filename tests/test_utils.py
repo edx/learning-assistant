@@ -56,8 +56,8 @@ class GetChatResponseTests(TestCase):
 
         status_code, message = self.get_response()
         self.assertEqual(status_code, 200)
-        # Single objects should be converted to a list
-        self.assertEqual(message, [message_response])
+        # Single objects are returned as-is
+        self.assertEqual(message, message_response)
 
     @responses.activate
     def test_200_response_list_object(self):
@@ -74,7 +74,7 @@ class GetChatResponseTests(TestCase):
 
         status_code, message = self.get_response()
         self.assertEqual(status_code, 200)
-        # Lists should remain as lists
+        # Lists are returned as-is
         self.assertEqual(message, message_response)
 
     @responses.activate
@@ -89,8 +89,8 @@ class GetChatResponseTests(TestCase):
 
         status_code, message = self.get_response()
         self.assertEqual(status_code, 500)
-        # Error messages should also be converted to a list
-        self.assertEqual(message, [message_response])
+        # Error messages are returned as-is
+        self.assertEqual(message, message_response)
 
     @ddt.data(
         ConnectionError,
