@@ -13,6 +13,11 @@ Change Log
 
 Unreleased
 **********
+4.10.7 - 2025-07-15
+*******************
+* XPert Chat API response will be message object for V1 endpoint and a list of messages for V2 endpoint.
+* Adds a Django setting to control the chat v2 endpoint availability in production
+
 4.10.6 - 2025-07-01
 *******************
 * XPert chat API responses are uniformly returned as a list, which improves compatibility between the v1 and v2 endpoints.
