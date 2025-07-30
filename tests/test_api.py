@@ -2,6 +2,8 @@
 Test cases for the learning-assistant api module.
 """
 import itertools
+import random
+import string
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
@@ -20,7 +22,7 @@ from learning_assistant.api import (
     _leaf_filter,
     audit_trial_is_expired,
     get_audit_trial,
-    get_audit_trial_expiration_date,
+    get_audit_trial_expiration_date_from_start_date,
     get_block_content,
     get_message_history,
     get_or_create_audit_trial,
@@ -244,6 +246,42 @@ class GetBlockContentAPITests(TestCase):
         )
 
         self.assertNotIn('The following text is useful.', prompt_text)
+
+    @patch('learning_assistant.api.get_cache_course_data')
+    @patch('learning_assistant.api.get_block_content')
+    def test_render_prompt_template_trim_unit_content(self, mock_get_content, mock_cache):
+        # Generate a random string of a specified length. This is to simulate unit content.
+        characters = string.ascii_letters + " "  # Includes a space as a possible character to simulate words.
+        unit_content_max_length = settings.CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH
+        unit_content_length = unit_content_max_length + 100
+        random_unit_content = ''.join(random.choices(characters, k=unit_content_length))
+
+        mock_get_content.return_value = (len(random_unit_content), random_unit_content)
+        skills_content = ['skills']
+        title = 'title'
+        mock_cache.return_value = {'skill_names': skills_content, 'title': title}
+
+        # mock arguments that are passed through to `get_block_content` function. the value of these
+        # args does not matter for this test right now, as the `get_block_content` function is entirely mocked.
+        request = MagicMock()
+        user_id = 1
+        course_run_id = self.course_run_id
+        unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
+        course_id = 'edx+test'
+        template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
+
+        prompt_text = render_prompt_template(
+            request, user_id, course_run_id, unit_usage_key, course_id, template_string
+        )
+
+        # Assert that the trimmed unit content is in the prompt and that the entire unit content is not in the prompt,
+        # because the original unit content exceeds the character limit.
+        self.assertNotIn(random_unit_content, prompt_text)
+        self.assertNotIn(random_unit_content[0:unit_content_length+1], prompt_text)
+        self.assertIn(random_unit_content[0:unit_content_max_length], prompt_text)
+
+        self.assertIn(str(skills_content), prompt_text)
+        self.assertIn(title, prompt_text)
 
 
 @ddt.ddt
@@ -487,9 +525,9 @@ class GetMessageHistoryTests(TestCase):
 
 
 @ddt.ddt
-class GetAuditTrialExpirationDateTests(TestCase):
+class GetAuditTrialExpirationDateFromStartTests(TestCase):
     """
-    Test suite for get_audit_trial_expiration_date.
+    Test suite for get_audit_trial_expiration_date_from_start_date.
     """
 
     @ddt.data(
@@ -509,43 +547,50 @@ class GetAuditTrialExpirationDateTests(TestCase):
         mock_get_audit_trial_length_days
     ):
         mock_get_audit_trial_length_days.return_value = trial_length_days
-        expiration_date = get_audit_trial_expiration_date(start_date, 1, 'verified')
+        expiration_date = get_audit_trial_expiration_date_from_start_date(start_date, 1, 'verified')
         self.assertEqual(expected_expiration_date, expiration_date)
 
 
+@ddt.ddt
 class GetAuditTrialTests(TestCase):
     """
     Test suite for get_audit_trial.
     """
 
-    @freeze_time('2024-01-01')
     def setUp(self):
         super().setUp()
         self.user = User(username='tester', email='tester@test.com')
         self.user.save()
 
-    def test_exists(self):
-        start_date = datetime.now()
+    @freeze_time('2024-01-01')
+    @ddt.data(
+        datetime(2024, 1, 15),
+        datetime(2024, 1, 29),
+    )
+    def test_exists(self, audit_trial_expiration_date):
+        audit_trial_start_date = datetime.now()
 
         LearningAssistantAuditTrial.objects.create(
             user=self.user,
-            start_date=start_date
+            start_date=audit_trial_start_date,
+            expiration_date=audit_trial_expiration_date,
         )
 
         expected_return = LearningAssistantAuditTrialData(
             user_id=self.user.id,
-            start_date=start_date,
-            expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
+            start_date=audit_trial_start_date,
+            expiration_date=audit_trial_expiration_date,
         )
-        self.assertEqual(expected_return, get_audit_trial(self.user, 'verified'))
+        self.assertEqual(expected_return, get_audit_trial(self.user))
 
     def test_not_exists(self):
         other_user = User(username='other-tester', email='other-tester@test.com')
         other_user.save()
 
-        self.assertIsNone(get_audit_trial(self.user, 'verified'))
+        self.assertIsNone(get_audit_trial(self.user))
 
 
+@ddt.ddt
 class GetOrCreateAuditTrialTests(TestCase):
     """
     Test suite for get_or_create_audit_trial.
@@ -557,31 +602,45 @@ class GetOrCreateAuditTrialTests(TestCase):
         self.user.save()
 
     @freeze_time('2024-01-01')
-    def test_exists(self):
-        start_date = datetime.now()
+    @ddt.data(
+        datetime(2024, 1, 15),
+        datetime(2024, 1, 29),
+    )
+    @patch('learning_assistant.api.get_audit_trial_expiration_date_from_start_date')
+    def test_exists_get(self, audit_trial_expiration_date, get_audit_trial_expiration_date_mock):
+        audit_trial_start_date = datetime.now()
+        get_audit_trial_expiration_date_mock.return_value = audit_trial_expiration_date
 
         LearningAssistantAuditTrial.objects.create(
             user=self.user,
-            start_date=start_date
+            start_date=audit_trial_start_date,
+            expiration_date=audit_trial_expiration_date,
         )
 
         expected_return = LearningAssistantAuditTrialData(
             user_id=self.user.id,
-            start_date=start_date,
-            expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
+            start_date=audit_trial_start_date,
+            expiration_date=audit_trial_expiration_date,
         )
         self.assertEqual(expected_return, get_or_create_audit_trial(self.user, 'verified'))
 
     @freeze_time('2024-01-01')
-    def test_not_exists(self):
+    @ddt.data(
+        datetime(2024, 1, 15),
+        datetime(2024, 1, 29),
+    )
+    @patch('learning_assistant.api.get_audit_trial_expiration_date_from_start_date')
+    def test_not_exists_create(self, audit_trial_expiration_date, get_audit_trial_expiration_date_mock):
         other_user = User(username='other-tester', email='other-tester@test.com')
         other_user.save()
 
         start_date = datetime.now()
+        get_audit_trial_expiration_date_mock.return_value = audit_trial_expiration_date
+
         expected_return = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
+            expiration_date=audit_trial_expiration_date
         )
 
         self.assertEqual(expected_return, get_or_create_audit_trial(self.user, 'verified'))
@@ -653,7 +712,7 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date, 1, 'verified'),
+            expiration_date=get_audit_trial_expiration_date_from_start_date(start_date, 1, 'verified'),
         )
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), True)
@@ -667,7 +726,7 @@ class CheckIfAuditTrialIsExpiredTests(TestCase):
         audit_trial_data = LearningAssistantAuditTrialData(
             user_id=self.user.id,
             start_date=start_date,
-            expiration_date=get_audit_trial_expiration_date(start_date, 1, 'verified'),
+            expiration_date=get_audit_trial_expiration_date_from_start_date(start_date, 1, 'verified'),
         )
 
         self.assertEqual(audit_trial_is_expired(mock_enrollment, audit_trial_data), False)

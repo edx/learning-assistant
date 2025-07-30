@@ -2,6 +2,7 @@
 Tests for the utils functions
 """
 import json
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import ddt
@@ -10,11 +11,13 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from requests.exceptions import ConnectTimeout
 
+from learning_assistant.constants import LMS_DATETIME_FORMAT
 from learning_assistant.utils import (
     get_audit_trial_length_days,
     get_chat_response,
     get_optimizely_variation,
     get_reduced_message_list,
+    parse_lms_datetime,
     user_role_is_staff,
 )
 
@@ -42,7 +45,7 @@ class GetChatResponseTests(TestCase):
         self.assertEqual(message, 'Completion endpoint is not defined.')
 
     @responses.activate
-    def test_200_response(self):
+    def test_200_response_single_object(self):
         message_response = {'role': 'assistant', 'content': 'See you later!'}
         responses.add(
             responses.POST,
@@ -53,6 +56,25 @@ class GetChatResponseTests(TestCase):
 
         status_code, message = self.get_response()
         self.assertEqual(status_code, 200)
+        # Single objects are returned as-is
+        self.assertEqual(message, message_response)
+
+    @responses.activate
+    def test_200_response_list_object(self):
+        message_response = [
+            {'role': 'assistant', 'content': 'Hello!'},
+            {'role': 'assistant', 'content': 'See you later!'}
+        ]
+        responses.add(
+            responses.POST,
+            settings.CHAT_COMPLETION_API,
+            status=200,
+            body=json.dumps(message_response),
+        )
+
+        status_code, message = self.get_response()
+        self.assertEqual(status_code, 200)
+        # Lists are returned as-is
         self.assertEqual(message, message_response)
 
     @responses.activate
@@ -67,6 +89,7 @@ class GetChatResponseTests(TestCase):
 
         status_code, message = self.get_response()
         self.assertEqual(status_code, 500)
+        # Error messages are returned as-is
         self.assertEqual(message, message_response)
 
     @ddt.data(
@@ -229,3 +252,24 @@ class GetOptimizelyVariationTests(TestCase):
         with patch.object(settings, 'OPTIMIZELY_FULLSTACK_SDK_KEY', 'sdk_key'):
             expected_value = {'enabled': True, 'variation_key': 'variation'}
             self.assertEqual(get_optimizely_variation(1, 'verified'), expected_value)
+
+
+class ParseLMSDatetimeTests(TestCase):
+    """
+    Tests for the parse_lms_datetime helper function.
+    """
+
+    def test_correct_date(self):
+        expected_value = datetime(1982, 12, 7, 14, 00, 00)
+        stringified = expected_value.strftime(LMS_DATETIME_FORMAT)
+
+        response = parse_lms_datetime(stringified)
+
+        self.assertEqual(response, expected_value)
+
+    def test_wrong_date(self):
+        expected_value = None
+
+        response = parse_lms_datetime('when I get my homework done')
+
+        self.assertEqual(response, expected_value)

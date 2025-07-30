@@ -127,12 +127,22 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
                 {'course_run_id': course_run_id, 'unit_usage_key': unit_usage_key}
             )
 
+    # The maximum of 15,000 chars for the unit content is based on average lengths
+    # of chat messages in production, the length of the static text in the system prompt template,
+    # and an estimate of the reasonable upper limit of the length of a course's title and a course's skills.
+    # This limit allows there to be a chat history of several 1,000+ character long messages, with some room for
+    # buffer. This limit also prevents an error from occurring wherein unusually long prompt templates cause an
+    # error due to using too many tokens.
+    UNIT_CONTENT_MAX_CHAR_LENGTH = getattr(settings, 'CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH', 11750)
+    unit_content = unit_content[0:UNIT_CONTENT_MAX_CHAR_LENGTH]
+
     course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
     skill_names = course_data['skill_names']
     title = course_data['title']
 
     template = Environment(loader=BaseLoader).from_string(template_string)
     data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
+
     return data
 
 
@@ -233,9 +243,13 @@ def get_message_history(courserun_key, user, message_count):
     return message_history
 
 
-def get_audit_trial_expiration_date(start_date, user_id, enrollment_mode):
+def get_audit_trial_expiration_date_from_start_date(start_date, user_id, enrollment_mode):
     """
-    Given a start date of an audit trial, calculate the expiration date of the audit trial.
+    Given a start date of an audit trial, return the expiration date of the audit trial.
+
+    Note that this should only be used when computing the expiration date for a new audit trial. If an audit trial
+    exists, use the expiration_date field on the LearningAssistantAuditTrial model, as that will be guaranteed to be
+    accurate.
 
     Arguments:
     * start_date (datetime): the start date of the audit trial
@@ -246,18 +260,17 @@ def get_audit_trial_expiration_date(start_date, user_id, enrollment_mode):
     * expiration_date (datetime): the expiration date of the audit trial
     """
     trial_length_days = get_audit_trial_length_days(user_id, enrollment_mode)
-
     expiration_datetime = start_date + timedelta(days=trial_length_days)
+
     return expiration_datetime
 
 
-def get_audit_trial(user, enrollment_mode):
+def get_audit_trial(user):
     """
     Given a user, return the associated audit trial data.
 
     Arguments:
     * user (User): the user
-    * enrollment_mode (str): enrollment mode of the user
 
     Returns:
     * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
@@ -274,7 +287,7 @@ def get_audit_trial(user, enrollment_mode):
     return LearningAssistantAuditTrialData(
         user_id=user.id,
         start_date=audit_trial.start_date,
-        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date, user.id, enrollment_mode),
+        expiration_date=audit_trial.expiration_date,
     )
 
 
@@ -292,17 +305,21 @@ def get_or_create_audit_trial(user, enrollment_mode):
         * start_date (datetime): the start date of the audit trial
         * expiration_date (datetime): the expiration date of the audit trial
     """
+    start_date = timezone.now()
+    expiration_date = get_audit_trial_expiration_date_from_start_date(start_date, user.id, enrollment_mode)
+
     audit_trial, _ = LearningAssistantAuditTrial.objects.get_or_create(
         user=user,
         defaults={
-            "start_date": timezone.now(),
+            "start_date": start_date,
+            "expiration_date": expiration_date,
         },
     )
 
     return LearningAssistantAuditTrialData(
         user_id=user.id,
         start_date=audit_trial.start_date,
-        expiration_date=get_audit_trial_expiration_date(audit_trial.start_date, user.id, enrollment_mode),
+        expiration_date=audit_trial.expiration_date,
     )
 
 

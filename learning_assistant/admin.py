@@ -1,12 +1,13 @@
 """
 Django Admin pages.
 """
-from datetime import timedelta
-
-from django.conf import settings
 from django.contrib import admin
 
-from learning_assistant.models import LearningAssistantAuditTrial, LearningAssistantCourseEnabled
+from learning_assistant.models import (
+    LearningAssistantAuditTrial,
+    LearningAssistantCourseEnabled,
+    LearningAssistantMessage,
+)
 
 
 @admin.register(LearningAssistantCourseEnabled)
@@ -14,6 +15,9 @@ class LearningAssistantCourseEnabledAdmin(admin.ModelAdmin):
     """
     Admin panel for the LearningAssistantCourseEnabled model.
     """
+
+    list_display = ('course_id', 'enabled')
+    search_fields = ('course_id',)
 
 
 @admin.register(LearningAssistantAuditTrial)
@@ -25,15 +29,7 @@ class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
     Please take this into account when reading/modifying entries.
     """
 
-    @admin.display(description="Expiration Date")
-    def expiration_date(self):
-        """
-        Generate the expiration date for the LearningAssistantAuditTrial based on the start_date.
-        """
-        # pylint: disable-next=no-member
-        return self.start_date + timedelta(days=settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS)
-
-    list_display = ('user', 'start_date', expiration_date)
+    list_display = ('user', 'start_date', 'expiration_date')
     raw_id_fields = ('user',)
     search_fields = ('user__username',)
 
@@ -43,4 +39,16 @@ class LearningAssistantAuditTrialAdmin(admin.ModelAdmin):
         """
 
         model = LearningAssistantAuditTrial
-        fields = ('user', 'start_date',)
+        fields = ('user', 'start_date', 'expiration_date')
+
+
+@admin.register(LearningAssistantMessage)
+class LearningAssistantMessageAdmin(admin.ModelAdmin):
+    """
+    Admin panel for the LearningAssistantMessage model.
+    """
+
+    exclude = ('content',)
+    list_display = ('user', 'course_id', 'role',)
+    raw_id_fields = ('user',)
+    search_fields = ('user__username',)

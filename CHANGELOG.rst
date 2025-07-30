@@ -13,6 +13,48 @@ Change Log
 
 Unreleased
 **********
+4.10.7 - 2025-07-15
+*******************
+* XPert Chat API response will be message object for V1 endpoint and a list of messages for V2 endpoint.
+* Adds a Django setting to control the chat v2 endpoint availability in production
+
+4.10.6 - 2025-07-01
+*******************
+* XPert chat API responses are uniformly returned as a list, which improves compatibility between the v1 and v2 endpoints.
+
+4.10.5 - 2025-03-06
+*******************
+* Fixes a bug where audit trial length was defaulting to 14 days due to missing language preference for Optimizely
+
+4.10.4 - 2025-03-05
+*******************
+* Adds logic to trim down unit content to a maximum length of characters, specified with a Django setting
+  to fix edge cases where the unit content is so large it leaves no room for any chat history.
+  This typically occurs with units that contain videos with very long transcripts.
+* Adds user to raw_id_fields for LearningAssistantMessageAdmin form to improve performance.
+
+4.10.3 - 2025-03-04
+*******************
+* Adds Django admin form for LearningAssistantMessage model.
+* Improves Django admin form for LearningAssistantCourseEnabled model by improving display.
+
+4.10.2 - 2025-02-19
+*******************
+* Fixes an error when parsing dates for the chat views.
+* Small update in the documentation regarding Paver deprecation.
+
+4.10.1 - 2025-02-19
+*******************
+* Fixes a linting error on the changelog that prevented the previous release.
+
+4.10.0 - 2025-02-19
+*******************
+* Upgraded Python requirements.
+* Updated Chat Trial Audit gating consistency.
+
+4.9.0 - 2025-02-12
+******************
+* Add an expiration_date field on the LearningAssistantAuditTrial model to store expiration date of a trial.
 
 4.8.0 - 2025-02-05
 ******************

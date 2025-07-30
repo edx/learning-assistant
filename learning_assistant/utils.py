@@ -4,19 +4,22 @@ Utils file for learning-assistant.
 import copy
 import json
 import logging
+from datetime import datetime
 
 import requests
 from django.conf import settings
+from django.utils.translation import get_language
 from optimizely import optimizely
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
+from learning_assistant.constants import LMS_DATETIME_FORMAT
 from learning_assistant.toggles import v2_endpoint_enabled
 
 log = logging.getLogger(__name__)
 
 
-def _estimated_message_tokens(message):
+def estimated_message_tokens(message):
     """
     Estimates how many tokens are in a given message.
     """
@@ -30,7 +33,7 @@ def get_reduced_message_list(prompt_template, message_list):
     """
     If messages are larger than allotted token amount, return a smaller list of messages.
     """
-    total_system_tokens = _estimated_message_tokens(prompt_template)
+    total_system_tokens = estimated_message_tokens(prompt_template)
 
     max_tokens = getattr(settings, 'CHAT_COMPLETION_MAX_TOKENS', 16385)
     response_tokens = getattr(settings, 'CHAT_COMPLETION_RESPONSE_TOKENS', 1000)
@@ -43,7 +46,7 @@ def get_reduced_message_list(prompt_template, message_list):
 
     while total_message_tokens < remaining_tokens and len(message_list_copy) != 0:
         new_message = message_list_copy.pop()
-        total_message_tokens += _estimated_message_tokens(new_message['content'])
+        total_message_tokens += estimated_message_tokens(new_message['content'])
         if total_message_tokens >= remaining_tokens:
             break
 
@@ -143,7 +146,9 @@ def get_optimizely_variation(user_id, enrollment_mode):
         variation_key = None
     else:
         optimizely_client = optimizely.Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
-        user = optimizely_client.create_user_context(str(user_id), {'enrollment_mode': enrollment_mode})
+        user = optimizely_client.create_user_context(str(user_id),
+                                                     {'lms_language_preference': get_language(),
+                                                      'lms_enrollment_mode': enrollment_mode})
         decision = user.decide(getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_EXPERIMENT_KEY', ''))
         enabled = decision.enabled
         variation_key = decision.variation_key
@@ -185,3 +190,21 @@ def get_audit_trial_length_days(user_id, enrollment_mode):
         trial_length_days = 0
 
     return trial_length_days
+
+
+def parse_lms_datetime(datetime_string):
+    """
+    Parse an LMS datetime into a timezone-aware, Python datetime object.
+
+    Arguments:
+        datetime_string: A string to be parsed.
+    """
+    if datetime_string is None:
+        return None
+
+    try:
+        parsed_datetime = datetime.strptime(datetime_string, LMS_DATETIME_FORMAT)
+    except ValueError:
+        return None
+
+    return parsed_datetime
