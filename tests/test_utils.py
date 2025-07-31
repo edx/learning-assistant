@@ -148,6 +148,31 @@ class GetChatResponseTests(TestCase):
             timeout=(connect_timeout, read_timeout)
         )
 
+    @ddt.data(
+        # (v2_enabled, response_data, description)
+        (False, {'role': 'assistant', 'content': 'v1 response'}, 'v1 single dict'),
+        (True, [{'role': 'assistant', 'content': 'v2 response'}], 'v2 array of dicts'),
+        (True, {'role': 'assistant', 'content': 'v2 dict'}, 'v2 unexpected dict format'),
+    )
+    @ddt.unpack
+    @responses.activate
+    @patch('learning_assistant.utils.v2_endpoint_enabled')
+    def test_endpoint_response_formats(self, v2_enabled, response_data, description, mock_v2_enabled):
+        """Test that both v1 and v2 endpoint response formats are handled correctly."""
+        mock_v2_enabled.return_value = v2_enabled
+
+        endpoint = settings.CHAT_COMPLETION_API_V2 if v2_enabled else settings.CHAT_COMPLETION_API
+        responses.add(
+            responses.POST,
+            endpoint,
+            status=200,
+            body=json.dumps(response_data),
+        )
+
+        status_code, message = self.get_response()
+        self.assertEqual(status_code, 200, f"Failed for {description}")
+        self.assertEqual(message, response_data, f"Response mismatch for {description}")
+
 
 class GetReducedMessageListTests(TestCase):
     """

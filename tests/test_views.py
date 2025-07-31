@@ -3,7 +3,7 @@ Tests for the learning assistant views.
 """
 import json
 import sys
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from importlib import import_module
 from itertools import product
 from unittest.mock import MagicMock, call, patch
@@ -16,6 +16,7 @@ from django.http import HttpRequest
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
+from django.utils import timezone
 from freezegun import freeze_time
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -241,7 +242,7 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
         mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
         mock_mode.objects.get.return_value = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
+        mock_mode.expiration_datetime.return_value = timezone.now() - timedelta(days=1)
         mock_enrollment.return_value = MagicMock(mode='audit')
 
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
@@ -266,7 +267,7 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
         mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
         mock_mode.objects.get.return_value = MagicMock()
-        mock_mode.expiration_datetime.return_value = datetime.now() - timedelta(days=1)
+        mock_mode.expiration_datetime.return_value = timezone.now() - timedelta(days=1)
         mock_enrollment.return_value = MagicMock(mode='unpaid_executive_education')
 
         response = self.client.post(reverse('chat', kwargs={'course_run_id': self.course_id}))
@@ -343,6 +344,166 @@ class CourseChatViewTests(LoggedInTestCase):
             ])
         else:
             mock_save_chat_message.assert_not_called()
+
+    @ddt.data(
+        (True, True),   # v2 enabled, chat history enabled
+        (True, False),  # v2 enabled, chat history disabled
+        (False, True),  # v2 disabled, chat history enabled
+        (False, False),  # v2 disabled, chat history disabled
+    )
+    @ddt.unpack
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.render_prompt_template')
+    @patch('learning_assistant.views.get_chat_response')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    @patch('learning_assistant.views.save_chat_message')
+    @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.v2_endpoint_enabled')
+    @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
+    def test_chat_response_v1_vs_v2_endpoint_formats(
+        self,
+        v2_enabled,
+        history_enabled,
+        mock_v2_endpoint_enabled,
+        mock_chat_history_enabled,
+        mock_save_chat_message,
+        mock_mode,
+        mock_enrollment,
+        mock_get_user_role,
+        mock_waffle,
+        mock_chat_response,
+        mock_render,
+        mock_trial_expired,
+    ):
+        """Test that both v1 (dict) and v2 (array) endpoint responses are handled correctly."""
+        mock_waffle.return_value = True
+        mock_get_user_role.return_value = 'student'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
+        mock_render.return_value = 'Rendered template mock'
+        mock_trial_expired.return_value = False
+        mock_v2_endpoint_enabled.return_value = v2_enabled
+        mock_chat_history_enabled.return_value = history_enabled
+
+        # Configure response based on endpoint version
+        if v2_enabled:
+            # v2 endpoint returns array format
+            api_response = [
+                {'role': 'assistant', 'content': 'First message'},
+                {'role': 'assistant', 'content': 'v2 response'}
+            ]
+            expected_content = 'v2 response'  # Should extract from last message
+        else:
+            # v1 endpoint returns single dict format
+            api_response = {'role': 'assistant', 'content': 'v1 response'}
+            expected_content = 'v1 response'
+
+        mock_chat_response.return_value = (200, api_response)
+
+        test_data = [{'role': 'user', 'content': 'What is 2+2?'}]
+
+        response = self.client.post(
+            reverse('chat', kwargs={'course_run_id': self.course_id}),
+            data=json.dumps(test_data),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), api_response)
+
+        if history_enabled:
+            mock_save_chat_message.assert_has_calls([
+                call(self.course_run_key, self.user.id, LearningAssistantMessage.USER_ROLE, test_data[-1]['content']),
+                call(self.course_run_key, self.user.id, LearningAssistantMessage.ASSISTANT_ROLE, expected_content)
+            ])
+        else:
+            mock_save_chat_message.assert_not_called()
+
+    @ddt.data(True, False)
+    @patch('learning_assistant.views.audit_trial_is_expired')
+    @patch('learning_assistant.views.render_prompt_template')
+    @patch('learning_assistant.views.get_chat_response')
+    @patch('learning_assistant.views.learning_assistant_enabled')
+    @patch('learning_assistant.views.get_user_role')
+    @patch('learning_assistant.views.CourseEnrollment')
+    @patch('learning_assistant.views.CourseMode')
+    @patch('learning_assistant.views.save_chat_message')
+    @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.v2_endpoint_enabled')
+    @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
+    def test_chat_response_edge_cases(
+        self,
+        history_enabled,
+        mock_v2_endpoint_enabled,
+        mock_chat_history_enabled,
+        mock_save_chat_message,
+        mock_mode,
+        mock_enrollment,
+        mock_get_user_role,
+        mock_waffle,
+        mock_chat_response,
+        mock_render,
+        mock_trial_expired,
+    ):
+        """Test edge cases: empty array, error strings, malformed responses."""
+        mock_waffle.return_value = True
+        mock_get_user_role.return_value = 'student'
+        mock_mode.VERIFIED_MODES = ['verified']
+        mock_mode.CREDIT_MODES = ['credit']
+        mock_mode.NO_ID_PROFESSIONAL_MODE = 'no-id'
+        mock_mode.UPSELL_TO_VERIFIED_MODES = ['audit']
+        mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
+        mock_render.return_value = 'Rendered template mock'
+        mock_trial_expired.return_value = False
+        mock_v2_endpoint_enabled.return_value = True
+        mock_chat_history_enabled.return_value = history_enabled
+
+        test_cases = [
+            # (response, expected_content_for_history)
+            ([], '[]'),  # Empty array
+            ('Error: Connection failed', 'Error: Connection failed'),  # Error string
+            ([{'role': 'assistant'}], ''),  # Missing content key
+        ]
+
+        test_data = [{'role': 'user', 'content': 'Test message'}]
+
+        for api_response, expected_content in test_cases:
+            with self.subTest(response=api_response):
+                mock_save_chat_message.reset_mock()
+                mock_chat_response.return_value = (200, api_response)
+
+                response = self.client.post(
+                    reverse('chat', kwargs={'course_run_id': self.course_id}),
+                    data=json.dumps(test_data),
+                    content_type='application/json'
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json(), api_response)
+
+                if history_enabled:
+                    mock_save_chat_message.assert_has_calls([
+                        call(
+                            self.course_run_key,
+                            self.user.id,
+                            LearningAssistantMessage.USER_ROLE,
+                            test_data[0]['content']
+                        ),
+                        call(
+                            self.course_run_key,
+                            self.user.id,
+                            LearningAssistantMessage.ASSISTANT_ROLE,
+                            expected_content
+                        )
+                    ])
+                else:
+                    mock_save_chat_message.assert_not_called()
 
 
 @ddt.ddt
@@ -426,7 +587,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
                 user=self.user,
                 role='user',
                 content='Older message',
-                created=date(2024, 10, 1)
+                created=timezone.make_aware(datetime(2024, 10, 1))
             )
 
             LearningAssistantMessage.objects.create(
@@ -434,7 +595,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
                 user=self.user,
                 role='user',
                 content='Newer message',
-                created=date(2024, 10, 3)
+                created=timezone.make_aware(datetime(2024, 10, 3))
             )
 
             db_messages = LearningAssistantMessage.objects.all().order_by('created')
@@ -444,7 +605,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
         mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
-        audit_trial_start_date = datetime.now()
+        audit_trial_start_date = timezone.now()
         audit_trial_expiration_date = audit_trial_start_date + timedelta(days=audit_trial_length_days_mock_value)
         if trial_available:
             LearningAssistantAuditTrial.objects.create(
@@ -482,7 +643,11 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             for i, message in enumerate(data):
                 self.assertEqual(message['role'], db_messages[i].role)
                 self.assertEqual(message['content'], db_messages[i].content)
-                self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
+                # Compare timestamps accounting for DRF 'Z' vs isoformat '+00:00' difference
+                expected_iso = db_messages[i].created.isoformat()
+                if expected_iso.endswith('+00:00'):
+                    expected_iso = expected_iso.replace('+00:00', 'Z')
+                self.assertEqual(message['timestamp'], expected_iso)
         else:
             self.assertEqual(response.data['message_history'], [])
 
@@ -552,7 +717,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
                 user=self.user,
                 role='user',
                 content='Older message',
-                created=date(2024, 10, 1)
+                created=timezone.make_aware(datetime(2024, 10, 1))
             )
 
             LearningAssistantMessage.objects.create(
@@ -560,7 +725,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
                 user=self.user,
                 role='user',
                 content='Newer message',
-                created=date(2024, 10, 3)
+                created=timezone.make_aware(datetime(2024, 10, 3))
             )
 
             db_messages = LearningAssistantMessage.objects.all().order_by('created')
@@ -570,7 +735,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
         mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
-        audit_trial_start_date = datetime.now()
+        audit_trial_start_date = timezone.now()
         audit_trial_expiration_date = audit_trial_start_date + timedelta(days=audit_trial_length_days_mock_value)
         if trial_available:
             LearningAssistantAuditTrial.objects.create(
@@ -608,7 +773,11 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             for i, message in enumerate(data):
                 self.assertEqual(message['role'], db_messages[i].role)
                 self.assertEqual(message['content'], db_messages[i].content)
-                self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
+                # Compare timestamps accounting for DRF 'Z' vs isoformat '+00:00' difference
+                expected_iso = db_messages[i].created.isoformat()
+                if expected_iso.endswith('+00:00'):
+                    expected_iso = expected_iso.replace('+00:00', 'Z')
+                self.assertEqual(message['timestamp'], expected_iso)
         else:
             self.assertEqual(response.data['message_history'], [])
 
@@ -678,7 +847,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
                 user=self.user,
                 role='user',
                 content='Older message',
-                created=date(2024, 10, 1)
+                created=timezone.make_aware(datetime(2024, 10, 1))
             )
 
             LearningAssistantMessage.objects.create(
@@ -686,7 +855,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
                 user=self.user,
                 role='user',
                 content='Newer message',
-                created=date(2024, 10, 3)
+                created=timezone.make_aware(datetime(2024, 10, 3))
             )
 
             db_messages = LearningAssistantMessage.objects.all().order_by('created')
@@ -696,7 +865,7 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
         mock_audit_trial_is_expired.return_value = audit_trial_is_expired_mock_value
         mock_get_audit_trial_length_days.return_value = audit_trial_length_days_mock_value
 
-        audit_trial_start_date = datetime.now()
+        audit_trial_start_date = timezone.now()
         audit_trial_expiration_date = audit_trial_start_date + timedelta(days=audit_trial_length_days_mock_value)
         if trial_available:
             LearningAssistantAuditTrial.objects.create(
@@ -734,7 +903,11 @@ class LearningAssistantChatSummaryViewTests(LoggedInTestCase):
             for i, message in enumerate(data):
                 self.assertEqual(message['role'], db_messages[i].role)
                 self.assertEqual(message['content'], db_messages[i].content)
-                self.assertEqual(message['timestamp'], db_messages[i].created.isoformat())
+                # Compare timestamps accounting for DRF 'Z' vs isoformat '+00:00' difference
+                expected_iso = db_messages[i].created.isoformat()
+                if expected_iso.endswith('+00:00'):
+                    expected_iso = expected_iso.replace('+00:00', 'Z')
+                self.assertEqual(message['timestamp'], expected_iso)
         else:
             self.assertEqual(response.data['message_history'], [])
 

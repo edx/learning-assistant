@@ -36,7 +36,7 @@ from learning_assistant.api import (
 from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.platform_imports import get_cache_course_run_data
 from learning_assistant.serializers import MessageSerializer
-from learning_assistant.toggles import chat_history_enabled
+from learning_assistant.toggles import chat_history_enabled, v2_endpoint_enabled
 from learning_assistant.utils import (
     get_audit_trial_length_days,
     get_chat_response,
@@ -115,7 +115,18 @@ class CourseChatView(APIView):
         status_code, message = get_chat_response(prompt_template, message_list)
 
         if chat_history_enabled(courserun_key):
-            save_chat_message(courserun_key, user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
+            # Handle both v1 (single message dict) and v2 (array of messages) endpoint formats
+            if v2_endpoint_enabled() and isinstance(message, list) and len(message) > 0:
+                # For v2 endpoint, message is an array - get the last message content
+                content = message[-1].get('content', '') if isinstance(message[-1], dict) else str(message[-1])
+            elif isinstance(message, dict) and 'content' in message:
+                # For v1 endpoint, message is a dict with content key
+                content = message['content']
+            else:
+                # Fallback for other formats (e.g., error strings)
+                content = str(message)
+
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.ASSISTANT_ROLE, content)
 
         return Response(status=status_code, data=message)
 

@@ -13,6 +13,10 @@ Change Log
 
 Unreleased
 **********
+4.10.8 - 2025-07-31
+*******************
+* Chat history to support XPert Chat API V2 response with a list of messages.
+
 4.10.7 - 2025-07-15
 *******************
 * XPert Chat API response will be message object for V1 endpoint and a list of messages for V2 endpoint.
