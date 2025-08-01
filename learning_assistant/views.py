@@ -115,10 +115,14 @@ class CourseChatView(APIView):
         status_code, message = get_chat_response(prompt_template, message_list)
 
         if chat_history_enabled(courserun_key):
-            # Handle both v1 (single message dict) and v2 (array of messages) endpoint formats
-            if v2_endpoint_enabled() and isinstance(message, list) and len(message) > 0:
+            if v2_endpoint_enabled() and isinstance(message, list):
                 # For v2 endpoint, message is an array - get the last message content
-                content = message[-1].get('content', '') if isinstance(message[-1], dict) else str(message[-1])
+                if len(message) > 0 and isinstance(message[-1], dict):
+                    content = message[-1].get('content', '')
+                elif len(message) > 0:
+                    content = str(message[-1])
+                else:
+                    content = ''  # Fallback for empty list
             elif isinstance(message, dict) and 'content' in message:
                 # For v1 endpoint, message is a dict with content key
                 content = message['content']

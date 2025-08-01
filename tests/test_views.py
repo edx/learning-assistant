@@ -126,11 +126,14 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
-    def test_invalid_messages(self, mock_mode, mock_enrollment, mock_get_user_role, mock_waffle, mock_render):
+    @patch('learning_assistant.views.v2_endpoint_enabled')
+    def test_invalid_messages(self, mock_v2_endpoint, mock_mode, mock_enrollment, mock_get_user_role,
+                              mock_waffle, mock_render):
         mock_waffle.return_value = True
         mock_get_user_role.return_value = 'staff'
         mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
+        mock_v2_endpoint.return_value = False
 
         mock_render.return_value = 'This is a template'
         test_unit_id = 'test-unit-id'
@@ -286,11 +289,13 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.CourseMode')
     @patch('learning_assistant.views.save_chat_message')
     @patch('learning_assistant.views.chat_history_enabled')
+    @patch('learning_assistant.views.v2_endpoint_enabled')
     @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_default(
         self,
         enabled_flag,
         enrollment_mode,
+        mock_v2_endpoint_enabled,
         mock_chat_history_enabled,
         mock_save_chat_message,
         mock_mode,
@@ -311,6 +316,7 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'Rendered template mock'
         mock_trial_expired.return_value = False
+        mock_v2_endpoint_enabled.return_value = False  # Test v1 endpoint behavior
         test_unit_id = 'test-unit-id'
 
         mock_chat_history_enabled.return_value = enabled_flag
@@ -466,9 +472,11 @@ class CourseChatViewTests(LoggedInTestCase):
 
         test_cases = [
             # (response, expected_content_for_history)
-            ([], '[]'),  # Empty array
+            ([], ''),  # Empty array
             ('Error: Connection failed', 'Error: Connection failed'),  # Error string
             ([{'role': 'assistant'}], ''),  # Missing content key
+            ([{'role': 'assistant', 'content': 'test'}], 'test'),  # Single message with content
+            (['string_item'], 'string_item'),  # Non-dict item in array
         ]
 
         test_data = [{'role': 'user', 'content': 'Test message'}]
