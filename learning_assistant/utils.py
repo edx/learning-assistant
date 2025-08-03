@@ -96,7 +96,7 @@ def get_chat_response(prompt_template, message_list):
                 data=json.dumps(body),
                 timeout=(connect_timeout, read_timeout)
             )
-            cresponse_json = response.json()
+            response_json = response.json()
             if isinstance(response_json, list):
                 chat = response_json
             else:
