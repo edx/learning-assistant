@@ -9,7 +9,7 @@ from datetime import datetime
 import requests
 from django.conf import settings
 from django.utils.translation import get_language
-from optimizely import optimizely
+from optimizely import optimizely as optimizely_sdk
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
@@ -45,7 +45,7 @@ def get_reduced_message_list(prompt_template, message_list):
     total_message_tokens = 0
 
     while total_message_tokens < remaining_tokens and len(message_list_copy) != 0:
-        new_message = message_list_copy.pop()
+        new_message = message_list_copy.pop(0)
         total_message_tokens += estimated_message_tokens(new_message['content'])
         if total_message_tokens >= remaining_tokens:
             break
@@ -96,7 +96,11 @@ def get_chat_response(prompt_template, message_list):
                 data=json.dumps(body),
                 timeout=(connect_timeout, read_timeout)
             )
-            chat = response.json()
+            response_json = response.json()
+            if isinstance(response_json, list):
+                chat = response_json
+            else:
+                chat = response_json
             response_status = response.status_code
         except (ConnectTimeout, ConnectionError) as e:
             error_message = str(e)
@@ -145,7 +149,7 @@ def get_optimizely_variation(user_id, enrollment_mode):
         enabled = False
         variation_key = None
     else:
-        optimizely_client = optimizely.Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
+        optimizely_client = optimizely_sdk.Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
         user = optimizely_client.create_user_context(str(user_id),
                                                      {'lms_language_preference': get_language(),
                                                       'lms_enrollment_mode': enrollment_mode})
@@ -185,7 +189,7 @@ def get_audit_trial_length_days(user_id, enrollment_mode):
         trial_length_days = default_trial_length_days
 
     # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
-    # pylint: disable=consider-using-max-builtin
+    trial_length_days = max(trial_length_days, 0)
     if trial_length_days < 0:
         trial_length_days = 0
 
