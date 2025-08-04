@@ -43,6 +43,10 @@ ROOT_URLCONF = 'learning_assistant.urls'
 
 SECRET_KEY = 'insecure-secret-key'
 
+# Timezone settings
+USE_TZ = True
+TIME_ZONE = 'UTC'  # Use UTC to avoid timezone conversion issues in tests
+
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

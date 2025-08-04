@@ -38,6 +38,7 @@ from learning_assistant.platform_imports import get_cache_course_run_data
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.toggles import chat_history_enabled
 from learning_assistant.utils import (
+    extract_message_content,
     get_audit_trial_length_days,
     get_chat_response,
     parse_lms_datetime,
@@ -115,7 +116,8 @@ class CourseChatView(APIView):
         status_code, message = get_chat_response(prompt_template, message_list)
 
         if chat_history_enabled(courserun_key):
-            save_chat_message(courserun_key, user_id, LearningAssistantMessage.ASSISTANT_ROLE, message['content'])
+            content = extract_message_content(message)
+            save_chat_message(courserun_key, user_id, LearningAssistantMessage.ASSISTANT_ROLE, content)
 
         return Response(status=status_code, data=message)
 

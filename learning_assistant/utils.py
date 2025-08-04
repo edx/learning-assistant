@@ -208,3 +208,32 @@ def parse_lms_datetime(datetime_string):
         return None
 
     return parsed_datetime
+
+
+def extract_message_content(message):
+    """
+    Extract content from a message response handling both v1 and v2 endpoint formats.
+
+    Args:
+        message: The message response from the chat API. Can be:
+            - v2 format: List of message objects
+            - v1 format: Single message dict with 'content' key
+            - Error format: Plain string or other format
+
+    Returns:
+        str: The extracted message content, or empty string for empty lists
+    """
+    if v2_endpoint_enabled() and isinstance(message, list):
+        # For v2 endpoint, message is an array - get the last message content
+        if len(message) > 0 and isinstance(message[-1], dict):
+            return message[-1].get('content', '')
+        elif len(message) > 0:
+            return str(message[-1])
+        else:
+            return ''  # Fallback for empty list
+    elif isinstance(message, dict) and 'content' in message:
+        # For v1 endpoint, message is a dict with content key
+        return message['content']
+    else:
+        # Fallback for other formats (e.g., error strings)
+        return str(message)
