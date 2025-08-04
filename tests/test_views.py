@@ -126,14 +126,12 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.get_user_role')
     @patch('learning_assistant.views.CourseEnrollment')
     @patch('learning_assistant.views.CourseMode')
-    @patch('learning_assistant.views.v2_endpoint_enabled')
-    def test_invalid_messages(self, mock_v2_endpoint, mock_mode, mock_enrollment, mock_get_user_role,
+    def test_invalid_messages(self, mock_mode, mock_enrollment, mock_get_user_role,
                               mock_waffle, mock_render):
         mock_waffle.return_value = True
         mock_get_user_role.return_value = 'staff'
         mock_mode.VERIFIED_MODES = ['verified']
         mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
-        mock_v2_endpoint.return_value = False
 
         mock_render.return_value = 'This is a template'
         test_unit_id = 'test-unit-id'
@@ -289,13 +287,13 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.CourseMode')
     @patch('learning_assistant.views.save_chat_message')
     @patch('learning_assistant.views.chat_history_enabled')
-    @patch('learning_assistant.views.v2_endpoint_enabled')
+    @patch('learning_assistant.views.extract_message_content')
     @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_default(
         self,
         enabled_flag,
         enrollment_mode,
-        mock_v2_endpoint_enabled,
+        mock_extract_message_content,
         mock_chat_history_enabled,
         mock_save_chat_message,
         mock_mode,
@@ -316,7 +314,7 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_chat_response.return_value = (200, {'role': 'assistant', 'content': 'Something else'})
         mock_render.return_value = 'Rendered template mock'
         mock_trial_expired.return_value = False
-        mock_v2_endpoint_enabled.return_value = False  # Test v1 endpoint behavior
+        mock_extract_message_content.return_value = 'Something else'  # Mock the extracted content
         test_unit_id = 'test-unit-id'
 
         mock_chat_history_enabled.return_value = enabled_flag
@@ -344,11 +342,13 @@ class CourseChatViewTests(LoggedInTestCase):
         )
 
         if enabled_flag:
+            mock_extract_message_content.assert_called_once_with({'role': 'assistant', 'content': 'Something else'})
             mock_save_chat_message.assert_has_calls([
                 call(self.course_run_key, self.user.id, LearningAssistantMessage.USER_ROLE, test_data[-1]['content']),
                 call(self.course_run_key, self.user.id, LearningAssistantMessage.ASSISTANT_ROLE, 'Something else')
             ])
         else:
+            mock_extract_message_content.assert_not_called()
             mock_save_chat_message.assert_not_called()
 
     @ddt.data(
@@ -367,13 +367,13 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.CourseMode')
     @patch('learning_assistant.views.save_chat_message')
     @patch('learning_assistant.views.chat_history_enabled')
-    @patch('learning_assistant.views.v2_endpoint_enabled')
+    @patch('learning_assistant.views.extract_message_content')
     @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_v1_vs_v2_endpoint_formats(
         self,
         v2_enabled,
         history_enabled,
-        mock_v2_endpoint_enabled,
+        mock_extract_message_content,
         mock_chat_history_enabled,
         mock_save_chat_message,
         mock_mode,
@@ -394,10 +394,9 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
         mock_render.return_value = 'Rendered template mock'
         mock_trial_expired.return_value = False
-        mock_v2_endpoint_enabled.return_value = v2_enabled
         mock_chat_history_enabled.return_value = history_enabled
 
-        # Configure response based on endpoint version
+        # Configure response and expected content based on endpoint version
         if v2_enabled:
             # v2 endpoint returns array format
             api_response = [
@@ -411,6 +410,7 @@ class CourseChatViewTests(LoggedInTestCase):
             expected_content = 'v1 response'
 
         mock_chat_response.return_value = (200, api_response)
+        mock_extract_message_content.return_value = expected_content
 
         test_data = [{'role': 'user', 'content': 'What is 2+2?'}]
 
@@ -424,11 +424,13 @@ class CourseChatViewTests(LoggedInTestCase):
         self.assertEqual(response.json(), api_response)
 
         if history_enabled:
+            mock_extract_message_content.assert_called_once_with(api_response)
             mock_save_chat_message.assert_has_calls([
                 call(self.course_run_key, self.user.id, LearningAssistantMessage.USER_ROLE, test_data[-1]['content']),
                 call(self.course_run_key, self.user.id, LearningAssistantMessage.ASSISTANT_ROLE, expected_content)
             ])
         else:
+            mock_extract_message_content.assert_not_called()
             mock_save_chat_message.assert_not_called()
 
     @ddt.data(True, False)
@@ -441,12 +443,12 @@ class CourseChatViewTests(LoggedInTestCase):
     @patch('learning_assistant.views.CourseMode')
     @patch('learning_assistant.views.save_chat_message')
     @patch('learning_assistant.views.chat_history_enabled')
-    @patch('learning_assistant.views.v2_endpoint_enabled')
+    @patch('learning_assistant.views.extract_message_content')
     @override_settings(LEARNING_ASSISTANT_PROMPT_TEMPLATE='This is the default template')
     def test_chat_response_edge_cases(
         self,
         history_enabled,
-        mock_v2_endpoint_enabled,
+        mock_extract_message_content,
         mock_chat_history_enabled,
         mock_save_chat_message,
         mock_mode,
@@ -467,7 +469,6 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_enrollment.get_enrollment.return_value = MagicMock(mode='verified')
         mock_render.return_value = 'Rendered template mock'
         mock_trial_expired.return_value = False
-        mock_v2_endpoint_enabled.return_value = True
         mock_chat_history_enabled.return_value = history_enabled
 
         test_cases = [
@@ -484,7 +485,9 @@ class CourseChatViewTests(LoggedInTestCase):
         for api_response, expected_content in test_cases:
             with self.subTest(response=api_response):
                 mock_save_chat_message.reset_mock()
+                mock_extract_message_content.reset_mock()
                 mock_chat_response.return_value = (200, api_response)
+                mock_extract_message_content.return_value = expected_content
 
                 response = self.client.post(
                     reverse('chat', kwargs={'course_run_id': self.course_id}),
@@ -496,6 +499,7 @@ class CourseChatViewTests(LoggedInTestCase):
                 self.assertEqual(response.json(), api_response)
 
                 if history_enabled:
+                    mock_extract_message_content.assert_called_once_with(api_response)
                     mock_save_chat_message.assert_has_calls([
                         call(
                             self.course_run_key,
@@ -511,6 +515,7 @@ class CourseChatViewTests(LoggedInTestCase):
                         )
                     ])
                 else:
+                    mock_extract_message_content.assert_not_called()
                     mock_save_chat_message.assert_not_called()
 
 
