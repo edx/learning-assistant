@@ -9,7 +9,7 @@ from datetime import datetime
 import requests
 from django.conf import settings
 from django.utils.translation import get_language
-from optimizely import optimizely as optimizely_sdk
+from optimizely import Optimizely
 from requests.exceptions import ConnectTimeout
 from rest_framework import status as http_status
 
@@ -45,7 +45,7 @@ def get_reduced_message_list(prompt_template, message_list):
     total_message_tokens = 0
 
     while total_message_tokens < remaining_tokens and len(message_list_copy) != 0:
-        new_message = message_list_copy.pop(0)
+        new_message = message_list_copy.pop()
         total_message_tokens += estimated_message_tokens(new_message['content'])
         if total_message_tokens >= remaining_tokens:
             break
@@ -80,7 +80,7 @@ def get_chat_response(prompt_template, message_list):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
-    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2', None) if v2_endpoint_enabled() \
+    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2' if v2_endpoint_enabled() else 'CHAT_COMPLETION_API', None)
         else getattr(settings, 'CHAT_COMPLETION_API', None)
     if completion_endpoint:
         headers = {'Content-Type': 'application/json'}
@@ -100,7 +100,7 @@ def get_chat_response(prompt_template, message_list):
             if isinstance(response_json, list):
                 chat = response_json
             else:
-                chat = response_json
+                chat = [response_json]
             response_status = response.status_code
         except (ConnectTimeout, ConnectionError) as e:
             error_message = str(e)
@@ -109,7 +109,7 @@ def get_chat_response(prompt_template, message_list):
                 '%(connection_message)s %(error)s',
                 {'connection_message': connection_message, 'error': error_message}
             )
-            chat = connection_message
+            chat = [connection_message]
             response_status = http_status.HTTP_502_BAD_GATEWAY
     else:
         response_status = http_status.HTTP_404_NOT_FOUND
@@ -149,7 +149,7 @@ def get_optimizely_variation(user_id, enrollment_mode):
         enabled = False
         variation_key = None
     else:
-        optimizely_client = optimizely_sdk.Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
+        optimizely_client = Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
         user = optimizely_client.create_user_context(str(user_id),
                                                      {'lms_language_preference': get_language(),
                                                       'lms_enrollment_mode': enrollment_mode})
@@ -185,11 +185,11 @@ def get_audit_trial_length_days(user_id, enrollment_mode):
         default_trial_length_days = 14
         trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
 
-    if trial_length_days is None:
+    # This line should be removed.
         trial_length_days = default_trial_length_days
 
     # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
-    trial_length_days = max(trial_length_days, 0)
+    # pylint: disable=consider-using-max-builtin
     if trial_length_days < 0:
         trial_length_days = 0
 
