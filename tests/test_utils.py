@@ -251,7 +251,9 @@ class GetAuditTrialLengthDaysTests(TestCase):
     )
     @ddt.unpack
     @patch('learning_assistant.utils.get_optimizely_variation')
-    def test_get_audit_trial_length_days_experiment(self, variation_key, expected_value, mock_get_optimizely_variation):
+    def test_get_audit_trial_length_days_experiment(
+        self, variation_key, expected_value, mock_get_optimizely_variation
+    ):
         mock_get_optimizely_variation.return_value = {'enabled': True, 'variation_key': variation_key}
         with patch.object(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', 'variation'):
             self.assertEqual(get_audit_trial_length_days(1, 'verified'), expected_value)
@@ -311,12 +313,12 @@ class ExtractMessageContentTests(TestCase):
     def test_v2_endpoint_with_list_dict_message(self, mock_v2_enabled):
         """Test v2 endpoint with list containing dict messages"""
         mock_v2_enabled.return_value = True
-        
+
         message = [
             {'role': 'assistant', 'content': 'First message'},
             {'role': 'assistant', 'content': 'Last message'}
         ]
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, 'Last message')
 
@@ -324,9 +326,9 @@ class ExtractMessageContentTests(TestCase):
     def test_v2_endpoint_with_list_non_dict_message(self, mock_v2_enabled):
         """Test v2 endpoint with list containing non-dict messages"""
         mock_v2_enabled.return_value = True
-        
+
         message = ['First message', 'Last message']
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, 'Last message')
 
@@ -334,9 +336,9 @@ class ExtractMessageContentTests(TestCase):
     def test_v2_endpoint_with_empty_list(self, mock_v2_enabled):
         """Test v2 endpoint with empty list"""
         mock_v2_enabled.return_value = True
-        
+
         message = []
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, '')
 
@@ -344,9 +346,9 @@ class ExtractMessageContentTests(TestCase):
     def test_v2_endpoint_with_dict_missing_content(self, mock_v2_enabled):
         """Test v2 endpoint with dict message missing content key"""
         mock_v2_enabled.return_value = True
-        
+
         message = [{'role': 'assistant'}]
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, '')
 
@@ -354,9 +356,9 @@ class ExtractMessageContentTests(TestCase):
     def test_v1_endpoint_with_dict_message(self, mock_v2_enabled):
         """Test v1 endpoint with dict message containing content"""
         mock_v2_enabled.return_value = False
-        
+
         message = {'role': 'assistant', 'content': 'v1 response'}
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, 'v1 response')
 
@@ -364,9 +366,9 @@ class ExtractMessageContentTests(TestCase):
     def test_v1_endpoint_with_dict_missing_content(self, mock_v2_enabled):
         """Test v1 endpoint with dict message missing content key"""
         mock_v2_enabled.return_value = False
-        
+
         message = {'role': 'assistant'}
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, "{'role': 'assistant'}")
 
@@ -374,9 +376,9 @@ class ExtractMessageContentTests(TestCase):
     def test_fallback_with_string_message(self, mock_v2_enabled):
         """Test fallback case with string message"""
         mock_v2_enabled.return_value = False
-        
+
         message = 'Error: Something went wrong'
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, 'Error: Something went wrong')
 
@@ -384,9 +386,9 @@ class ExtractMessageContentTests(TestCase):
     def test_fallback_with_none_message(self, mock_v2_enabled):
         """Test fallback case with None message"""
         mock_v2_enabled.return_value = False
-        
+
         message = None
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, 'None')
 
@@ -394,12 +396,12 @@ class ExtractMessageContentTests(TestCase):
     def test_v2_endpoint_mixed_message_types(self, mock_v2_enabled):
         """Test v2 endpoint with mixed message types in list"""
         mock_v2_enabled.return_value = True
-        
+
         message = [
             'First string message',
             {'role': 'assistant', 'content': 'Dict message'},
             'Last string message'
         ]
-        
+
         result = extract_message_content(message)
         self.assertEqual(result, 'Last string message')
