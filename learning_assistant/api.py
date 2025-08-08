@@ -252,8 +252,6 @@ def get_audit_trial_expiration_date_from_start_date(start_date):
 
     Arguments:
     * start_date (datetime): the start date of the audit trial
-    * user_id (int): user id
-    * enrollment_mode (str): enrollment mode of the user
 
     Returns:
     * expiration_date (datetime): the expiration date of the audit trial
@@ -296,7 +294,6 @@ def get_or_create_audit_trial(user):
 
     Arguments:
     * user (User): the user
-    * enrollment_mode (str): enrollment mode of the user
 
     Returns:
     * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
