@@ -33,17 +33,12 @@ from learning_assistant.api import (
     render_prompt_template,
     save_chat_message,
 )
+from learning_assistant.constants import AUDIT_TRIAL_MAX_DAYS
 from learning_assistant.models import LearningAssistantMessage
 from learning_assistant.platform_imports import get_cache_course_run_data
 from learning_assistant.serializers import MessageSerializer
 from learning_assistant.toggles import chat_history_enabled
-from learning_assistant.utils import (
-    extract_message_content,
-    get_audit_trial_length_days,
-    get_chat_response,
-    parse_lms_datetime,
-    user_role_is_staff,
-)
+from learning_assistant.utils import extract_message_content, get_chat_response, parse_lms_datetime, user_role_is_staff
 
 log = logging.getLogger(__name__)
 
@@ -178,7 +173,7 @@ class CourseChatView(APIView):
         # If user has an audit enrollment record, get or create their trial. If the trial is not expired, return the
         # next message. Otherwise, return 403
         elif enrollment_mode in CourseMode.UPSELL_TO_VERIFIED_MODES:  # AUDIT, HONOR
-            audit_trial = get_or_create_audit_trial(request.user, enrollment_mode)
+            audit_trial = get_or_create_audit_trial(request.user)
             is_user_audit_trial_expired = audit_trial_is_expired(enrollment_object, audit_trial)
             if is_user_audit_trial_expired:
                 return Response(
@@ -335,6 +330,7 @@ class LearningAssistantChatSummaryView(APIView):
 
         data['audit_trial'] = trial_data
 
-        data['audit_trial_length_days'] = get_audit_trial_length_days(user.id, enrollment_mode)
+        # Default audit trial length is 14 days
+        data['audit_trial_length_days'] = AUDIT_TRIAL_MAX_DAYS
 
         return Response(status=http_status.HTTP_200_OK, data=data)
