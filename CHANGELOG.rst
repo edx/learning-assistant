@@ -14,9 +14,13 @@ Change Log
 Unreleased
 **********
 
+4.11.1 - 2025-08-22
+*******************
+* Fixes a linting error on the changelog that prevented the previous release.
+
 4.11.0 - 2025-08-08
-******************
-* Replaced the get_audit_trial_length_days utils.py function from with the AUDIT_TRIAL_MAX_DAYS = 14, as the
+*******************
+* Replaced the get_audit_trial_length_days utils.py function with the AUDIT_TRIAL_MAX_DAYS = 14, as the
   audit trial length will be 14 days going forwards.
 
 4.10.8 - 2025-07-31
