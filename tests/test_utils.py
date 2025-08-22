@@ -14,7 +14,6 @@ from requests.exceptions import ConnectTimeout
 from learning_assistant.constants import LMS_DATETIME_FORMAT
 from learning_assistant.utils import (
     extract_message_content,
-    get_audit_trial_length_days,
     get_chat_response,
     get_optimizely_variation,
     get_reduced_message_list,
@@ -219,44 +218,6 @@ class UserRoleIsStaffTests(TestCase):
     @ddt.unpack
     def test_user_role_is_staff(self, role, expected_value):
         self.assertEqual(user_role_is_staff(role), expected_value)
-
-
-@ddt.ddt
-class GetAuditTrialLengthDaysTests(TestCase):
-    """
-    Tests for the get_audit_trial_length_days helper function.
-    """
-    @ddt.data(
-        (None, 14),
-        (0, 0),
-        (-7, 0),
-        (7, 7),
-        (14, 14),
-        (28, 28),
-    )
-    @ddt.unpack
-    def test_get_audit_trial_length_days_with_value(self, setting_value, expected_value):
-        with patch.object(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', setting_value):
-            self.assertEqual(get_audit_trial_length_days(1, 'verified'), expected_value)
-
-    @override_settings()
-    def test_get_audit_trial_length_days_no_setting(self):
-        del settings.LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS
-        self.assertEqual(get_audit_trial_length_days(1, 'verified'), 14)
-
-    # mock optimizely function
-    @ddt.data(
-        ('variation', 28),
-        ('control', 14),
-    )
-    @ddt.unpack
-    @patch('learning_assistant.utils.get_optimizely_variation')
-    def test_get_audit_trial_length_days_experiment(
-        self, variation_key, expected_value, mock_get_optimizely_variation
-    ):
-        mock_get_optimizely_variation.return_value = {'enabled': True, 'variation_key': variation_key}
-        with patch.object(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', 'variation'):
-            self.assertEqual(get_audit_trial_length_days(1, 'verified'), expected_value)
 
 
 class GetOptimizelyVariationTests(TestCase):

@@ -156,42 +156,6 @@ def get_optimizely_variation(user_id, enrollment_mode):
     return {'enabled': enabled, 'variation_key': variation_key}
 
 
-def get_audit_trial_length_days(user_id, enrollment_mode):
-    """
-    Return the length of an audit trial in days.
-
-    Arguments:
-    * user_id
-    * enrollment_mode
-
-    Returns:
-    * int: the length of an audit trial in days
-    """
-    variation = get_optimizely_variation(user_id, enrollment_mode)
-
-    # For the sake of the experiment on the backend, the only difference in behavior should be for the 28 day variation.
-    # This is because the control group will never see the audit experience, so the value being returned here does not
-    # matter, and the 14 day variation can use the default trial length of 14 days.
-    if (
-        variation['enabled']
-        and variation['variation_key'] == getattr(settings, 'OPTIMIZELY_LEARNING_ASSISTANT_TRIAL_VARIATION_KEY_28', '')
-    ):
-        trial_length_days = 28
-    else:
-        default_trial_length_days = 14
-        trial_length_days = getattr(settings, 'LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS', default_trial_length_days)
-
-    if trial_length_days is None:
-        trial_length_days = default_trial_length_days
-
-    # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
-    # pylint: disable=consider-using-max-builtin
-    if trial_length_days < 0:
-        trial_length_days = 0
-
-    return trial_length_days
-
-
 def parse_lms_datetime(datetime_string):
     """
     Parse an LMS datetime into a timezone-aware, Python datetime object.
