@@ -21,7 +21,7 @@ charset-normalizer==3.4.3
     # via requests
 click==8.2.1
     # via edx-django-utils
-cryptography==45.0.6
+cryptography==45.0.7
     # via pyjwt
 django==4.2.23
     # via
@@ -101,7 +101,7 @@ requests==2.32.5
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   optimizely-sdk
-rpds-py==0.27.0
+rpds-py==0.27.1
     # via
     #   jsonschema
     #   referencing
