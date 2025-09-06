@@ -210,6 +210,9 @@ class GetBlockContentAPITests(TestCase):
             {'content_type': 'VIDEO', 'content_text': "Video intro " + ("C" * 1000)},
             {'content_type': 'TEXT', 'content_text': "Some explanation " + ("D" * 1000)},
         ],
+        [  # Explicitly test empty content in a list
+        {'content_type': 'TEXT', 'content_text': ''},
+        ],
     )
     @patch('learning_assistant.api.get_cache_course_data')
     @patch('learning_assistant.api.get_block_content')
