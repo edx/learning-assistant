@@ -261,19 +261,20 @@ class GetBlockContentAPITests(TestCase):
                 trimmed_content.append({"content_type": ctype, "content_text": trimmed_text})
                 current_length += len(trimmed_text)
 
-            total_trimmed_chars = sum(len(item['content_text']) for item in trimmed_content)
-            self.assertLessEqual(total_trimmed_chars, unit_content_max_length)
+            self.assertLessEqual(current_length, unit_content_max_length)
+            for item in trimmed_content:
+                self.assertIn(item["content_text"], prompt_text)
 
         elif isinstance(unit_content, str):
             if unit_content:
-                trimmed = unit_content[:unit_content_max_length]
-                self.assertIn(trimmed, prompt_text)
+                trimmed_content = unit_content[:unit_content_max_length]
+                self.assertIn(trimmed_content, prompt_text)
                 if len(unit_content) > unit_content_max_length:
                     self.assertNotIn(unit_content, prompt_text)
             else:
                 self.assertNotIn('The following text is useful.', prompt_text)
-        self.assertIn(title, prompt_text)
         self.assertIn(str(skills_content), prompt_text)
+        self.assertIn(title, prompt_text)
 
     @patch('learning_assistant.api.get_cache_course_data', MagicMock())
     @patch('learning_assistant.api.get_block_content')
