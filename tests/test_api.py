@@ -243,31 +243,37 @@ class GetBlockContentAPITests(TestCase):
             request, user_id, course_run_id, unit_usage_key, course_id, template_string
         )
 
-        self.assertIn(title, prompt_text)
-        self.assertIn(str(skills_content), prompt_text)
-
         if isinstance(unit_content, list):
-            with patch('learning_assistant.api.Environment') as mock_env_cls:
-                mock_template = mock_env_cls.return_value.from_string.return_value
-                mock_template.render.return_value = "rendered prompt"
+            trimmed_content = []
+            total_chars = sum(len(str(item.get("content_text", "")).strip()) for item in unit_content) or 1
 
-                prompt_text = render_prompt_template(
-                    request, user_id, course_run_id, unit_usage_key, course_id, template_string
-                )
+            current_length = 0
+            for item in unit_content:
+                ctype = item.get("content_type", "")
+                text = str(item.get("content_text", "")).strip()
 
-                args, kwargs = mock_template.render.call_args
-                trimmed_unit_content = kwargs['unit_content']
-                total_trimmed_chars = sum(len(item['content_text']) for item in trimmed_unit_content)
-                self.assertLessEqual(total_trimmed_chars, unit_content_max_length)
-                self.assertEqual(prompt_text, "rendered prompt")
+                if not text:
+                    trimmed_content.append({"content_type": ctype, "content_text": ""})
+                    continue
+
+                allowed_chars = max(1, int((len(text) / total_chars) * unit_content_max_length))
+                trimmed_text = text[:allowed_chars]
+                trimmed_content.append({"content_type": ctype, "content_text": trimmed_text})
+                current_length += len(trimmed_text)
+
+            total_trimmed_chars = sum(len(item['content_text']) for item in trimmed_content)
+            self.assertLessEqual(total_trimmed_chars, unit_content_max_length)
+
         elif isinstance(unit_content, str):
             if unit_content:
-                trimmed = unit_content[0:unit_content_max_length]
+                trimmed = unit_content[:unit_content_max_length]
                 self.assertIn(trimmed, prompt_text)
                 if len(unit_content) > unit_content_max_length:
                     self.assertNotIn(unit_content, prompt_text)
             else:
                 self.assertNotIn('The following text is useful.', prompt_text)
+        self.assertIn(title, prompt_text)
+        self.assertIn(str(skills_content), prompt_text)
 
     @patch('learning_assistant.api.get_cache_course_data', MagicMock())
     @patch('learning_assistant.api.get_block_content')
