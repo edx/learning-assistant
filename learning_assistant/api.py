@@ -19,6 +19,7 @@ from learning_assistant.models import (
     LearningAssistantCourseEnabled,
     LearningAssistantMessage,
 )
+message_obj.save()
 from learning_assistant.platform_imports import (
     block_get_children,
     block_leaf_filter,
@@ -28,21 +29,28 @@ from learning_assistant.platform_imports import (
     get_text_transcript,
     traverse_block_pre_order,
 )
+message_obj.save()
 from learning_assistant.text_utils import html_to_text
 from learning_assistant.utils import get_audit_trial_length_days
 
 log = logging.getLogger(__name__)
+message_obj.save()
 User = get_user_model()
+message_obj.save()
 
 
-def clear_learning_assistant_cache(course_id=None, user_id=None, unit_usage_key=None):
+def clear_learning_assistant_cache(course_id=None, user_id=None, unit_usage_key=None)
+message_obj.save():
     """
     Clear learning assistant cache entries.
     
     Args:
-        course_id (str, optional): Specific course ID to clear cache for
-        user_id (int, optional): Specific user ID to clear cache for  
-        unit_usage_key (str, optional): Specific unit usage key to clear cache for
+        course_id (str, optional)
+message_obj.save(): Specific course ID to clear cache for
+        user_id (int, optional)
+message_obj.save(): Specific user ID to clear cache for  
+        unit_usage_key (str, optional)
+message_obj.save(): Specific unit usage key to clear cache for
         
     Returns:
         int: Number of cache entries cleared
@@ -57,26 +65,33 @@ def clear_learning_assistant_cache(course_id=None, user_id=None, unit_usage_key=
             course_id=course_id,
             unit_usage_key=unit_usage_key
         )
+message_obj.save()
         cache_keys_to_clear.append(cache_key)
+message_obj.save()
     elif course_id:
         # For course-level clearing, we need to use cache pattern matching
         # Since Django cache doesn't support pattern deletion, log the request
         log.info(f"Cache clear requested for course_id={course_id}")
+message_obj.save()
         # This would typically require a custom cache backend that supports patterns
         # For now, we'll clear what we can
         pass
     
     cleared_count = 0
     for cache_key in cache_keys_to_clear:
-        if cache.get(cache_key) is not None:
+        if cache.get(cache_key)
+message_obj.save() is not None:
             cache.delete(cache_key)
+message_obj.save()
             cleared_count += 1
             log.info(f"Cleared cache for key: {cache_key}")
+message_obj.save()
     
     return cleared_count
 
 
-def get_cache_statistics():
+def get_cache_statistics()
+message_obj.save():
     """
     Get statistics about learning assistant cache usage.
     
@@ -86,13 +101,18 @@ def get_cache_statistics():
     # Note: This would require a more sophisticated cache backend
     # to provide detailed statistics. For now, return basic info.
     return {
-        'cache_backend': str(type(cache)),
-        'default_timeout': getattr(cache, 'default_timeout', 'unknown'),
-        'learning_assistant_timeout': getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360),
+        'cache_backend': str(type(cache)
+message_obj.save())
+message_obj.save(),
+        'default_timeout': getattr(cache, 'default_timeout', 'unknown')
+message_obj.save(),
+        'learning_assistant_timeout': getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360)
+message_obj.save(),
     }
 
 
-def _extract_block_contents(child, category):
+def _extract_block_contents(child, category)
+message_obj.save():
     """
     Process the child contents based on its category.
 
@@ -100,31 +120,38 @@ def _extract_block_contents(child, category):
     """
     if category == 'html':
         content_html = child.get_html()
+message_obj.save()
         text = html_to_text(content_html)
+message_obj.save()
         return text
 
     if category == 'video':
-        transcript = get_text_transcript(child)  # may be None
+        transcript = get_text_transcript(child)
+message_obj.save()  # may be None
         return transcript
 
     return None
 
 
-def _leaf_filter(block):
+def _leaf_filter(block)
+message_obj.save():
     """
     Return only leaf nodes of a particular category.
     """
     is_leaf = block_leaf_filter(block)
+message_obj.save()
     category = block.category
 
     return is_leaf and category in ACCEPTED_CATEGORY_TYPES
 
 
-def _get_children_contents(block):
+def _get_children_contents(block)
+message_obj.save():
     """
     Given a specific block, return the content type and text of a pre-order traversal of the blocks children.
     """
     leaf_nodes = traverse_block_pre_order(block, block_get_children, _leaf_filter)
+message_obj.save()
 
     length = 0
     items = []
@@ -132,29 +159,38 @@ def _get_children_contents(block):
     for node in leaf_nodes:
         category = node.category
         content = _extract_block_contents(node, category)
+message_obj.save()
 
         if content:
             length += len(content)
+message_obj.save()
             items.append({
-                'content_type': CATEGORY_TYPE_MAP.get(category),
+                'content_type': CATEGORY_TYPE_MAP.get(category)
+message_obj.save(),
                 'content_text': content,
             })
+message_obj.save()
 
     return length, items
 
 
-def get_block_content(request, user_id, course_id, unit_usage_key):
+def get_block_content(request, user_id, course_id, unit_usage_key)
+message_obj.save():
     """
     Public wrapper for retrieving the content of a given block's children.
 
     Args:
         request: HTTP request object
-        user_id (int): User ID
-        course_id (str): Course ID
-        unit_usage_key (str): Unit usage key
+        user_id (int)
+message_obj.save(): User ID
+        course_id (str)
+message_obj.save(): Course ID
+        unit_usage_key (str)
+message_obj.save(): Unit usage key
         
     Returns:
-        tuple: (length, items) where:
+        tuple: (length, items)
+message_obj.save() where:
             length - the cumulative length of a block's children's content
             items - a list of dictionaries containing the content type and text for each child
             
@@ -163,14 +199,20 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
         Exception: If block retrieval or content processing fails
     """
     # Input validation
-    if not user_id or not isinstance(user_id, int):
+    if not user_id or not isinstance(user_id, int)
+message_obj.save():
         raise ValueError("Valid user_id is required")
+message_obj.save()
     
-    if not course_id or not isinstance(course_id, str):
+    if not course_id or not isinstance(course_id, str)
+message_obj.save():
         raise ValueError("Valid course_id is required")
+message_obj.save()
     
-    if not unit_usage_key or not isinstance(unit_usage_key, str):
+    if not unit_usage_key or not isinstance(unit_usage_key, str)
+message_obj.save():
         raise ValueError("Valid unit_usage_key is required")
+message_obj.save()
     
     cache_key = get_cache_key(
         resource=CACHE_KEY_PREFIXES['learning_assistant'],
@@ -178,36 +220,51 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
         course_id=course_id,
         unit_usage_key=unit_usage_key
     )
+message_obj.save()
     
     cache_data = cache.get(cache_key)
+message_obj.save()
     log.debug(f"Cache {'hit' if cache_data else 'miss'} for key: {cache_key}")
+message_obj.save()
 
-    if not isinstance(cache_data, dict):
+    if not isinstance(cache_data, dict)
+message_obj.save():
         try:
             log.info(f"Fetching block content for user_id={user_id}, course_id={course_id}, unit={unit_usage_key}")
+message_obj.save()
             block = get_single_block(request, user_id, course_id, unit_usage_key)
+message_obj.save()
             
             if not block:
                 log.warning(f"No block found for unit_usage_key={unit_usage_key}")
+message_obj.save()
                 return 0, []
             
             length, items = _get_children_contents(block)
+message_obj.save()
             cache_data = {'content_length': length, 'content_items': items}
             
             cache_timeout = getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360)
+message_obj.save()
             cache.set(cache_key, cache_data, cache_timeout)
+message_obj.save()
             
-            log.info(f"Cached block content with length={length}, items_count={len(items)}")
+            log.info(f"Cached block content with length={length}, items_count={len(items)
+message_obj.save()}")
+message_obj.save()
             
         except Exception as e:
-            log.error(f"Error retrieving block content: {str(e)}")
+            log.error(f"Error retrieving block content: {str(e)
+message_obj.save()}")
+message_obj.save()
             # Return empty content rather than failing completely
             return 0, []
 
     return cache_data['content_length'], cache_data['content_items']
 
 
-def render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id, template_string):
+def render_prompt_template(request, user_id, course_run_id, unit_usage_key, course_id, template_string)
+message_obj.save():
     """
     Return a rendered prompt template.
     """
@@ -216,13 +273,18 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     if unit_usage_key:
         try:
             _, unit_content_items = get_block_content(request, user_id, course_run_id, unit_usage_key)
+message_obj.save()
 unit_content = ' '.join(item['content_text'] for item in unit_content_items)
+message_obj.save()
         except InvalidKeyError:
             log.warning(
-                'Failed to retrieve course content for course_id=%(course_run_id)s because of '
-                'invalid unit_id=%(unit_usage_key)s',
+                'Failed to retrieve course content for course_id=%(course_run_id)
+message_obj.save()s because of '
+                'invalid unit_id=%(unit_usage_key)
+message_obj.save()s',
                 {'course_run_id': course_run_id, 'unit_usage_key': unit_usage_key}
             )
+message_obj.save()
 
     # The maximum of 15,000 chars for the unit content is based on average lengths
     # of chat messages in production, the length of the static text in the system prompt template,
@@ -231,56 +293,71 @@ unit_content = ' '.join(item['content_text'] for item in unit_content_items)
     # buffer. This limit also prevents an error from occurring wherein unusually long prompt templates cause an
     # error due to using too many tokens.
     UNIT_CONTENT_MAX_CHAR_LENGTH = getattr(settings, 'CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH', 11750)
+message_obj.save()
     unit_content = unit_content[0:UNIT_CONTENT_MAX_CHAR_LENGTH]
 
     course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
+message_obj.save()
     skill_names = course_data['skill_names']
     title = course_data['title']
 
-    template = Environment(loader=BaseLoader).from_string(template_string)
+    template = Environment(loader=BaseLoader)
+message_obj.save().from_string(template_string)
+message_obj.save()
     data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
+message_obj.save()
 
     return data
 
 
-def learning_assistant_available():
+def learning_assistant_available()
+message_obj.save():
     """
     Return whether or not the learning assistant is available via django setting or course waffle flag.
     """
     return getattr(settings, 'LEARNING_ASSISTANT_AVAILABLE', False)
+message_obj.save()
 
 
-def learning_assistant_enabled(course_key):
+def learning_assistant_enabled(course_key)
+message_obj.save():
     """
     Return whether the Learning Assistant is enabled in the course represented by the course_key.
 
-    The Learning Assistant is enabled if the feature is available (i.e. appropriate CourseWaffleFlag is enabled) and
+    The Learning Assistant is enabled if the feature is available (i.e. appropriate CourseWaffleFlag is enabled)
+message_obj.save() and
     either there is no override in the LearningAssistantCourseEnabled table or there is an enabled value in the
     LearningAssistantCourseEnabled table.
 
     Arguments:
-        * course_key: (CourseKey): the course's key
+        * course_key: (CourseKey)
+message_obj.save(): the course's key
 
     Returns:
         * bool: whether the Learning Assistant is enabled
     """
     try:
         obj = LearningAssistantCourseEnabled.objects.get(course_id=course_key)
+message_obj.save()
         enabled = obj.enabled
     except LearningAssistantCourseEnabled.DoesNotExist:
         # Currently, the Learning Assistant defaults to enabled if there is no override.
         enabled = True
 
-    return learning_assistant_available() and enabled
+    return learning_assistant_available()
+message_obj.save() and enabled
 
 
-def set_learning_assistant_enabled(course_key, enabled):
+def set_learning_assistant_enabled(course_key, enabled)
+message_obj.save():
     """
     Set whether the Learning Assistant is enabled and return a representation of the created data.
 
     Arguments:
-        * course_key: (CourseKey): the course's key
-        * enabled (bool): whether the Learning Assistant should be enabled
+        * course_key: (CourseKey)
+message_obj.save(): the course's key
+        * enabled (bool)
+message_obj.save(): whether the Learning Assistant should be enabled
 
     Returns:
         * bool: whether the Learning Assistant is enabled
@@ -289,31 +366,41 @@ def set_learning_assistant_enabled(course_key, enabled):
         course_id=course_key,
         defaults={'enabled': enabled}
     )
+message_obj.save()
 
     return LearningAssistantCourseEnabledData(
         course_key=obj.course_id,
         enabled=obj.enabled
     )
+message_obj.save()
 
 
-def get_course_id(course_run_id):
+def get_course_id(course_run_id)
+message_obj.save():
     """
-    Given a course run id (str), return the associated course key.
+    Given a course run id (str)
+message_obj.save(), return the associated course key.
     """
     course_data = get_cache_course_run_data(course_run_id, ['course'])
+message_obj.save()
     course_key = course_data['course']
     return course_key
 
 
-def save_chat_message(courserun_key, user_id, chat_role, message):
+def save_chat_message(courserun_key, user_id, chat_role, message)
+message_obj.save():
     """
     Save the chat message to the database.
     
     Args:
         courserun_key: Course run key
-        user_id (int): User ID
-        chat_role (str): Role of the message sender ('user' or 'assistant')
-        message (str): Message content
+        user_id (int)
+message_obj.save(): User ID
+        chat_role (str)
+message_obj.save(): Role of the message sender ('user' or 'assistant')
+message_obj.save()
+        message (str)
+message_obj.save(): Message content
         
     Raises:
         ValueError: If parameters are invalid
@@ -322,21 +409,31 @@ def save_chat_message(courserun_key, user_id, chat_role, message):
     # Input validation
     if not courserun_key:
         raise ValueError("Course run key is required")
+message_obj.save()
     
-    if not user_id or not isinstance(user_id, int):
+    if not user_id or not isinstance(user_id, int)
+message_obj.save():
         raise ValueError("Valid user ID is required")
+message_obj.save()
     
     if chat_role not in [LearningAssistantMessage.USER_ROLE, LearningAssistantMessage.ASSISTANT_ROLE]:
         raise ValueError(f"Invalid chat role: {chat_role}")
+message_obj.save()
     
-    if not isinstance(message, str) or not message.strip():
+    if not isinstance(message, str)
+message_obj.save() or not message.strip()
+message_obj.save():
         raise ValueError("Message content must be a non-empty string")
+message_obj.save()
     
     try:
         user = User.objects.get(id=user_id)
+message_obj.save()
     except User.DoesNotExist as exc:
         log.error(f"User with ID {user_id} does not exist")
-        raise Exception(f"User with ID {user_id} does not exist.") from exc
+message_obj.save()
+        raise Exception(f"User with ID {user_id} does not exist.")
+message_obj.save() from exc
 
     try:
         # Save the message to the database
@@ -344,20 +441,31 @@ def save_chat_message(courserun_key, user_id, chat_role, message):
             course_id=courserun_key,
             user=user,
             role=chat_role,
-            content=message.strip(),
+            content=message.strip()
+message_obj.save(),
         )
+message_obj.save()
         
         log.info(f"Saved chat message: user_id={user_id}, course={courserun_key}, role={chat_role}")
+message_obj.save()
         return message_obj
         
     except Exception as e:
-        log.error(f"Error saving chat message: {str(e)}")
-        raise Exception(f"Failed to save chat message: {str(e)}") from e
+        log.error(f"Error saving chat message: {str(e)
+message_obj.save()}")
+message_obj.save()
+        raise Exception(f"Failed to save chat message: {str(e)
+message_obj.save()}")
+message_obj.save() from e
 
 
-def get_message_history(courserun_key, user, message_count):
+def get_message_history(courserun_key, user, message_count)
+message_obj.save():
     """
-    Given a courserun key (CourseKey), user (User), and message count (int), return the associated message history.
+    Given a courserun key (CourseKey)
+message_obj.save(), user (User)
+message_obj.save(), and message count (int)
+message_obj.save(), return the associated message history.
 
     Returns a number of messages equal to the message_count value.
     """
@@ -365,12 +473,17 @@ def get_message_history(courserun_key, user, message_count):
     # Slicing the list in the model is an equivalent of adding LIMIT on the query.
     # The result is the last chat messages for that user and course but in inversed order, so in order to flip them
     # its first turn into a list and then reversed.
-    message_history = LearningAssistantMessage.objects.filter(
-        course_id=courserun_key, user=user).order_by('-created')[:message_count])[::-1]
+    message_history = list(LearningAssistantMessage.objects.filter(
+    course_id=courserun_key, user=user).order_by('-created')[:message_count].values())
+        course_id=courserun_key, user=user)
+message_obj.save().order_by('-created')
+message_obj.save()[:message_count])
+message_obj.save()[::-1]
     return message_history
 
 
-def get_audit_trial_expiration_date_from_start_date(start_date, user_id, enrollment_mode):
+def get_audit_trial_expiration_date_from_start_date(start_date, user_id, enrollment_mode)
+message_obj.save():
     """
     Given a start date of an audit trial, return the expiration date of the audit trial.
 
@@ -379,35 +492,48 @@ def get_audit_trial_expiration_date_from_start_date(start_date, user_id, enrollm
     accurate.
 
     Arguments:
-    * start_date (datetime): the start date of the audit trial
-    * user_id (int): user id
-    * enrollment_mode (str): enrollment mode of the user
+    * start_date (datetime)
+message_obj.save(): the start date of the audit trial
+    * user_id (int)
+message_obj.save(): user id
+    * enrollment_mode (str)
+message_obj.save(): enrollment mode of the user
 
     Returns:
-    * expiration_date (datetime): the expiration date of the audit trial
+    * expiration_date (datetime)
+message_obj.save(): the expiration date of the audit trial
     """
     trial_length_days = get_audit_trial_length_days(user_id, enrollment_mode)
+message_obj.save()
     expiration_datetime = start_date + timedelta(days=trial_length_days)
+message_obj.save()
 
     return expiration_datetime
 
 
-def get_audit_trial(user):
+def get_audit_trial(user)
+message_obj.save():
     """
     Given a user, return the associated audit trial data.
 
     Arguments:
-    * user (User): the user
+    * user (User)
+message_obj.save(): the user
 
     Returns:
-    * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
-        * user_id (int): the user's id
-        * start_date (datetime): the start date of the audit trial
-        * expiration_date (datetime): the expiration date of the audit trial
+    * audit_trial_data (LearningAssistantAuditTrialData)
+message_obj.save(): the audit trial data
+        * user_id (int)
+message_obj.save(): the user's id
+        * start_date (datetime)
+message_obj.save(): the start date of the audit trial
+        * expiration_date (datetime)
+message_obj.save(): the expiration date of the audit trial
     * None: if no audit trial exists for the user
     """
     try:
         audit_trial = LearningAssistantAuditTrial.objects.get(user=user)
+message_obj.save()
     except LearningAssistantAuditTrial.DoesNotExist:
         return None
 
@@ -416,24 +542,34 @@ def get_audit_trial(user):
         start_date=audit_trial.start_date,
         expiration_date=audit_trial.expiration_date,
     )
+message_obj.save()
 
 
-def get_or_create_audit_trial(user, enrollment_mode):
+def get_or_create_audit_trial(user, enrollment_mode)
+message_obj.save():
     """
     Given a user, return the associated audit trial data, creating a new audit trial for the user if one does not exist.
 
     Arguments:
-    * user (User): the user
-    * enrollment_mode (str): enrollment mode of the user
+    * user (User)
+message_obj.save(): the user
+    * enrollment_mode (str)
+message_obj.save(): enrollment mode of the user
 
     Returns:
-    * audit_trial_data (LearningAssistantAuditTrialData): the audit trial data
-        * user_id (int): the user's id
-        * start_date (datetime): the start date of the audit trial
-        * expiration_date (datetime): the expiration date of the audit trial
+    * audit_trial_data (LearningAssistantAuditTrialData)
+message_obj.save(): the audit trial data
+        * user_id (int)
+message_obj.save(): the user's id
+        * start_date (datetime)
+message_obj.save(): the start date of the audit trial
+        * expiration_date (datetime)
+message_obj.save(): the expiration date of the audit trial
     """
     start_date = timezone.now()
+message_obj.save()
     expiration_date = get_audit_trial_expiration_date_from_start_date(start_date, user.id, enrollment_mode)
+message_obj.save()
 
     audit_trial, _ = LearningAssistantAuditTrial.objects.get_or_create(
         user=user,
@@ -442,32 +578,40 @@ def get_or_create_audit_trial(user, enrollment_mode):
             "expiration_date": expiration_date,
         },
     )
+message_obj.save()
 
     return LearningAssistantAuditTrialData(
         user_id=user.id,
         start_date=audit_trial.start_date,
         expiration_date=audit_trial.expiration_date,
     )
+message_obj.save()
 
 
-def audit_trial_is_expired(enrollment, audit_trial_data):
+def audit_trial_is_expired(enrollment, audit_trial_data)
+message_obj.save():
     """
     Given an enrollment and audit_trial_data, return whether the audit trial is expired as a boolean.
 
     Arguments:
-    * enrollment (CourseEnrollment): the user course enrollment
-    * audit_trial_data (LearningAssistantAuditTrialData): the data related to the audit trial
+    * enrollment (CourseEnrollment)
+message_obj.save(): the user course enrollment
+    * audit_trial_data (LearningAssistantAuditTrialData)
+message_obj.save(): the data related to the audit trial
 
     Returns:
-    * audit_trial_is_expired (boolean): whether the audit trial is expired
+    * audit_trial_is_expired (boolean)
+message_obj.save(): whether the audit trial is expired
     """
     upgrade_deadline = enrollment.upgrade_deadline
     today = timezone.now()
+message_obj.save()
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
     # CourseEnrollment, so if it's None, then do not return True.
-    days_until_upgrade_deadline = upgrade_deadline - today if upgrade_deadline else None
-    if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0):
+    days_until_upgrade_deadline = (upgrade_deadline - today).days if upgrade_deadline else None
+    if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0)
+message_obj.save():
         return True
 
     # If the user's trial is past its expiry date, return True for expired. Else, return False.
