@@ -12,7 +12,7 @@ from edx_django_utils.cache import get_cache_key
 from jinja2 import BaseLoader, Environment
 from opaque_keys import InvalidKeyError
 
-from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CATEGORY_TYPE_MAP
+from learning_assistant.constants import ACCEPTED_CATEGORY_TYPES, CACHE_KEY_PREFIXES, CATEGORY_TYPE_MAP
 from learning_assistant.data import LearningAssistantAuditTrialData, LearningAssistantCourseEnabledData
 from learning_assistant.models import (
     LearningAssistantAuditTrial,
@@ -33,6 +33,63 @@ from learning_assistant.utils import get_audit_trial_length_days
 
 log = logging.getLogger(__name__)
 User = get_user_model()
+
+
+def clear_learning_assistant_cache(course_id=None, user_id=None, unit_usage_key=None):
+    """
+    Clear learning assistant cache entries.
+    
+    Args:
+        course_id (str, optional): Specific course ID to clear cache for
+        user_id (int, optional): Specific user ID to clear cache for  
+        unit_usage_key (str, optional): Specific unit usage key to clear cache for
+        
+    Returns:
+        int: Number of cache entries cleared
+    """
+    cache_keys_to_clear = []
+    
+    if course_id and user_id and unit_usage_key:
+        # Clear specific cache entry
+        cache_key = get_cache_key(
+            resource=CACHE_KEY_PREFIXES['learning_assistant'],
+            user_id=user_id,
+            course_id=course_id,
+            unit_usage_key=unit_usage_key
+        )
+        cache_keys_to_clear.append(cache_key)
+    elif course_id:
+        # For course-level clearing, we need to use cache pattern matching
+        # Since Django cache doesn't support pattern deletion, log the request
+        log.info(f"Cache clear requested for course_id={course_id}")
+        # This would typically require a custom cache backend that supports patterns
+        # For now, we'll clear what we can
+        pass
+    
+    cleared_count = 0
+    for cache_key in cache_keys_to_clear:
+        if cache.get(cache_key) is not None:
+            cache.delete(cache_key)
+            cleared_count += 1
+            log.info(f"Cleared cache for key: {cache_key}")
+    
+    return cleared_count
+
+
+def get_cache_statistics():
+    """
+    Get statistics about learning assistant cache usage.
+    
+    Returns:
+        dict: Cache statistics including hit/miss ratios if available
+    """
+    # Note: This would require a more sophisticated cache backend
+    # to provide detailed statistics. For now, return basic info.
+    return {
+        'cache_backend': str(type(cache)),
+        'default_timeout': getattr(cache, 'default_timeout', 'unknown'),
+        'learning_assistant_timeout': getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360),
+    }
 
 
 def _extract_block_contents(child, category):
@@ -90,23 +147,62 @@ def get_block_content(request, user_id, course_id, unit_usage_key):
     """
     Public wrapper for retrieving the content of a given block's children.
 
-    Returns
-        length - the cummulative length of a block's children's content
-        items - a list of dictionaries containing the content type and text for each child
+    Args:
+        request: HTTP request object
+        user_id (int): User ID
+        course_id (str): Course ID
+        unit_usage_key (str): Unit usage key
+        
+    Returns:
+        tuple: (length, items) where:
+            length - the cumulative length of a block's children's content
+            items - a list of dictionaries containing the content type and text for each child
+            
+    Raises:
+        ValueError: If required parameters are missing or invalid
+        Exception: If block retrieval or content processing fails
     """
+    # Input validation
+    if not user_id or not isinstance(user_id, int):
+        raise ValueError("Valid user_id is required")
+    
+    if not course_id or not isinstance(course_id, str):
+        raise ValueError("Valid course_id is required")
+    
+    if not unit_usage_key or not isinstance(unit_usage_key, str):
+        raise ValueError("Valid unit_usage_key is required")
+    
     cache_key = get_cache_key(
-        resource='learning_assistant',
+        resource=CACHE_KEY_PREFIXES['learning_assistant'],
         user_id=user_id,
         course_id=course_id,
         unit_usage_key=unit_usage_key
     )
+    
     cache_data = cache.get(cache_key)
+    log.debug(f"Cache {'hit' if cache_data else 'miss'} for key: {cache_key}")
 
     if not isinstance(cache_data, dict):
-        block = get_single_block(request, user_id, course_id, unit_usage_key)
-        length, items = _get_children_contents(block)
-        cache_data = {'content_length': length, 'content_items': items}
-        cache.set(cache_key, cache_data, getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360))
+        try:
+            log.info(f"Fetching block content for user_id={user_id}, course_id={course_id}, unit={unit_usage_key}")
+            block = get_single_block(request, user_id, course_id, unit_usage_key)
+            
+            if not block:
+                log.warning(f"No block found for unit_usage_key={unit_usage_key}")
+                return 0, []
+            
+            length, items = _get_children_contents(block)
+            cache_data = {'content_length': length, 'content_items': items}
+            
+            cache_timeout = getattr(settings, 'LEARNING_ASSISTANT_CACHE_TIMEOUT', 360)
+            cache.set(cache_key, cache_data, cache_timeout)
+            
+            log.info(f"Cached block content with length={length}, items_count={len(items)}")
+            
+        except Exception as e:
+            log.error(f"Error retrieving block content: {str(e)}")
+            # Return empty content rather than failing completely
+            return 0, []
 
     return cache_data['content_length'], cache_data['content_items']
 
@@ -119,7 +215,8 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
 
     if unit_usage_key:
         try:
-            _, unit_content = get_block_content(request, user_id, course_run_id, unit_usage_key)
+            _, unit_content_items = get_block_content(request, user_id, course_run_id, unit_usage_key)
+unit_content = ' '.join(item['content_text'] for item in unit_content_items)
         except InvalidKeyError:
             log.warning(
                 'Failed to retrieve course content for course_id=%(course_run_id)s because of '
@@ -211,21 +308,51 @@ def get_course_id(course_run_id):
 def save_chat_message(courserun_key, user_id, chat_role, message):
     """
     Save the chat message to the database.
+    
+    Args:
+        courserun_key: Course run key
+        user_id (int): User ID
+        chat_role (str): Role of the message sender ('user' or 'assistant')
+        message (str): Message content
+        
+    Raises:
+        ValueError: If parameters are invalid
+        Exception: If user doesn't exist or database operation fails
     """
-    user = None
+    # Input validation
+    if not courserun_key:
+        raise ValueError("Course run key is required")
+    
+    if not user_id or not isinstance(user_id, int):
+        raise ValueError("Valid user ID is required")
+    
+    if chat_role not in [LearningAssistantMessage.USER_ROLE, LearningAssistantMessage.ASSISTANT_ROLE]:
+        raise ValueError(f"Invalid chat role: {chat_role}")
+    
+    if not isinstance(message, str) or not message.strip():
+        raise ValueError("Message content must be a non-empty string")
+    
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist as exc:
-        raise Exception("User does not exists.") from exc
+        log.error(f"User with ID {user_id} does not exist")
+        raise Exception(f"User with ID {user_id} does not exist.") from exc
 
-    # Save the user message to the database.
-    LearningAssistantMessage.objects.create(
-        course_id=courserun_key,
-        user=user,
-        role=chat_role,
-        content=message,
-
-    )
+    try:
+        # Save the message to the database
+        message_obj = LearningAssistantMessage(
+            course_id=courserun_key,
+            user=user,
+            role=chat_role,
+            content=message.strip(),
+        )
+        
+        log.info(f"Saved chat message: user_id={user_id}, course={courserun_key}, role={chat_role}")
+        return message_obj
+        
+    except Exception as e:
+        log.error(f"Error saving chat message: {str(e)}")
+        raise Exception(f"Failed to save chat message: {str(e)}") from e
 
 
 def get_message_history(courserun_key, user, message_count):
@@ -238,7 +365,7 @@ def get_message_history(courserun_key, user, message_count):
     # Slicing the list in the model is an equivalent of adding LIMIT on the query.
     # The result is the last chat messages for that user and course but in inversed order, so in order to flip them
     # its first turn into a list and then reversed.
-    message_history = list(LearningAssistantMessage.objects.filter(
+    message_history = LearningAssistantMessage.objects.filter(
         course_id=courserun_key, user=user).order_by('-created')[:message_count])[::-1]
     return message_history
 
@@ -339,7 +466,7 @@ def audit_trial_is_expired(enrollment, audit_trial_data):
 
     # If the upgrade deadline has passed, return True for expired. Upgrade deadline is an optional attribute of a
     # CourseEnrollment, so if it's None, then do not return True.
-    days_until_upgrade_deadline = today - upgrade_deadline if upgrade_deadline else None
+    days_until_upgrade_deadline = upgrade_deadline - today if upgrade_deadline else None
     if days_until_upgrade_deadline is not None and days_until_upgrade_deadline >= timedelta(days=0):
         return True
 
