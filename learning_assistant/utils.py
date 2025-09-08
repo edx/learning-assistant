@@ -24,7 +24,7 @@ from learning_assistant.constants import (
     MAX_RETRY_ATTEMPTS,
     TOKEN_ESTIMATION_CACHE_TIMEOUT,
 )
-from learning_assistant.toggles import is_v2_endpoint_enabled as v2_endpoint_enabled
+from learning_assistant.toggles import v2_endpoint_enabled
 
 log = logging.getLogger(__name__)
 
@@ -61,7 +61,6 @@ def estimated_message_tokens(message, use_cache=True):
 
     # More accurate estimation considering whitespace
     non_whitespace_chars = len(message.replace(' ', '').replace('\n', '').replace('\t', ''))
-    estimated_tokens = int(non_whitespace_chars / chars_per_token) + json_padding
     estimated_tokens = int(non_whitespace_chars / chars_per_token) + json_padding
     
     # Cache the result if caching is enabled
@@ -117,7 +116,7 @@ def get_reduced_message_list(prompt_template, message_list):
     message_list_copy = copy.deepcopy(message_list)
     total_message_tokens = 0
 
-    while total_message_tokens <= remaining_tokens and len(message_list_copy) != 0:
+    while total_message_tokens < remaining_tokens and len(message_list_copy) != 0:
         new_message = message_list_copy.pop()
         try:
             message_tokens = estimated_message_tokens(new_message['content'])
@@ -178,8 +177,8 @@ def get_chat_response(prompt_template, message_list):
     if not isinstance(message_list, list):
         raise ValueError("Message list must be a list")
     
-    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2', None) if v2_endpoint_enabled else \
-        getattr(settings, 'CHAT_COMPLETION_API', None)
+    completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2', None) if v2_endpoint_enabled() \
+        else getattr(settings, 'CHAT_COMPLETION_API', None)
         
     if not completion_endpoint:
         log.error("Chat completion API endpoint is not configured")
@@ -313,7 +312,7 @@ def get_optimizely_variation(user_id, enrollment_mode):
         enabled = False
         variation_key = None
     else:
-        optimizely_client = Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
+        optimizely_client = optimizely.Optimizely(sdk_key=settings.OPTIMIZELY_FULLSTACK_SDK_KEY)
         user = optimizely_client.create_user_context(str(user_id),
                                                      {'lms_language_preference': get_language(),
                                                       'lms_enrollment_mode': enrollment_mode})
@@ -353,7 +352,9 @@ def get_audit_trial_length_days(user_id, enrollment_mode):
         trial_length_days = default_trial_length_days
 
     # If LEARNING_ASSISTANT_AUDIT_TRIAL_LENGTH_DAYS is set to a negative number, assume it should be 0.
+    # pylint: disable=consider-using-max-builtin, no-else-return
     trial_length_days = max(trial_length_days, 0)
+        trial_length_days = 0
 
     return trial_length_days
 
