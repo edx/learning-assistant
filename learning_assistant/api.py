@@ -139,9 +139,15 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
         # Create a new list of dictionaries to hold trimmed content
         trimmed_unit_content = []
 
-        total_chars = sum(len(str(item.get("content_text", "")).strip()) for item in unit_content) or 1
-        current_length = 0
+        total_chars = 0
+        for item in unit_content:
+            text = str(item.get("content_text", "")).strip()
+            total_chars += len(text)
 
+        if total_chars == 0:
+            total_chars = 1  # prevent divide-by-zero
+
+        current_length = 0
         for item in unit_content:
             ctype = item.get("content_type", "")
             text = str(item.get("content_text", "")).strip()
