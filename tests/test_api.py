@@ -229,7 +229,7 @@ class GetBlockContentAPITests(TestCase):
         unit_usage_key = 'block-v1:edX+A+B+type@vertical+block@verticalD'
         course_id = 'edx+test'
         template_string = getattr(settings, 'LEARNING_ASSISTANT_PROMPT_TEMPLATE', '')
-        unit_content_max_length = settings.CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH
+        unit_content_max_length = getattr(settings, 'CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH', 11750)
 
         # Determine total content length for mock
         if isinstance(unit_content, list):
