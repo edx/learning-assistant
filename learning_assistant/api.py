@@ -134,6 +134,17 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     # error due to using too many tokens.
     UNIT_CONTENT_MAX_CHAR_LENGTH = getattr(settings, 'CHAT_COMPLETION_UNIT_CONTENT_MAX_CHAR_LENGTH', 11750)
 
+    # Calculate static content size by rendering template with empty unit_content
+    course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
+    skill_names = course_data['skill_names']
+    title = course_data['title']
+    
+    template = Environment(loader=BaseLoader).from_string(template_string)
+    static_content = template.render(unit_content="", skill_names=skill_names, title=title)
+    static_content_length = len(static_content)
+    
+    adjusted_unit_limit = min(UNIT_CONTENT_MAX_CHAR_LENGTH, max(0, 15000 - static_content_length))
+
     # --- Proportional trimming logic ---
     if isinstance(unit_content, list):
         # Create a new list of dictionaries to hold trimmed content
@@ -156,7 +167,7 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
                 trimmed_unit_content.append({"content_type": ctype, "content_text": ""})
                 continue
 
-            allowed_chars = max(1, int((len(text) / total_chars) * UNIT_CONTENT_MAX_CHAR_LENGTH))
+            allowed_chars = max(1, int((len(text) / total_chars) * adjusted_unit_limit))
             trimmed_text = text[:allowed_chars]
             trimmed_unit_content.append({"content_type": ctype, "content_text": trimmed_text})
             current_length += len(trimmed_text)
@@ -166,13 +177,8 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
 
     else:
         # For non-list content, keep as string trimmed
-        unit_content = unit_content[0:UNIT_CONTENT_MAX_CHAR_LENGTH]
+        unit_content = unit_content[0:adjusted_unit_limit]
 
-    course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
-    skill_names = course_data['skill_names']
-    title = course_data['title']
-
-    template = Environment(loader=BaseLoader).from_string(template_string)
     data = template.render(unit_content=unit_content, skill_names=skill_names, title=title)
 
     return data
