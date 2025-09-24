@@ -138,12 +138,12 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
     course_data = get_cache_course_data(course_id, ['skill_names', 'title'])
     skill_names = course_data['skill_names']
     title = course_data['title']
-    
+
     template = Environment(loader=BaseLoader).from_string(template_string)
     static_content = template.render(unit_content="", skill_names=skill_names, title=title)
     static_content_length = len(static_content)
-    
-    adjusted_unit_limit = min(UNIT_CONTENT_MAX_CHAR_LENGTH, max(0, 15000 - static_content_length))
+
+    adjusted_unit_limit = max(0, UNIT_CONTENT_MAX_CHAR_LENGTH - static_content_length)
 
     # --- Proportional trimming logic ---
     if isinstance(unit_content, list):
@@ -155,25 +155,32 @@ def render_prompt_template(request, user_id, course_run_id, unit_usage_key, cour
             text = str(item.get("content_text", "")).strip()
             total_chars += len(text)
 
-        if total_chars == 0:
-            total_chars = 1  # prevent divide-by-zero
+        # If all content is empty, skip proportional calculation and handle as empty content
+        if total_chars > 0:
+            # Distribute the available characters proportionally among non-empty content
+            for item in unit_content:
+                ctype = item.get("content_type", "")
+                text = str(item.get("content_text", "")).strip()
 
-        current_length = 0
-        for item in unit_content:
-            ctype = item.get("content_type", "")
-            text = str(item.get("content_text", "")).strip()
+                if not text:
+                    trimmed_unit_content.append({"content_type": ctype, "content_text": ""})
+                    continue
 
-            if not text:
+                allowed_chars = max(1, int((len(text) / total_chars) * adjusted_unit_limit))
+                trimmed_text = text[:allowed_chars]
+                trimmed_unit_content.append({"content_type": ctype, "content_text": trimmed_text})
+        else:
+            # All content items are empty, so create empty content items
+            for item in unit_content:
+                ctype = item.get("content_type", "")
                 trimmed_unit_content.append({"content_type": ctype, "content_text": ""})
-                continue
-
-            allowed_chars = max(1, int((len(text) / total_chars) * adjusted_unit_limit))
-            trimmed_text = text[:allowed_chars]
-            trimmed_unit_content.append({"content_type": ctype, "content_text": trimmed_text})
-            current_length += len(trimmed_text)
 
         # Keep the trimmed content as a list of dictionaries
         unit_content = trimmed_unit_content
+
+        # If all content items are empty after trimming, treat as no content
+        if all(not str(item.get("content_text", "")).strip() for item in unit_content):
+            unit_content = ""
 
     else:
         # For non-list content, keep as string trimmed
