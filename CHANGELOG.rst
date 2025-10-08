@@ -14,6 +14,10 @@ Change Log
 Unreleased
 **********
 
+4.11.3 - 2025-10-08
+*******************
+* Handle large system messages in Xpert Assistant.
+
 4.11.1 - 2025-08-22
 *******************
 * Fixes a linting error on the changelog that prevented the previous release.
