@@ -340,6 +340,8 @@ class CourseChatViewTests(LoggedInTestCase):
         mock_chat_response.assert_called_with(
             'Rendered template mock',
             test_data,
+            self.user.id,
+            self.course_id,
         )
 
         if enabled_flag:
