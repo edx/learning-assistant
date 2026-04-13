@@ -80,11 +80,11 @@ def create_request_body(prompt_template, message_list, user_id):
 
 def create_conversation_history_id(user_id, course_run_id):
     """
-    Create a conversation history id for a given user and course.
+    Create a conversation history id for a given user and course run.
 
     Arguments:
     * user_id: the user's id
-    * course_id: the course's id
+    * course_run_id: the course run's id
 
     Returns:
     * str: the conversation history id
