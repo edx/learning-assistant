@@ -2,6 +2,7 @@
 Tests for the utils functions
 """
 import json
+import uuid
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
@@ -33,10 +34,11 @@ class GetChatResponseTests(TestCase):
         self.prompt_template = 'This is a prompt.'
 
         self.message_list = [{'role': 'assistant', 'content': 'Hello'}, {'role': 'user', 'content': 'Goodbye'}]
+        self.user_id = "testing@tempuri.false"
         self.course_id = 'edx+test'
 
     def get_response(self):
-        return get_chat_response(self.prompt_template, self.message_list)
+        return get_chat_response(self.prompt_template, self.message_list, self.user_id, self.course_id)
 
     @override_settings(CHAT_COMPLETION_API=None)
     def test_no_endpoint_setting(self):
@@ -106,10 +108,12 @@ class GetChatResponseTests(TestCase):
     def test_post_request_structure(self, mock_requests):
         mock_requests.post = MagicMock()
 
+        mock_convo_hist_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f'{self.user_id}_{self.course_id}'))
+
         completion_endpoint = settings.CHAT_COMPLETION_API
         connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
         read_timeout = settings.CHAT_COMPLETION_API_READ_TIMEOUT
-        headers = {'Content-Type': 'application/json'}
+        headers = {'Content-Type': 'application/json', 'Conversation-History-ID': mock_convo_hist_id}
 
         response_body = {
             'message_list': [{'role': 'system', 'content': self.prompt_template}] + self.message_list,
@@ -129,15 +133,18 @@ class GetChatResponseTests(TestCase):
         mock_requests.post = MagicMock()
         mock_v2_enabled.return_value = True
 
+        mock_convo_hist_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f'{self.user_id}_{self.course_id}'))
+
         completion_endpoint_v2 = settings.CHAT_COMPLETION_API_V2
         connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
         read_timeout = settings.CHAT_COMPLETION_API_READ_TIMEOUT
-        headers = {'Content-Type': 'application/json'}
+        headers = {'Content-Type': 'application/json', 'Conversation-History-ID': mock_convo_hist_id}
 
         response_body = {
             'client_id': 'edx_olc_la',
             'system_message': self.prompt_template,
             'messages': self.message_list,
+            'external_id': self.user_id,
         }
 
         self.get_response()

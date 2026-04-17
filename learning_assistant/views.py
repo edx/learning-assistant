@@ -108,7 +108,7 @@ class CourseChatView(APIView):
         prompt_template = render_prompt_template(
             request, request.user.id, course_run_id, unit_id, course_id, template_string
         )
-        status_code, message = get_chat_response(prompt_template, message_list)
+        status_code, message = get_chat_response(prompt_template, message_list, request.user.id, course_run_id)
 
         if chat_history_enabled(courserun_key):
             content = extract_message_content(message)

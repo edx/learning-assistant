@@ -4,6 +4,7 @@ Utils file for learning-assistant.
 import copy
 import json
 import logging
+import uuid
 from datetime import datetime
 
 import requests
@@ -56,7 +57,7 @@ def get_reduced_message_list(prompt_template, message_list):
     return new_message_list
 
 
-def create_request_body(prompt_template, message_list):
+def create_request_body(prompt_template, message_list, user_id):
     """
     Form request body to be passed to the chat endpoint.
     """
@@ -71,23 +72,47 @@ def create_request_body(prompt_template, message_list):
             'client_id': getattr(settings, 'CHAT_COMPLETION_CLIENT_ID', 'edx_olc_la'),
             'system_message': prompt_template,
             'messages': messages,
+            'external_id': str(user_id),
         }
 
     return response_body
 
 
-def get_chat_response(prompt_template, message_list):
+def create_conversation_history_id(user_id, course_run_id):
+    """
+    Create a conversation history id for a given user and course run.
+
+    Arguments:
+    * user_id: the user's id
+    * course_run_id: the course run's id
+
+    Returns:
+    * str: the conversation history id
+    """
+    convo_hist_seed = f'{user_id}_{course_run_id}'
+
+    # Use a pre-defined namespace (e.g., DNS, URL, OID, or X500)
+    namespace = uuid.NAMESPACE_URL
+
+    # Generate the same UUID every time for the same string
+    deterministic_uuid = uuid.uuid5(namespace, convo_hist_seed)
+
+    return str(deterministic_uuid)
+
+
+def get_chat_response(prompt_template, message_list, user_id, course_run_id):
     """
     Pass message list to chat endpoint, as defined by the CHAT_COMPLETION_API setting.
     """
     completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2', None) if v2_endpoint_enabled() \
         else getattr(settings, 'CHAT_COMPLETION_API', None)
     if completion_endpoint:
-        headers = {'Content-Type': 'application/json'}
+        conversation_history_id = create_conversation_history_id(user_id, course_run_id)
+        headers = {'Content-Type': 'application/json', 'Conversation-History-ID': conversation_history_id}
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
-        body = create_request_body(prompt_template, message_list)
+        body = create_request_body(prompt_template, message_list, user_id)
 
         try:
             response = requests.post(
