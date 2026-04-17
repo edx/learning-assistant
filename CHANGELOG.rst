@@ -13,6 +13,14 @@ Change Log
 
 Unreleased
 **********
+4.11.4 - 2026-04-17
+*******************
+* To include additional, optional parameters so that learning assistant messages are included in downstream reports and analysis.
+
+  * Specific changes to the API call:
+
+    added Conversation-History-ID header item
+    added external_id body property, only to v2 version of api call
 
 4.11.3 - 2025-10-08
 *******************

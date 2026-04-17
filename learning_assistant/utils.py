@@ -72,7 +72,7 @@ def create_request_body(prompt_template, message_list, user_id):
             'client_id': getattr(settings, 'CHAT_COMPLETION_CLIENT_ID', 'edx_olc_la'),
             'system_message': prompt_template,
             'messages': messages,
-            'external_id': user_id,
+            'external_id': str(user_id),
         }
 
     return response_body
@@ -113,7 +113,7 @@ def get_chat_response(prompt_template, message_list, user_id, course_run_id):
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
         body = create_request_body(prompt_template, message_list, user_id)
-
+        log.debug('Sending request to chat completion API with user id: %s', user_id)
         try:
             response = requests.post(
                 completion_endpoint,
