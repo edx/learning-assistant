@@ -5,7 +5,7 @@
 | Name                                                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |-------------------------------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | learning\_assistant/\_\_init\_\_.py                                                   |        2 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/api.py                                                            |      136 |        5 |       28 |        1 |     96% |119->135, 251-253, 263-264 |
+| learning\_assistant/api.py                                                            |      136 |        5 |       28 |        1 |     96% |119-\>135, 251-253, 263-264 |
 | learning\_assistant/apps.py                                                           |        4 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/constants.py                                                      |        7 |        0 |        0 |        0 |    100% |           |
 | learning\_assistant/data.py                                                           |       12 |        0 |        0 |        0 |    100% |           |
@@ -29,12 +29,12 @@
 | learning\_assistant/platform\_imports.py                                              |       29 |       21 |        0 |        0 |     28% |12-19, 25-26, 32-33, 39-40, 46-47, 58-59, 70-71, 86-87 |
 | learning\_assistant/plugins\_api.py                                                   |       16 |        0 |        2 |        0 |    100% |           |
 | learning\_assistant/serializers.py                                                    |       14 |        1 |        2 |        1 |     88% |        36 |
-| learning\_assistant/text\_utils.py                                                    |       32 |        2 |        4 |        1 |     86% |42->exit, 47-48 |
+| learning\_assistant/text\_utils.py                                                    |       32 |        2 |        4 |        1 |     86% |42-\>exit, 47-48 |
 | learning\_assistant/toggles.py                                                        |       13 |        2 |        0 |        0 |     85% |    34, 43 |
 | learning\_assistant/urls.py                                                           |        5 |        0 |        0 |        0 |    100% |           |
-| learning\_assistant/utils.py                                                          |       88 |        0 |       20 |        0 |    100% |           |
+| learning\_assistant/utils.py                                                          |       95 |        0 |       20 |        0 |    100% |           |
 | learning\_assistant/views.py                                                          |      114 |        7 |       22 |        1 |     94% |21-24, 91, 132-133 |
-|                                                                             **TOTAL** |  **597** |   **38** |   **80** |    **4** | **94%** |           |
+| **TOTAL**                                                                             |  **604** |   **38** |   **80** |    **4** | **94%** |           |
 
 
 ## Setup coverage badge
