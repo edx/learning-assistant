@@ -108,12 +108,10 @@ class GetChatResponseTests(TestCase):
     def test_post_request_structure(self, mock_requests):
         mock_requests.post = MagicMock()
 
-        mock_convo_hist_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f'{self.user_id}_{self.course_id}'))
-
         completion_endpoint = settings.CHAT_COMPLETION_API
         connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
         read_timeout = settings.CHAT_COMPLETION_API_READ_TIMEOUT
-        headers = {'Content-Type': 'application/json', 'Conversation-History-ID': mock_convo_hist_id}
+        headers = {'Content-Type': 'application/json'}
 
         response_body = {
             'message_list': [{'role': 'system', 'content': self.prompt_template}] + self.message_list,
@@ -138,13 +136,14 @@ class GetChatResponseTests(TestCase):
         completion_endpoint_v2 = settings.CHAT_COMPLETION_API_V2
         connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
         read_timeout = settings.CHAT_COMPLETION_API_READ_TIMEOUT
-        headers = {'Content-Type': 'application/json', 'Conversation-History-ID': mock_convo_hist_id}
+        headers = {'Content-Type': 'application/json'}
 
         response_body = {
             'client_id': 'edx_olc_la',
             'system_message': self.prompt_template,
             'messages': self.message_list,
             'external_id': self.user_id,
+            'conversation_id': mock_convo_hist_id,
         }
 
         self.get_response()

@@ -57,7 +57,7 @@ def get_reduced_message_list(prompt_template, message_list):
     return new_message_list
 
 
-def create_request_body(prompt_template, message_list, user_id):
+def create_request_body(prompt_template, message_list, user_id, convo_id):
     """
     Form request body to be passed to the chat endpoint.
     """
@@ -73,6 +73,7 @@ def create_request_body(prompt_template, message_list, user_id):
             'system_message': prompt_template,
             'messages': messages,
             'external_id': str(user_id),
+            'conversation_id': convo_id,
         }
 
     return response_body
@@ -107,12 +108,12 @@ def get_chat_response(prompt_template, message_list, user_id, course_run_id):
     completion_endpoint = getattr(settings, 'CHAT_COMPLETION_API_V2', None) if v2_endpoint_enabled() \
         else getattr(settings, 'CHAT_COMPLETION_API', None)
     if completion_endpoint:
-        conversation_history_id = create_conversation_history_id(user_id, course_run_id)
-        headers = {'Content-Type': 'application/json', 'Conversation-History-ID': conversation_history_id}
+        headers = {'Content-Type': 'application/json'}
         connect_timeout = getattr(settings, 'CHAT_COMPLETION_API_CONNECT_TIMEOUT', 1)
         read_timeout = getattr(settings, 'CHAT_COMPLETION_API_READ_TIMEOUT', 15)
 
-        body = create_request_body(prompt_template, message_list, user_id)
+        conversation_history_id = create_conversation_history_id(user_id, course_run_id)
+        body = create_request_body(prompt_template, message_list, user_id, conversation_history_id)
 
         try:
             response = requests.post(
