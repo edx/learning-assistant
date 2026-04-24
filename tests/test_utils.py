@@ -131,7 +131,8 @@ class GetChatResponseTests(TestCase):
         mock_requests.post = MagicMock()
         mock_v2_enabled.return_value = True
 
-        mock_convo_hist_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f'{self.user_id}_{self.course_id}'))
+        mock_convo_id_seed = json.dumps([str(user_id), str(course_run_id)], separators=(',', ':'))
+        mock_convo_hist_id = str(uuid.uuid5(uuid.NAMESPACE_URL, str(mock_convo_id_seed))
 
         completion_endpoint_v2 = settings.CHAT_COMPLETION_API_V2
         connect_timeout = settings.CHAT_COMPLETION_API_CONNECT_TIMEOUT
