@@ -13,6 +13,11 @@ Change Log
 
 Unreleased
 **********
+
+4.11.6 - 2026-08-05
+*******************
+* Added Django 5.2 tox and CI coverage support.
+
 4.11.5 - 2026-04-24
 *******************
 * Fixes a bug where the Conversation-ID value was not being properly included in the API call to the Xpert backend, which caused learning assistant messages to not be included in downstream reports and analysis.
