@@ -13,7 +13,7 @@ attrs==25.3.0
     #   -r requirements/base.txt
     #   jsonschema
     #   referencing
-certifi==2025.8.3
+certifi==2026.10.19
     # via
     #   -r requirements/base.txt
     #   requests
@@ -42,7 +42,7 @@ cryptography==46.0.1
 ddt==1.7.2
     # via -r requirements/test.in
     # via
-    #   -c https:/raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.txt
     #   django-crum
     #   django-model-utils
