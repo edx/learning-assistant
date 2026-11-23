@@ -15,6 +15,7 @@ jobs:
     uses: openedx/.github/.github/workflows/upgrade-python-requirements.yml@master
     with:
       branch: ${{ github.event.inputs.branch || 'main' }}
+      python_version: "3.11"  # compile on the oldest supported Python: edx.org's LMS runs 3.11
       email_address: "cosmonauts-requirements-update@2u-internal.opsgenie.net"
       send_success_notification: true
     secrets:
